@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{DA7A21FA-8162-4350-AD77-A8D1B671F3ED}") = "Scripts", "R Playground\Scripts.rxproj", "{DED14C05-1E59-42D4-8981-939A5626CB0A}"
+Project("{DA7A21FA-8162-4350-AD77-A8D1B671F3ED}") = "Scripts", "Scripts\Scripts.rxproj", "{A36DF591-70BE-4AC9-B58A-6DCBC9197D19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DED14C05-1E59-42D4-8981-939A5626CB0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DED14C05-1E59-42D4-8981-939A5626CB0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DED14C05-1E59-42D4-8981-939A5626CB0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DED14C05-1E59-42D4-8981-939A5626CB0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A36DF591-70BE-4AC9-B58A-6DCBC9197D19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A36DF591-70BE-4AC9-B58A-6DCBC9197D19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A36DF591-70BE-4AC9-B58A-6DCBC9197D19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A36DF591-70BE-4AC9-B58A-6DCBC9197D19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
