@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{DA7A21FA-8162-4350-AD77-A8D1B671F3ED}") = "R Playground", "R Playground\R Playground.rxproj", "{DED14C05-1E59-42D4-8981-939A5626CB0A}"
+Project("{DA7A21FA-8162-4350-AD77-A8D1B671F3ED}") = "Scripts", "R Playground\Scripts.rxproj", "{DED14C05-1E59-42D4-8981-939A5626CB0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
