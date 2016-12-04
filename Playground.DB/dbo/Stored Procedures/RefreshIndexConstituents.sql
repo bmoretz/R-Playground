@@ -64,7 +64,7 @@ BEGIN
 		SELECT
 			*
 		FROM
-			dbo.[CompanyData]
+			dbo.[IndexConstituents]
 		WHERE
 			[Index] = @ReqIndex
 	)
