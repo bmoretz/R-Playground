@@ -5,9 +5,9 @@ getSymbols("YHOO", src = "google")
 getSymbols("AAPL", src = "yahoo")
 barChart(AAPL)
 
-getSymbols("DIN", src = "yahoo")
-barChart(DIN)
-candleChart(DIN, multi.col = TRUE, theme = "white")
+getSymbols("YESBANK.NS", src = "yahoo")
+barChart(YESBANK.NS)
+candleChart(YESBANK.NS, multi.col = TRUE, theme = "white")
 
 getSymbols("XPT/USD", src = "Oanda") # Platinum from Oanda 
 setSymbolLookup(XPTUSD = list(name = "XPT/USD", src = "oanda"))
