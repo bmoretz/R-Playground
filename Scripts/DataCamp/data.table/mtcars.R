@@ -20,3 +20,4 @@ DT
 
 DT[3:5] # works
 DF[3:5] # error (must include comma)
+
