@@ -12,13 +12,13 @@ setkey(DT, A, B)
 DT["b",]
 
 # "b" and "c" groups
-
 DT[c("b","c")]
 
-# The first row of the "b" and "c" groups
+# The first row of the "b" and "c" groups (Select the first row of the "b" and "c" groups using mult.)
+DT[c("b","c"), mult = "first"]
 
-
-# First and last row of the "b" and "c" groups
-
+# First and last row of the "b" and "c" groups (Use by = .EACHI and .SD to select the first and last row of the "b" and "c" groups.)
+DT[c("b","c"), .SD[c(1, .N)], by = A, .SDcols = B:C]
 
 # Copy and extend code for instruction 4: add printout
+DT[c("b", "c"), { print(.SD); .SD[c(1, .N)] }, by = A, .SDcols = B:C]
