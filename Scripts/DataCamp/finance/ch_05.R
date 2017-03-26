@@ -43,6 +43,7 @@ portfolio$aaple <- NULL
 # *********************
 # Split-Apply-Combine
 # *********************
+rm(list = ls())
 
 # Basics - setup
 
@@ -98,6 +99,7 @@ cash_no_A
 # *********************
 # Attributes
 # *********************
+rm(list = ls())
 
 # my_matrix and my_factor
 
@@ -111,6 +113,7 @@ my_factor <- factor(c("A", "A", "B"), ordered = T, levels = c("A", "B"))
 attributes(my_matrix)
 
 # Just the dim attribute of my_matrix
-
+attr(my_matrix, which = "dim")
 
 # attributes of my_factor
+attributes(my_factor)
