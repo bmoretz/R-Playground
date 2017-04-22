@@ -175,3 +175,105 @@ boxplot(expend.lean, expend.obese)
 detach(juul)
 
 # sec 4.4.3
+
+attach(energy)
+
+expend.lean <- expend[stature == "lean"]
+expend.obese <- expend[stature == "obese"]
+
+opar <- par(mfrow = c(2, 2), mex = 0.8, mar = c(3, 3, 2, 1) + .1)
+
+stripchart(expend ~ stature)
+stripchart(expend ~ stature, method = "stack")
+stripchart(expend ~ stature, method = "jitter")
+stripchart(expend ~ stature, method = "jitter", jitter = 0.3)
+
+stripchart(list(lean = expend.lean, obease = expend.obese))
+
+# 4.5, Tables
+
+# Matrix
+
+caff.marital <- matrix(c(652, 1537, 598, 242, 36, 46, 38, 21, 218, 327, 106, 67),
+	nrow = 3, byrow = TRUE)
+
+caff.marital
+
+colnames(caff.marital) <- c("0", "1-150", "151-300", ">300")
+rownames(caff.marital) <- c("Married", "Prev.Married", "Single")
+
+caff.marital
+
+as.table(caff.marital)
+
+as.data.frame(as.table(caff.marital))
+
+attach(juul)
+
+# table class
+table(sex)
+
+table(sex, menarche)
+
+table(menarche, tanner)
+
+# formatting output
+xtabs(~tanner + sex, data = juul)
+
+xtabs(~dgn + diab + coma, data = stroke)
+
+ftable(coma + diab ~ dgn, data = stroke)
+
+# flat table transposed
+t(caff.marital)
+
+# multiway table transpose
+aperm(caff.marital)
+
+# 4.5.2, Marginal tables
+
+tanner.sex <- table(tanner, sex)
+
+colnames(tanner.sex) <- c("M", "F")
+rownames(tanner.sex) <- c("I", "II", "III", "IV", "V")
+
+tanner.sex
+
+margin.table(tanner.sex, 1)
+margin.table(tanner.sex, 2)
+
+prop.table(tanner.sex, 1)
+
+# 4.6, Graphical Displays of Tables
+
+total.caff <- margin.table(caff.marital, 2)
+
+total.caff
+
+barplot(total.caff, col = "white")
+
+par(mfrow = c(2, 2))
+barplot(caff.marital, col = "white")
+barplot(t(caff.marital), col = "white")
+barplot(t(caff.marital), col = "white", beside = TRUE)
+barplot(prop.table(t(caff.marital), 2), col = "white", beside = TRUE)
+
+par(mfrow = c(1, 1))
+barplot(prop.table(t(caff.marital), 2),
+	beside = TRUE,
+	legend.text = colnames(caff.marital),
+	col = c("white", "grey80", "grey50", "black")
+)
+
+# 4.6.2 dotchart
+
+dotchart(t(caff.marital), lcolor = "black")
+
+# 4.6.3, Piecharts
+
+opar <- par(mfrow=c(2,2), mex = 0.8, mar = c(1,1,2,1))
+slices <- c("white", "grey80", "grey50", "black")
+pie(caff.marital["Married",], main = "Married", col = slices)
+pie(caff.marital["Prev.Married",], main = "Prev.Married", col = slices)
+pie(caff.marital["Single",], main = "Single", col = slices)
+par(opar)
