@@ -3,7 +3,7 @@ library(ggplot2)
 
 # Use data() to load Trucking_jobs
 
-load("DataCamp\\stastical.modeling_1\\data\\Trucking_jobs.rda")
+load("DataCamp\\stastical.modeling\\data\\Trucking_jobs.rda")
 
 # View the number rows in Trucking_jobs
 nrow(Trucking_jobs)
@@ -18,7 +18,7 @@ library(ggplot2)
 # Look at the head() of diamonds
 head(diamonds)
 
-load("DataCamp\\stastical.modeling_1\\data\\AARP.rda")
+load("DataCamp\\stastical.modeling\\data\\AARP.rda")
 
 # Find the variable names in AARP
 names(AARP)
