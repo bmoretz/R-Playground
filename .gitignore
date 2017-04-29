@@ -243,3 +243,5 @@ ModelManifest.xml
 R Playground/Data/
 Scripts/Data/
 Playground.DB/Playground.DB.jfm
+
+Scripts/\.Rhistory
