@@ -373,3 +373,6 @@ flights %>%
 	mutate(avg_delay = mean(arr_delay)) %>%
 	select(tailnum, avg_delay) %>%
 	arrange(desc(avg_delay))
+
+
+# 5
