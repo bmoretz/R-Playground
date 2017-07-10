@@ -296,11 +296,80 @@ daily
 
 # Exercises
 
-# 3
+not_canceled <- filter(flights, is.na(arr_delay) | is.na(dep_delay))
 
-not_canceled %>%
-	group_by(year, month, day) %>%
+# 2
+
+	# a
+
+	by_dest_1 <- not_canceled %>%
+		count(dest)
+
+	by_dest_2 <- not_canceled %>%
+		group_by(dest) %>%
+		summarise( num = sum(!is.na(flight)) )
+
+	# equal ?
+
+	all( by_dest_1 == by_dest_2 )
+
+	# b
+
+	by_flight_1 <- not_canceled %>%
+		filter(!is.na(tailnum)) %>%
+		count(tailnum, wt = distance)
+	
+	by_flight_2 <- not_canceled %>%
+		filter(!is.na(tailnum)) %>%
+		group_by(tailnum) %>%
+		summarise(wt = sum(distance))
+
+	# equal ?
+
+	all(by_flight_1 == by_flight_2)
+
+# 4
+
+canceled <- subset(flights, !( flights %in% not_canceled ) )
+
+canceled_flights <- canceled %>%
 	mutate(date = as.Date(paste0(year, "-", month, "-", day), flights = n())) %>%
-	select( c(date, flights))
+	group_by(date) %>%
+	select(date, flight, dep_delay) %>%
+	summarise(flights = sum(!is.na(flight))) %>%
 	ggplot(aes(x = date, y = flights)) +
-	geom_point()
+	geom_point() +
+	geom_smooth(alpha = 1 / 3)
+
+# Grouped Mutate (and filters)
+
+# worst members of each group
+
+flights %>%
+	group_by(year, month, day) %>%
+	filter(rank(desc(arr_delay)) < 10)
+
+# groups bigger than a threshold
+
+popular_dests <- flights %>%
+	group_by(dest) %>%
+	filter(n() > 365)
+
+unique(popular_dests$dest)
+
+popular_dests %>%
+	filter(arr_delay > 0) %>%
+	mutate(prop_delay = arr_delay / sum(arr_delay)) %>%
+	select(year:day, dest, arr_delay, prop_delay)
+
+# Exercises
+
+head(flights)
+
+# 2
+
+flights %>%
+	group_by(tailnum) %>%
+	mutate(avg_delay = mean(arr_delay)) %>%
+	select(tailnum, avg_delay) %>%
+	arrange(desc(avg_delay))
