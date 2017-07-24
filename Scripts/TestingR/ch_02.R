@@ -12,15 +12,11 @@ suppressPackageStartupMessages(library(assertive, quietly = TRUE))
 suppressPackageStartupMessages(library(magrittr, quietly = TRUE))
 
 library(assertive)
+library(magrittr)
 
 assert_is_numeric(counts)
 assert_all_are_non_negative(counts)
 assert_all_are_whole_numbers(counts)
-
-counts %>%
-  assert_is_numeric %>%
-  assert_all_are_non_negative %>%
-  assert_all_are_whole_numbers
 
 is_numeric(1:6)
 
@@ -126,3 +122,116 @@ r_executable <- file.path(R.home("bin"), "R")
 
 is_existing_file(r_executable)
 
+# 2.4.9
+
+(m <- matrix(c(1, eps, 0, 1), nrow = 2))
+
+is_identity_matrix(m)
+
+is_identity_matrix(m, tol = 0)
+
+# 2.4.11, assertive.sets
+
+cor(longley)
+
+x <- c(1, 3, 5, 4, 2)
+y <- c(6, 1, 4, 3, 5)
+
+is_subset(x, y)
+
+is_superset(x, y)
+
+are_set_equal(x, y)
+
+has_colnames(women, c("weight", "height"))
+# or
+are_set_equal(names(women), c("weight", "height"))
+
+model <- lm(weight ~ feed, chickwts)
+
+has_terms(chickwts)
+
+has_terms(model)
+
+an_empty_model <- lm(weight ~ 0, ChickWeight)
+is_empty_model(an_empty_model)
+
+is_empty_model(lm(uptake ~ 1, C02))
+
+is_r_devel
+
+is_date_string(c("21JUL1954", "wednesday"), "%d%b%Y")
+
+assert_all_are_nan(-1:1 / 0, severity = "warning")
+
+# 2.7
+
+geomean <- function(x, na.rm = FALSE) {
+	exp(mean(log(x), na.rm = na.rm ) )
+}
+
+geomean("a")
+
+geomean2 <- function(x, na.rm = FALSE) {
+	assert_is_numeric(x)
+	exp(mean(log(x), na.rm = na.rm))
+}
+
+geomean2("a")
+
+geomean2(rnorm(20))
+
+geomean3 <- function(x, na.rm = FALSE) {
+	assert_is_numeric(x)
+
+	# don't worry about NA's here
+	if (any(is_negative(x), na.rm = TRUE)) {
+		warning(
+			"x contains negative values.",
+			"so the geometric mean makes no sense."
+		)
+
+		return(NaN)
+	}
+
+	exp(mean(log(x), na.rm = na.rm))
+}
+
+geomean3(rnorm(20))
+
+x <- rlnorm(20)
+x[sample(length(x), 5)] <- NA
+geomean3(x, na.rm = c(1.5, 0))
+
+geomean4 <- function(x, na.rm = FALSE) {
+	assert_is_numeric(x)
+
+	# don't worry about NA's here
+	if (any(is_negative(x), na.rm = TRUE)) {
+		warning(
+			"x contains negative values.",
+			"so the geometric mean makes no sense."
+		)
+
+		return(NaN)
+	}
+
+	na.rm <- coerce_to( use_first( na.rm ), "logical" )
+	exp(mean(log(x), na.rm = na.rm ))
+}
+
+geomean4(x, na.rm = c(1.5, 0))
+
+apropos("numeric")
+
+harmean <- function(x, na.rm = FALSE) {
+
+	x %>%
+		assert_is_numeric %>%
+		assert_all_are_positive
+
+	1 / mean( 1 / x, na.rm = na.rm )
+}
+
+harmean(rnorm(20))
+harmean(1:20)
