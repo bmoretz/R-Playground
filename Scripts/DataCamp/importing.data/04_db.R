@@ -60,6 +60,23 @@ short <- dbGetQuery(conn = con, "SELECT id, name FROM users WHERE CHAR_LENGTH( n
 # Print short
 short
 
-dbGetQuery(conn = con, "SELECT id, name FROM users WHERE CHAR_LENGTH( name ) < 5")
+dbGetQuery(conn = con, "SELECT post, message
+  FROM tweats INNER JOIN comments on tweats.id = tweat_id
+    WHERE tweat_id = 77")
+
+# Send query to the database
+res <- dbSendQuery(con, "SELECT * FROM comments WHERE user_id > 4")
+
+dbFetch(res, 2)
+dbFetch(res)
+
+dbClearResult(res)
+
+# Create the data frame  long_tweats
+
+long_tweats <-dbGetQuery(conn = con, "SELECT post, date
+  FROM tweats WHERE CHAR_LENGTH( post ) > 40")
+
+long_tweats
 
 dbDisconnect(conn = con)
