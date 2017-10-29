@@ -69,3 +69,20 @@ C <- c(5, 6, 7)
 ( B + C ) %*% A
 (A %*% B) + (A %*% C)
 
+# Cauchy-Schwarz Inequality
+
+# Given X, Y E R^N ( X != 0, Y != 0 )
+# | X * Y | <= || X || || Y ||
+
+A %*% C
+
+magnitude(A) * magnitude(C)
+
+X1 = c(1, 1, 1)
+X2 = c(1, 1, 1)
+
+# Equality
+X1 %*% X2
+magnitude(X1) * magnitude(X2)
+
+# P(t) = at^2 + bt + c >= 0
