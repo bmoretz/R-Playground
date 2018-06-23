@@ -52,5 +52,5 @@ by_state[, per_100k := (victims / POPEST18PLUS2017) * 100000]
 theme_set(theme_fivethirtyeight())
 
 ggplot(by_state[state != "District of Columbia"], aes(x = reorder(state, - per_100k), y = per_100k)) + geom_bar(stat = 'identity') +
-        labs(x = 'State', y = 'Incidents per 100,000 inhabitants') +
-        theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    labs(x = 'State', y = 'Incidents per 100,000 inhabitants') +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
