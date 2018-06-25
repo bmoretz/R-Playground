@@ -72,11 +72,12 @@ legend(x = 18, y = 100, legend = paste(c("Diet 1, yellow", "Diet 2, red",
 	"Diet 3, blue", "Diet 4, green")))
 
 # 1. Use RColorBrewer and six colors from the Accent scheme to produce a pie chart with equal area slices. 
-# This will require use of brewer.pal() .
+# This will require use of brewer.pal().
 
 pie(rep(1, 6), labels = "", col = c(brewer.pal(6, "Accent")), main = "Accent Color Wheel")
 
-# 2. Use set.seed(123) and rnorm(100, 100, sd = 1.5) to generate six random samples. Use the color scheme from(1) above to produce six side - by - side boxplots.
+# 2. Use set.seed(123) and rnorm(100, 100, sd = 1.5) to generate six random samples. 
+# Use the color scheme from(1) above to produce six side - by - side boxplots.
 
 set.seed(123)
 sample <- rnorm(100, 100, 1.5)
@@ -84,7 +85,8 @@ sample <- rnorm(100, 100, 1.5)
 barplot(head(sample, 6), main = "Accent Color Bars",
 	col = c(brewer.pal(6, "Accent")))
 
-# 3. Produce six histograms using the samples from(2) . Color each with a different color from the palette(c("red", "purple", "blue", "green3", "yellow", "orange")).
+# 3. Produce six histograms using the samples from(2) . 
+# Color each with a different color from the palette(c("red", "purple", "blue", "green3", "yellow", "orange")).
 
 palette(c("red", "purple", "blue", "green3", "yellow", "orange"))
 par(mfrow = c(2, 3))
@@ -104,3 +106,4 @@ rgbcols <- sapply(c("red", "purple", "blue", "green3", "yellow", "orange"), col2
 apply(rgbcols, 2, FUN = function(x) {
 	return(rgb(x[1], x[2], x[3], max = 255))
 })
+

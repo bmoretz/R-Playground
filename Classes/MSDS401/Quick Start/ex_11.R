@@ -13,3 +13,6 @@ result
 
 addmargins(table(ToothGrowth$supp, ToothGrowth$dose))
 
+with(ToothGrowth, aggregate(len, by = list(supp, dose), median))
+
+with(ToothGrowth, addmargins(table(supp, dose)))

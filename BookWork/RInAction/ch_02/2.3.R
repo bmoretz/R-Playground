@@ -11,3 +11,5 @@ age gender weight
 60 f 115
 18 f 120"
 
+mydata <- read.table(header = TRUE, text = mydatatxt)
+
