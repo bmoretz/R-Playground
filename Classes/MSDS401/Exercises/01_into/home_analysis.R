@@ -18,14 +18,14 @@ str(home.sales)
 
 variable_types = data.frame(
       Variable = colnames(home.sales),
-      Type = c( "Interval",
-                "Interval",
+      Type = c( "Ratio",
+                "Ratio",
                 "Ordinal",
                 "Ordinal",
-                "Ordinal",
-                "Ordinal",
+                "Ratio",
                 "Nominal",
-                "Interval"))
+                "Nominal",
+                "Ratio"))
 
 print(variable_types)
 
@@ -42,6 +42,7 @@ str(home.sales)
 # c) From the vector “price”, select a simple random sample of size 12. Assign the sample to the name “SRS.”" 
 # Print SRS and determine the mean value.
 
+set.seed(999)
 SRS <- sample(home.sales$Price, 12)
 
 print(SRS)
@@ -54,6 +55,7 @@ print(mu_SRS)
 # observation. Assign the sample vector to “SS.”" Print the values of SS and compute the mean value.
 
 obs <- seq(from = 7, to = 117, by = 10)
+obs
 SS <- home.sales[obs]$Price
 
 print(SS)
@@ -88,4 +90,3 @@ pSS <- qplot(SS,
       xlab = "Price")
 
 grid.arrange(pSRS, pSS, nrow = 1)
-
