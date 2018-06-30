@@ -1,0 +1,294 @@
+---
+title: "Chapter 2 Exercises"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: spacelab
+    df_print: paged
+---
+
+```{r knitr-setup, include = FALSE}
+library(knitr)
+
+knitr::opts_chunk$set(eval = TRUE)
+
+opts_chunk$set(fig.align = "center", fig.height = 4, fig.width = 8) # for html
+opts_knit$set(progress = FALSE, verbose = TRUE)
+
+```
+
+## Getting started with ggplot2
+
+```{r, echo=FALSE}
+
+require(data.table, quietly = TRUE, warn.conflicts = FALSE)
+require(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+require(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+
+mpg
+
+```
+
+### Exercises 2.2.1
+
+> __Question 1__: 
+
+> List five functions that you could use to get more information
+    about the `mpg` data set.
+    
+> __Answer__: Some useful functions are:
+
+> + `summary`: print some summary statistics for each variable  
+> + `View`: to see the whole data set in a nice spread-sheet like fashion
+> + `str` : get info on the structure of the `mpg` object
+> + `dplyr::glimps`: similar to `str` but much tidier
+> + `class`: to get its class
+
+```{r ch_2.2.1_1}
+glimpse(mpg)
+```
+
+> __Question 2__: 
+
+> How can you find out what other datasets are included with ggplot2?
+
+> __Answer__:
+
+```{r ch_2.2.1_3}
+
+pkg.data <- data(package = "ggplot2")
+pkgs <- as.data.table(pkg.data$results)[, 3:4]
+
+pkgs
+
+```
+
+
+> __Question 3__: 
+
+> Apart from the US, most countries use fuel consumption, 
+(`fuel consumed over fixed distance`) rather than fuel economy,
+(`distance travelled with fixed amount of fuel`).
+
+> How could you convert cty and hwy into the European standard of 1/100km?
+    
+> __Answer__: 
+
+```{r ch_2.2.1_2}
+
+mpgTol100km <- function(milespergallon) {
+	GalloLiter <- 3.785411784
+	MileKilometer <- 1.609344
+
+	l100km <- (100 * GalloLiter) / (milespergallon * MileKilometer)
+	l100km
+}
+
+
+```
+
+> __Question 4__: 
+
+> Which manufacturer has the most models in this dataset?
+
+```{r ch_2_q_4_1}
+
+q4_1 <- mpg %>%
+	group_by(manufacturer) %>%
+	tally( sort = TRUE)
+
+```
+
+
+> Which model has the most variations?
+
+```{r ch_2_q_4_2}
+
+q4_2 <- mpg %>%
+    group_by(manufacturer) %>%
+    transmute("n" = length(unique(model))) %>%
+    unique() %>%
+    ungroup() %>%
+    arrange(desc(n))
+
+```
+
+
+```{r}
+
+df <- data.frame(rbind(q4_1, q4_2), "Type" = as.factor(rep(c("overall", "unique"), each = 15)))
+
+ggplot(df, aes(x = reorder(as.factor(manufacturer), n), y = n, fill = Type)) +
+    geom_bar(width = 0.5, stat = "identity", position = "dodge") +
+    theme(panel.grid.major.y = element_blank(),
+		panel.grid.minor.y = element_blank()) +
+		scale_y_continuous(breaks = seq(0, 40, by = 5)) +
+		ggtitle("Number of models per manufacturer") +
+		labs(y = "Count", x = "Model") +
+		coord_flip()
+
+```
+
+> Does your answer change if you remove the redundant specifications of drive train 
+(e.g., "pathfinder 4wd", 'a4 quattro") from the model name?
+
+
+```{r ch_2_q_4_3}
+
+require(stringr, quietly = TRUE)
+
+unique_model <- mpg %>%
+	select(manufacturer, model)
+
+unique_model$model <- str_trim(str_replace_all(unique_model$model, c("quattro" = "", "4wd" = "",
+									 "2wd" = "", "awd" = "")))
+
+q4_3 <- unique_model %>%
+	group_by(manufacturer) %>%
+	transmute("n" = length(unique(model))) %>%
+	unique() %>%
+	ungroup() %>%
+	arrange(desc(n))
+
+df <- data.frame(rbind(q4_1, q4_3), "Type" = as.factor(rep(c("overall", "unique"), each = 15)))
+
+ggplot(df, aes(x = reorder(as.factor(manufacturer), n), y = n, fill = Type)) +
+	geom_bar(width = 0.5, stat = "identity", position = "dodge") +
+	theme(panel.grid.major.y = element_blank(),
+		panel.grid.minor.y = element_blank()) +
+		scale_y_continuous(breaks = seq(0, 40, by = 5)) +
+		ggtitle("Number of Unique models per manufacturer") +
+		labs(y = "Count", x = "Model") +
+		coord_flip()
+
+```
+
+
+```{r}
+# rm(list = ls())
+```
+
+### Exercises 2.3.1
+
+> __Question 1__: 
+
+> How would you describe the relationship between cty and hwy? Do you have any
+    concerns about drawing conclusions from that plot?
+    
+> __Answer__:
+
+```{r ch_2.3.1}
+
+ggplot(mpg, aes(hwy, cty)) +
+    geom_point()
+
+```
+
+Strongly correlated. I would expect as much from intutition as they are both measurements of fuel economy.
+
+> __Question 2__: 
+
+> What does ggplot( mpg, aes( model, manufacturer)) + geom_point() show? Is it useful? 
+How could you modifiy the data to make it more informative?
+
+> __Answer__:
+
+
+```{r ch_2_3.2_1}
+
+glimpse(mpg)
+
+ggplot(mpg, aes(model, manufacturer)) +
+    geom_point()
+
+mpg %>% group_by(model, manufacturer)
+
+```
+
+It shows the manufacturer by model. It is not very useful. A better alternative might be:
+
+```{r ch_2_3.2_2}
+
+df <- mpg %>%
+	transmute("man_mod" = paste(manufacturer, model, sep = " "))
+
+ggplot(df, aes(man_mod)) +
+	geom_bar()
+
+```
+
+> __Question 3__:
+
+Describe the data, aesthetic mappings and layers used for each of the following plots. 
+You'll need to guess a little because you haven't seen all the data sets and functions yet, but use your common sense! 
+See if you can predict what the plot will look like before running the code.
+
+
+```{r ch_2_3.3}
+
+ggplot(mpg, aes(cty, hwy)) + geom_point()
+ggplot(diamonds, aes(carat, price)) + geom_point()
+ggplot(economics, aes(date, unemploy)) + geom_line()
+ggplot(mpg, aes(cty)) + geom_histogram()
+
+```
+
+### Exercises 2.4.1
+
+> __Question 1__: 
+
+> Experiment with the color, shape and size aesthetics. 
+What happens when you map them to continuous values? What about categorical values? 
+What happens when you use more than one aesthetic in a plot?
+    
+> __Answer__:
+
+```{r ch_2.4.1}
+
+# Categorial
+ggplot(mpg, aes(cty, displ, colour = class)) +
+    geom_point()
+
+# Continuous 
+ggplot(mpg, aes(cty, hwy, size = displ)) +
+    geom_jitter()
+
+```
+
+> __Question 2__: 
+
+> What happens if you map a continuous variable to shape? Why? What happens if you map trans to shape? Why?
+    
+> __Answer__:
+
+```{r ch_2.4.2}
+
+ggplot(mpg, aes(cty, hwy, shape = trans)) +
+    geom_point()
+
+```
+
+> __Question 2__: 
+
+> How is drive train related to fuel economy? How is drive train related to engine size and class?
+    
+> __Answer__:
+
+```{r ch_2.4.3}
+
+ggplot(mpg, aes(drv, cty)) +
+    geom_boxplot() +
+    scale_x_discrete(limits = c("f", "r", "4"),
+				   labels = c("Front wheel", "Rear wheel", "Four wheel"))
+
+ggplot(mpg, aes(drv, cty)) +
+    geom_violin() +
+    scale_x_discrete(limits = c("f", "r", "4"),
+				   labels = c("Front wheel", "Rear wheel", "Four wheel"))
+
+ggplot(mpg, aes(reorder(class, displ, FUN = median), displ, colour = drv)) +
+	geom_jitter(width = 0.5, height = 0)
+
+```

@@ -25,5 +25,9 @@ library(reshape2)
 
 md <- melt(mydata, id = c("ID", "Time"))
 
+head(md)
 
-newdata <- 
+dcast(md, ID ~ variable + Time)
+dcast(md, ID ~ variable, mean)
+dcast(md, Time ~ variable, mean)
+dcast(md, Time + variable ~ Time)

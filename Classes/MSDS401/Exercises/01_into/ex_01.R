@@ -76,17 +76,19 @@ summary(SS)
 stem(SRS)
 
 pSRS <- qplot(SRS,
-      geom = "histogram",
-      bins = 5,
-      main = "Histogram for Random Sample Price",
-      xlab = "Price")
+		geom = "histogram",
+		bins = 5,
+		breaks = pretty(SRS),
+		main = "Histogram for Random Sample Price",
+		xlab = "Price")
 
 stem(SS)
 
 pSS <- qplot(SS,
-      geom = "histogram",
-      bins = 5,
-      main = "Histogram for Systematic Sample Price",
-      xlab = "Price")
+		geom = "histogram",
+		bins = 5,
+		breaks = pretty(SS),
+		main = "Histogram for Systematic Sample Price",
+		xlab = "Price")
 
 grid.arrange(pSRS, pSS, nrow = 1)
