@@ -3,6 +3,7 @@ require(ggplot2)
 require(dplyr)
 require(mgcv)
 require(MASS)
+require(ggthemes)
 
 mpg
 
@@ -124,6 +125,9 @@ head(mpg)
 
 head(diamonds)
 
+ggplot(mpg, aes(reorder(class, hwy, fun = mean), hwy)) + geom_boxplot()
+
+
 # 2.7
 
 ggplot(mpg, aes(cty, hwy)) +
@@ -159,3 +163,14 @@ p <- ggplot(mpg, aes(displ, hwy, color = factor(cyl))) +
 print(p)
 
 ggsave("plot.png", width = 5, height = 5)
+
+summary(p)
+
+# Cars with Theme Example
+
+ggplot(mtcars, aes(x = wt, y = mpg, colour = factor(gear))) +
+	geom_point() +
+	ggtitle("Cars") +
+	geom_smooth(method = "lm", se = FALSE) +
+	scale_color_fivethirtyeight("cyl") +
+	theme_fivethirtyeight()
