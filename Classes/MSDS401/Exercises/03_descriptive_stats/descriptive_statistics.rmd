@@ -1,0 +1,35 @@
+---
+title: "Lesson 03: Descriptive Statistics"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: spacelab
+    df_print: paged
+---
+
+```{r knitr-setup, include = FALSE}
+library(knitr)
+
+knitr::opts_chunk$set(eval = TRUE)
+
+opts_chunk$set(fig.align = "center", fig.height = 4, fig.width = 8) # for html
+opts_knit$set(progress = FALSE, verbose = TRUE)
+
+```
+
+
+```{r additional-libraries, echo=FALSE}
+
+require(data.table, quietly = TRUE, warn.conflicts = FALSE)
+assignInNamespace("cedta.pkgEvalsUserCode", c(data.table:::cedta.pkgEvalsUserCode, "rtvs"), "data.table")
+
+require(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+require(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+require(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+require(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+
+theme_set(theme_fivethirtyeight())
+
+```
