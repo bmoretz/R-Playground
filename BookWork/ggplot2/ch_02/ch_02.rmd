@@ -24,6 +24,8 @@ opts_knit$set(progress = FALSE, verbose = TRUE)
 ```{r, echo=FALSE}
 
 require(data.table, quietly = TRUE, warn.conflicts = FALSE)
+assignInNamespace("cedta.pkgEvalsUserCode", c(data.table:::cedta.pkgEvalsUserCode, "rtvs"), "data.table")
+
 require(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 require(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
 
@@ -31,7 +33,7 @@ mpg
 
 ```
 
-### Exercises 2.2.1
+### Exercises 2.2
 
 > __Question 1__: 
 
@@ -170,7 +172,7 @@ ggplot(df, aes(x = reorder(as.factor(manufacturer), n), y = n, fill = Type)) +
 # rm(list = ls())
 ```
 
-### Exercises 2.3.1
+### Exercises 2.3
 
 > __Question 1__: 
 
@@ -235,7 +237,7 @@ ggplot(mpg, aes(cty)) + geom_histogram()
 
 ```
 
-### Exercises 2.4.1
+### Exercises 2.4
 
 > __Question 1__: 
 
@@ -290,5 +292,201 @@ ggplot(mpg, aes(drv, cty)) +
 
 ggplot(mpg, aes(reorder(class, displ, FUN = median), displ, colour = drv)) +
 	geom_jitter(width = 0.5, height = 0)
+
+```
+
+### Exercises 2.5
+
+> __Question 1__: 
+
+> What happens when you try to facet by a continuous variable like hwy? What about cyl? What's the key difference?
+
+> __Answer__:
+
+The key difference is that faceting by a continious variable leads to the generation of too many plots to be meaningful in analysis. 
+The factor based approach works much better.
+
+```{r ch_2_5.1}
+
+ggplot(mpg, aes(displ, cty)) +
+	geom_point() +
+	facet_wrap(~hwy)
+
+ggplot(mpg, aes(displ, cty)) +
+	geom_point() +
+	facet_wrap(~cyl)
+
+```
+
+> __Question 2__: 
+
+> Use facetting to explore the 3-way relationship between fuel economy, engine size, and number of cylinders. How does facetting by number of cylinders change your assessement of the relationship between engine size and fuel economy?
+
+> __Answer__:
+
+
+```{r ch_2_5.2}
+
+ggplot(mpg, aes(displ, cty)) +
+	geom_point() +
+	geom_smooth(method = "lm") +
+	facet_wrap(~cyl)
+
+```
+
+> __Question 3__: 
+
+>  Read the documentation for facet_wrap(). What arguments can you use to control how many rows and columns appear in the output?
+
+> __Answer__:
+
+?facet_wrap: the arguments are nrow and ncol.
+
+> __Question 4__: 
+
+>  What does the scales argument to facet_wrap() do? When might you use it?
+
+> __Answer__:
+
+The default scale is fixed. This is flexible through "free" and "free_x" / "free_y" to explore across individual pattersns, then "free" scale would be more appropriate.
+
+### Exercises 2.6
+
+> __Question 1__: 
+
+> What's the problem with the plot created by ggplot(mpg, aes(cty, hwy)) + geom_point()? Which of the geoms described above is most effective at remedying the problem?
+
+> __Answer__:
+
+Shows a simply comparison against to variables. Improvement could be to facet by class and add a smooth line to visualize the relationship.
+
+```{r ch_2_6.1_1}
+
+ggplot(mpg, aes(cty, hwy)) +
+	geom_point() +
+    geom_smooth() +
+    facet_wrap(~class)
+
+```
+
+There is also an issue of overplotting. These could help:
+
+```{r ch_2_6.1_2}
+
+ggplot(mpg, aes(cty, hwy)) +
+	geom_jitter() +
+    geom_smooth()
+
+```
+
+> __Question 2__: 
+
+> One challenge with ggplot(mpg, aes(class, hwy)) + geom_boxplot() is that the ordering of class is alphabetical, which is not terribly useful. 
+How could you change the factor levels to be more informative? Rather than reordering the factor by hand, you can do it automatically based on the data: 
+ggplot(mpg, aes(reorder(class, hwy), hwy)) + geom_boxplot(). What does reorder() do? Read the documentation.
+
+> __Answer__:
+
+
+```{r ch_2_6.2}
+
+ggplot(mpg, aes(class, hwy)) + geom_boxplot()
+
+ggplot(mpg, aes(reorder(class, hwy, fun = mean), hwy)) + geom_boxplot()
+
+```
+
+> __Question 3__: 
+
+> Explore the distribution of the carat variable in the diamonds dataset. 
+What binwidth reveals the most interesting patterns?
+
+> __Answer__:
+
+
+```{r ch_2_6.3}
+
+ggplot(diamonds, aes(carat)) + geom_histogram()
+
+ggplot(diamonds, aes(carat, color = cut)) +
+    geom_freqpoly()
+
+bins = 200
+ggplot(diamonds, aes(x = carat)) +
+	geom_histogram(bins = bins) +
+	scale_x_continuous(limits = c(0, 2), expand = c(0, 0), breaks = seq(0, 2, 0.1))
+
+```
+
+> __Question 4__: 
+
+> Explore the distribution of the price variable in the diamonds data. 
+How does the distribution vary by cut?
+
+> __Answer__:
+
+
+```{r ch_2_6.4}
+
+bins = 200
+ggplot(diamonds, aes(x = price)) +
+    geom_histogram(bins = bins) +
+    facet_wrap(~cut, scales = "free")
+
+ggplot(diamonds, aes(price, color = carat)) +
+    geom_histogram(bins = bins) +
+    facet_wrap(~cut, ncol = 2, scales = "free")
+
+ggplot(diamonds, aes(x = price, y = ..density.., color = cut)) +
+	geom_freqpoly(binwidth = 200)
+
+```
+
+
+> __Question 5__: 
+
+> You now know (at least) three ways to compare the distributions of subgroups: 
+    geom_violin(), 
+    geom_freqpoly() and the colour aesthetic, or 
+    geom_histogram() and facetting. 
+
+    What are the strengths and weaknesses of each approach? What other approaches could you try?
+
+> __Answer__:
+
+
+```{r ch_2_6.5}
+
+
+```
+
+> __Question 6__: 
+
+> You now know (at least) three ways to compare the distributions of subgroups: 
+    geom_violin(), 
+    geom_freqpoly() and the colour aesthetic, or 
+    geom_histogram() and facetting. 
+
+> What are the strengths and weaknesses of each approach? What other approaches could you try?
+
+> __Answer__:
+
+
+```{r ch_2_6.6}
+
+
+```
+
+> __Question 6__: 
+
+> Using the techniques already discussed in this chapter, come up with three ways to visualise a 2d categorical distribution. 
+Try them out by visualising the distribution of model and manufacturer, trans and class, and cyl and trans.
+
+> __Answer__:
+
+
+```{r ch_2_6.7}
+
+
 
 ```

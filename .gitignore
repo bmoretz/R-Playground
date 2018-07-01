@@ -248,3 +248,4 @@ Scripts/Data/
 Playground.DB/Playground.DB.jfm
 
 Scripts/\.Rhistory
+.Rproj.user

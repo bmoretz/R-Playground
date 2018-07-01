@@ -17,6 +17,7 @@ require(rmarkdown)
 require(data.table, quietly = TRUE, warn.conflicts = FALSE)
 options(datatable.verbose = TRUE)
 
+assignInNamespace("cedta.pkgEvalsUserCode", c(data.table:::cedta.pkgEvalsUserCode, "rtvs"), "data.table") # this fixes binding.
 
 DT = data.table(x=1:3, y=4:6)    # no
 DT                               # yes

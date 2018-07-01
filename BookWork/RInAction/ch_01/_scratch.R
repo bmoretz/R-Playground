@@ -49,3 +49,4 @@ mosaic(art, gp = shading_max)
 Arthritis
 
 example(Arthritis)
+
