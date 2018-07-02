@@ -22,17 +22,26 @@ opts_knit$set(progress = FALSE, verbose = TRUE)
 
 ```{r additional-libraries, echo=FALSE}
 
-require(data.table, quietly = TRUE, warn.conflicts = FALSE)
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
 assignInNamespace("cedta.pkgEvalsUserCode", c(data.table:::cedta.pkgEvalsUserCode, "rtvs"), "data.table")
 
-require(dplyr, quietly = TRUE, warn.conflicts = FALSE)
-require(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
-require(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
-require(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
 
 theme_set(theme_fivethirtyeight())
 
-data.path <- "C:/Projects/R/Playground/Classes/MSDS401/Exercises/03_descriptive_stats/data/"
+# Theme Overrides
+theme_update(plot.title = element_text(hjust = 0.5),
+             axis.text.x = element_text(face = "bold", size = 12),
+             axis.text.y = element_text(face = "bold", size = 12),
+             legend.position = "top", legend.title = element_blank())
+
+base.dir <- "E:/GitHub/R-Playground/"
+# base.dir <- "C:/Projects/R/Playground"
+
+data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/03_descriptive_stats/data/")
 
 options(digis = 2)
 
@@ -96,7 +105,7 @@ information on sixty cars: HP (engine horsepower), MPG (average miles per gallon
 
 ```{r ex_3_1.data, echo = FALSE}
 
-milage.raw <- loadDataFile("mileage.csv")
+milage <- loadDataFile("mileage.csv")
 
 milage$Class <- factor(milage$Class, ordered = TRUE)
 
@@ -121,10 +130,7 @@ print(mpg_by_class)
 
 ggplot(milage, aes(x = Class, y = Mpg)) +
 	geom_boxplot() +
-	labs(title = "MPG By Class") +
-	theme(plot.title = element_text(hjust = 0.5)) +
-	theme(axis.text.x = element_text(face = "bold", size = 12)) +
-	theme(axis.text.y = element_text(face = "bold", size = 12))
+	labs(title = "MPG By Class")
 
 ```
 
@@ -147,10 +153,7 @@ print(hp_by_class)
 
 ggplot(milage, aes(x = Class, y = Hp)) +
 	geom_boxplot() +
-	labs(title = "Hoursepower By Class") +
-	theme(plot.title = element_text(hjust = 0.5)) +
-	theme(axis.text.x = element_text(face = "bold", size = 12)) +
-	theme(axis.text.y = element_text(face = "bold", size = 12))
+	labs(title = "Hoursepower By Class")
 
 ```
 
@@ -188,10 +191,7 @@ print(shoppers.summary)
 
 ggplot(shoppers, aes(Spending, fill = ..count..)) +
 	geom_histogram(breaks = pretty(shoppers$Spending)) +
-	labs(title = "Shopping Distribution") +
-	theme(plot.title = element_text(hjust = 0.5)) +
-	theme(axis.text.x = element_text(face = "bold", size = 12)) +
-	theme(axis.text.y = element_text(face = "bold", size = 12))
+	labs(title = "Shopping Distribution")
 
 ```
 
