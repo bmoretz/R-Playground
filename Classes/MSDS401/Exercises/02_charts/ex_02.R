@@ -20,4 +20,4 @@ home.sales$Corner <- home.sales$Corner == "YES"
 
 glimpse(home.sales)
 
-?
+?hist

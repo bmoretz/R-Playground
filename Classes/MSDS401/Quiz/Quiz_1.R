@@ -13,7 +13,7 @@ getMode <- function(values) {
 getSummary <- function(values) {
 	mode <- getMode(values)
 
-	data.frame(
+	data.table(
 		Mean = mean(values),
 		Median = median(values),
 		Min = min(values),
