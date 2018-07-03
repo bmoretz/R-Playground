@@ -35,7 +35,7 @@ boxplot(values)
 # Question 2
 # Determine which of the four levels of measurement (nominal, ordinal, interval, ratio) is most appropriate for calendar years.
 
-# Years <- Ordinal
+# Years <- Interval
 
 # Question 3
 # Here are some scores from a quiz.  Find the range for the given data.
@@ -64,4 +64,6 @@ getSummary(monthly_precipitation)
 # Multiple Choice 
 # Which of the following is not a reason for
 # eliminating an identified outlier from a data set prior to further statistical analysis ?
+
+# Intentional falsification
 

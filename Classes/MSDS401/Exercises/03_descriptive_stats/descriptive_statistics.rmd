@@ -23,6 +23,7 @@ opts_knit$set(progress = FALSE, verbose = TRUE)
 ```{r additional-libraries, echo=FALSE}
 
 library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+
 assignInNamespace("cedta.pkgEvalsUserCode", c(data.table:::cedta.pkgEvalsUserCode, "rtvs"), "data.table")
 
 library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
@@ -38,16 +39,16 @@ theme_update(plot.title = element_text(hjust = 0.5),
              axis.text.y = element_text(face = "bold", size = 12),
              legend.position = "top", legend.title = element_blank())
 
-base.dir <- "E:/GitHub/R-Playground/"
-# base.dir <- "C:/Projects/R/Playground"
+#base.dir <- "E:/GitHub/R-Playground/"
+base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/03_descriptive_stats/data/")
 
-options(digis = 2)
+options(digis = 4)
 
 loadDataFile <- function(file_name) {
-	data.raw <- as.data.table(fread(paste0(data.path, file_name),
-		header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", "")))
+	data.raw <- fread(paste0(data.path, file_name),
+		header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
 
 	data <- setNames(data.raw, tools::toTitleCase(tolower(names(data.raw))))
 
@@ -77,21 +78,31 @@ getSummary <- function(values) {
 					"Median",
 					"Min",
 					"Max",
+                    "Range",
 					"Mode",
 					"ModeFreq",
 	                "StdDev",
-                    "Variance"),
+					"Variance",
+					"Q1",
+					"Q3",
+                    "P10"),
 
-	    Value = c(mean(values),
-			  median(values),
-			  min(values),
-			  max(values),
+	    Value = c(mean(values, na.rm = T),
+			  median(values, na.rm = T),
+			  min(values, na.rm = T),
+			  max(values, na.rm = T),
+              max(values, na.rm = T) - min(values, na.rm = T),
 			  ifelse(mode$Freq != 1, mode$Value, NA),
 			  ifelse(mode$Freq != 1, mode$Freq, NA),
-			  sd(values),
-              var(values))
+			  sd(values, na.rm = T),
+			  var(values, na.rm = T),
+			  quantile(values, probs = c(0.25), na.rm = T),
+              quantile(values, probs = c(0.75), na.rm = T),
+              quantile(values, probs = c(0.10), na.rm = T))
 	)
 }
+
+summary_cols <- c("Mean", "Median", "Range", "StdDev", "Variance", "Q1", "Q3", "P10")
 
 ```
 
@@ -182,7 +193,7 @@ describe the distribution.
 
 shoppers.summary <- getSummary(shoppers$Spending)
 
-print(shoppers.summary)
+print(shoppers.summary[which(Statistic %in% summary_cols)])
 
 ```
 
@@ -212,7 +223,7 @@ presidents <- loadDataFile("pontus.csv")
 
 presidents.age.summary <- getSummary(presidents$Age)
 
-print(presidents.age.summary)
+print(presidents.age.summary[which(Statistic %in% summary_cols)])
 
 ```
 
@@ -224,6 +235,9 @@ and also their opponents.
 
 ```{r ex_3_3_summary, echo = FALSE}
 
+lapply(apply(presidents[, .(Ht, Htopp)], 2, FUN = getSummary),
+    function(x) x[which(Statistic %in% summary_cols)])
+
 ```
 
 ### 3.3) Height Comparison
@@ -233,29 +247,71 @@ of these differences. Construct a boxplot. What do you conclude from your calcul
 difference of average heights calculated in (2) different from the average of the pairwise differences
 calculated in (3)?
 
+```{r ex_3_3_vs_hist, echo = FALSE}
 
-```{r ex_3_3_vs_summary, echo = FALSE}
+presidents[, Diff := Ht - Htopp]
+
+presidents.complete = presidents[complete.cases(presidents)]
+
+ggplot(presidents.complete, aes(Diff, fill = ..count..)) +
+    geom_histogram( breaks = pretty(presidents$Diff))
+
+```
+
+```{r ex_3_3_vs_box, echo = FALSE}
+
+ggplot(presidents.complete) +
+	geom_boxplot(aes("President", Ht)) +
+	geom_boxplot(aes("Opponent", Htopp))
 
 ```
 
 
-```{r ex_3_3_vs_vis, echo = FALSE}
-
-```
+> __Answer__: If you only include the complete cases (excluding any NAs), then 2 and 3 are similar in that the mean difference is 0, and the majory of the
+differences are between 180 - 170 [0-10].
 
 ## 4.) Old Faithful
 
-> __Exercise 4: geyser.csv contains the intervals (in minutes) between eruptions of Old Faithful Geyser in
+> __Exercise 4:__ geyser.csv contains the intervals (in minutes) between eruptions of Old Faithful Geyser in
 Yellowstone National Park. The data were taken on two consecutive weeks: WEEK1 and WEEK2.
+
+> Compare the two sets of data using summary(), hist() and boxplot(). 
 
 
 ```{r ex_3_4_data, echo = FALSE}
+
+geyser <- loadDataFile("geyser.csv")
+
+geyser_pivot <- melt(geyser, measure.vars = c("Week1", "Week2"))
+colnames(geyser_pivot) <- c("Week", "Minutes")
+
+```
+
+
+```{r ex_3_4_summary, echo = FALSE}
+
+summary(geyser)
+
+```
+
+
+```{r ex_3_4_hist, echo = FALSE}
+
+ggplot(geyser_pivot, aes(Minutes, fill = ..count..)) +
+	geom_histogram(breaks = pretty(geyser_pivot$Minutes)) +
+	facet_wrap(~Week)
 
 ```
 
 
 ```{r ex_3_4_vis, echo = FALSE}
 
+ggplot(geyser_pivot, aes(Week, Minutes)) +
+	geom_boxplot()
+
 ```
 
-> __Answer: __
+> What do you conclude?
+
+> __Answer:__ The two datasets are similar enough in terms of range and measures of center. Week 1 has some upper bound outliers and seemed to be
+more 'volatile' overall, while week 2 has more central tendency.

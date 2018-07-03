@@ -34,6 +34,7 @@ getSummary <- function(values) {
 		Median = median(values),
 		Min = min(values),
 		Max = max(values),
+		Range = max(values) - min(values),
 		Sum = sum(values),
 		Mode = mode[1,],
 		Count = length(values),
@@ -41,3 +42,4 @@ getSummary <- function(values) {
 		Variance = var(values),
 	)
 }
+
