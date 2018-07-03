@@ -206,7 +206,8 @@ ggplot(shoppers, aes(Spending, fill = ..count..)) +
 
 ```
 
-> __Answer__: __TO FILL__
+> __Answer__: The shopping distribution is heavily right-skewed, showing that most transactions were on the lower end,
+with a few big spenders sloping downward pretty linearly after around ~$20 (Assuming USD).
 
 ## 3.) POTUS
 
