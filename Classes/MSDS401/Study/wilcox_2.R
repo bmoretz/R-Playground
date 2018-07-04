@@ -137,4 +137,5 @@ values <- c(1, 2, 8, 9, 10, 16, 18, 22, 27, 29, 35, 42)
 winsor_vals <- winsorize(values, pct)
 
 mean(winsor_vals)
-
+var(winsor_vals)
+sd(winsor_vals)
