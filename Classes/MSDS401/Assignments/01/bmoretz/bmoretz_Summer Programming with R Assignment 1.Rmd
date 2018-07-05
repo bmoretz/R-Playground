@@ -1,7 +1,12 @@
 ---
-title: 'Programming with R Assignment #1'
+title: 'Moretz_Brandon'
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  html_document: default
+  html_document:
+    toc: true
+    toc_float: true
+    theme: spacelab
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -10,74 +15,217 @@ knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
 
 ```
 
+```{r additional-libraries, echo=FALSE}
+
+library(pander)
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+
+assignInNamespace("cedta.pkgEvalsUserCode", c(data.table:::cedta.pkgEvalsUserCode, "rtvs"), "data.table")
+
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+
+theme_set(theme_fivethirtyeight())
+
+# Theme Overrides
+theme_update(plot.title = element_text(hjust = 0.5),
+             plot.subtitle = element_text(hjust = 0.5),
+             axis.title = element_text( size = 10 ),
+             axis.text.x = element_text(face = "bold", size = 12),
+             axis.text.y = element_text(face = "bold", size = 12),
+             legend.position = "top", legend.title = element_blank())
+
+display_vector <- function(vec, label = "") {
+  pander::pander(vec)
+}
+
+```
+
+__Summer Programming with R Assignment 1__
+
 ### Test Items
 
 Read each question carefully and address each element.  Do not output contents of vectors or data frames unless requested.
 
-##### (1) (4 points) This problem deals with vector manipulations.
+## 1.) Vector Manipulations
 
-(1)(a)  Create a vector that contains the following, in this order, and output the final, resulting vector.  Do not round any values, unless requested.
-* A sequence of integers from 0 to 4, inclusive.
-* The number 13
-* Three repetitions of the vector c(2, -5.1, -23).
-* The arithmetic sum of 7/42, 3 and 35/42
+(4 points) This problem deals with vector manipulations.
+
+### a.)
+
+Create a vector that contains the following, in this order, and output the final, resulting vector.
+
+__Do not round any values, unless requested.__
+
++ A sequence of integers from 0 to 4, inclusive.
++ The number 13
++ Three repetitions of the vector c(2, -5.1, -23).
++ The arithmetic sum of 7/42, 3 and 35/42
 
 ```{r test1a}
 
+# Note: Parenthesis are not required in the final element. They are included for readability.
+values <- c(seq(from = 0, to = 4), 13, rep(c(2, -5.1, -23), 3), (7 / 42) + 3 + (35 / 42))
+
+display_vector(values)
 
 ```
 
-(1)(b)  Sort the vector created in (1)(a) in ascending order.  Output this result.  Determine the length of the resulting vector and assign to "L". Output L. Generate a descending sequence starting with L and ending with 1.  Add this descending sequence arithmetically the sorted vector. This is vector addition, not vector combination. Output the contents. Do not round any values.
+### b.)
+
++ Sort the vector created in _(1)(a)_ in ascending order.  Output this result.  
++ Determine the length of the resulting vector and assign to "L". Output L. 
++ Generate a descending sequence starting with L and ending with 1.  
++ Add this descending sequence arithmetically the sorted vector.
++ This is __vector addition__, _not vector combination_. Output the contents. 
+
+_Do not round any values._
 
 ```{r test1b}
 
+values.sorted <- sort(values, decreasing = F)
+
+display_vector(values.sorted)
+
+L <- length(values.sorted)
+
+display_vector(L)
+
+values.desc <- seq(from = L, to = 1)
+
+display_vector(values.desc)
+
+result <- values.desc + values.sorted
+
+display_vector(result)
 
 ```
 
-(1)(c) Extract the first and last elements of the vector you have created in (1)(b) to form another vector with the extracted elements. Form a third vector from the elements not extracted. Output these vectors.
+### c.) 
+
++ Extract the first and last elements of the vector you have created in __(1)(b)__ to form another vector with the extracted elements. 
++ Form a third vector from the elements not extracted. 
++ Output these vectors.
 
 ```{r test1c}
 
+result.fl <- c(head(result, 1), tail(result, 1))
+
+display_vector(result.fl)
+
+result.exc <- result[-which(result %in% result.fl)]
+
+display_vector(result.exc)
 
 ```
 
-(1)(d) Use the vectors from (c) to reconstruct the vector in (b). Output this vector. Sum the elements and round to two decimal places.
+### d.) 
+
++ Use the vectors from (c) to reconstruct the vector in (b).
++ Output this vector. 
++ Sum the elements and round to two decimal places.
 
 ```{r test1d}
 
+result.d <- c(result.fl[1], result.exc, result.fl[2])
+
+stopifnot(all.equal(result,result.d))
+
+display_vector(result.d)
+
+display_vector(round(sum(result.d), 2))
 
 ```
 
 -----
 
-##### (2) (5 points) The expression y = sin(x/2) + cos(x/2) is a trigonometric function.
+## 2.) Trigonometric Function
 
-(2)(a) Create a user-defined function - via *function()* - that implements the trigonometric function above, accepts numeric values, "x," calculates and returns values "y."
+(5 points) The expression y = sin(x/2) + cos(x/2) is a trigonometric function.
+
+### a.) 
+
+Create a user-defined function - via *function()* - that implements the trigonometric function above, accepts numeric values, "x," 
+calculates and returns values "y."
 
 ```{r test2a}
 
+trig_fun <- function(x) {
+    sin(x/2) + cos(x/2)
+}
 
 ```
 
-(2)(b) Create a vector, x, of 4001 equally-spaced values from -2 to 2, inclusive. Compute values for y using the vector x and your function from (2)(a).  **Do not output x or y.**  Find the value in the vector x that corresponds to the maximum value in the vector y. Restrict attention to only the values of x and y you have computed; i.e. do not interpolate. Round to 3 decimal places and output both the minimum y and corresponding x value.
+### b.) 
 
-Finding the two desired values can be accomplished in as few as two lines of code.  Do not use packages or programs you may find on the internet or elsewhere. Do not output the other elements of the vectors x and y. Use coding methods shown in the *Quick Start Guide for R*.
++ Create a vector, x, of 4001 equally-spaced values from -2 to 2, inclusive. 
+
++ Compute values for y using the vector x and your function from _(2)(a)_.  **Do not output x or y.**
+
++ Find the value in the vector x that corresponds to the __maximum value in the vector y__. 
+Restrict attention to only the values of x and y you have computed; i.e. do not interpolate. 
+Round to 3 decimal places and output both the minimum y and corresponding x value.
+
++ Finding the two desired values can be accomplished in as few as two lines of code.  
+
+__Do not use packages or programs you may find on the internet or elsewhere.__
+
+__Do not output the other elements of the vectors x and y.__
+
+Use coding methods shown in the *Quick Start Guide for R*.
 
 ```{r test2b}
 
+x <- seq(from = -2, to = 2, length.out = 4001)
+y <- trig_fun(x)
+
+max_y <- max(y)
+x_val <- x[y == max_y]
+
+stopifnot( trig_fun(x_val) == max_y )
+
+display_vector(round(c(max_y, x_val), digits = 3 ))
 
 ```
 
-(2)(c) Plot y versus x in color, with x on the horizontal axis. Show the location of the minimum value of y determined in 2(b).  Show the values of x and y corresponding to the minimum value of y in the display. Add a title and other features such as text annotations. Text annotations may be added via *text()* for base R plots and *geom_text()* or *geom_label()* for ggplots.
+### c.) 
+
++ Plot y versus x in color, with x on the horizontal axis. 
++ Show the location of the minimum value of y determined in __2(b)__.  
++ Show the values of x and y corresponding to the minimum value of y in the display.
++ Add a title and other features such as text annotations. 
+
+_Text annotations may be added via *text()* for base R plots and *geom_text()* or *geom_label()* for ggplots._
 
 ```{r test2c}
 
+trig.data <- data.table(x,y)
+
+offset <- .075
+
+ggplot(trig.data, aes(x, y), label = "f(x)", show.legend = T) +
+   geom_line(color = "#00ba38", lwd = 2) +
+   geom_point(aes(x_val, max_y), color = "#f8766d", size = 3.5) +
+   annotate("text", x = x_val, y = max_y + offset, label = paste("Max Y =", round(max_y,3 ))) +
+   labs(title = "Trigonometric Function",
+       subtitle = "Y as a function of X over the interval [-2, 2]",
+       caption = "MSDS 401: R Programming 1", x = "X", y = "Y")
 
 ```
 
 -----
 
-##### (3) (4 points) This problem requires finding the point of intersection of two functions.  Using the function *y = cos(x/2)\*sin(x/2)*, find where the curved line *y = -(x/2)\**3* intersects it within the range of values used in part (2) (i.e. 4001 equally-spaced values from -2 to 2).  Plot both functions on the same display, and show the point of intersection.  Present the coordinates of this point as text in the display.    
+##### (3) 
+(4 points) This problem requires finding the point of intersection of two functions. 
+Using the function *y = cos(x/2)\*sin(x/2)*, 
+find where the curved line *y = -(x/2)\**3* intersects it within the range of values used in part (2) 
+    _(i.e. 4001 equally-spaced values from -2 to 2)_.
+
++ Plot both functions on the same display, and show the point of intersection.  
++ Present the coordinates of this point as text in the display.
 
 ```{r test3}
 
@@ -86,7 +234,11 @@ Finding the two desired values can be accomplished in as few as two lines of cod
 
 -----
 
-##### (4) (6 points) Use the "trees" dataset for the following items. This dataset has three variables (Girth, Height, Volume) on 31 felled black cherry trees.
+## 4.) 
+
+(6 points) Use the "trees" dataset for the following items. 
+
+_This dataset has three variables (Girth, Height, Volume) on 31 felled black cherry trees._
 
 (4)(a) Use *data(trees)* to load the dataset. Check and output the structure with *str()*. Use *apply()* to return the median values for the three variables. Output these values.  Using R and logicals, output the row number and the three measurements - Girth, Height and Volume - of any trees with Girth equal to median Girth.  It is possible to accomplish this last request with one line of code.  
 
@@ -118,27 +270,34 @@ Finding the two desired values can be accomplished in as few as two lines of cod
 
 -----
 
-##### (5) (6 points) The exponential distribution is an example of a right-skewed distribution with outliers.  This problem involves comparing it with a normal distribution which typically has very few outliers.  
+## 4.) 
 
-5(a) Use *set.seed(124)* and *rexp()* with n = 100, rate = 5.5 to generate a random sample designated as y.  Generate a second random sample designated as x with *set.seed(127)* and *rnorm()* using n = 100, mean = 0 and sd = 0.15.  
+(6 points) The exponential distribution is an example of a right-skewed distribution with outliers.  
+This problem involves comparing it with a normal distribution which typically has very few outliers.  
 
-Generate a new object using *cbind(x, y)*. Do not output this object; instead, assign it to a new name. Pass this object to *apply()* and compute the inter-quartile range (IQR) for each column:  x and y. Use the function *IQR()* for this purpose. Round the results to four decimal places and present (this exercise shows the similarity of the IQR values.).
+### a.)
 
-For information about *rexp()*, use *help(rexp)* or *?rexp()*.  **Do not output x or y.**
++ Use *set.seed(124)* and *rexp()* with n = 100, rate = 5.5 to generate a random sample designated as y.  
++ Generate a second random sample designated as x with *set.seed(127)* and *rnorm()* using n = 100, mean = 0 and sd = 0.15.  
++ Generate a new object using *cbind(x, y)*. __Do not output this object__; instead, assign it to a new name. 
+Pass this object to *apply()* and compute the inter-quartile range (IQR) for each column:  x and y. 
++ Use the function *IQR()* for this purpose. Round the results to four decimal places and present (this exercise shows the similarity of the IQR values.).
+
+_For information about *rexp()*, use *help(rexp)* or *?rexp()*.  **Do not output x or y.**_
 
 ```{r test5a}
 
 
 ```
 
-(5)(b) This item will illustrate the difference between a right-skewed distribution and a symmetric one.  For base R plots, use *par(mfrow = c(2, 2))* to generate a display with four diagrams; *grid.arrange()* for ggplots. On the first row, for the normal results, present a histogram and a horizontal boxplot for x in color.  For the exponential results, present a histogram and a horizontal boxplot for y in color.
+### b.) This item will illustrate the difference between a right-skewed distribution and a symmetric one.  For base R plots, use *par(mfrow = c(2, 2))* to generate a display with four diagrams; *grid.arrange()* for ggplots. On the first row, for the normal results, present a histogram and a horizontal boxplot for x in color.  For the exponential results, present a histogram and a horizontal boxplot for y in color.
 
 ```{r test5b}
 
 
 ```
 
-(5)(c) QQ plots are useful for detecting the presence of heavy-tailed distributions. Present side-by-side QQ plots, one for each sample, using *qqnorm()* and *qqline()*.  Add color and titles. In base R plots, "cex" can be used to control the size of the plotted data points and text. Lastly, determine if there are any extreme outliers in either sample.
+### c.) QQ plots are useful for detecting the presence of heavy-tailed distributions. Present side-by-side QQ plots, one for each sample, using *qqnorm()* and *qqline()*.  Add color and titles. In base R plots, "cex" can be used to control the size of the plotted data points and text. Lastly, determine if there are any extreme outliers in either sample.
 
 ```{r test5c}
 
