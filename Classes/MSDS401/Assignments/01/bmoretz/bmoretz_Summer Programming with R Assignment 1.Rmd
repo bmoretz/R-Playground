@@ -165,7 +165,7 @@ trig_fun <- function(x) {
 
 + Compute values for y using the vector x and your function from _(2)(a)_.  **Do not output x or y.**
 
-+ Find the value in the vector x that corresponds to the __maximum value in the vector y__. 
++ Find the value in the vector x that corresponds to the __maximum__ value in the vector y. 
 Restrict attention to only the values of x and y you have computed; i.e. do not interpolate. 
 Round to 3 decimal places and output both the minimum y and corresponding x value.
 
@@ -194,7 +194,7 @@ display_vector(round(c(max_y, x_val), digits = 3 ))
 ### c.) 
 
 + Plot y versus x in color, with x on the horizontal axis. 
-+ Show the location of the minimum value of y determined in __2(b)__.  
++ Show the location of the __minimum__ value of y determined in __2(b)__.  
 + Show the values of x and y corresponding to the minimum value of y in the display.
 + Add a title and other features such as text annotations. 
 
@@ -209,7 +209,7 @@ offset <- .075
 ggplot(trig.data, aes(x, y), label = "f(x)", show.legend = T) +
    geom_line(color = "#00ba38", lwd = 2) +
    geom_point(aes(x_val, max_y), color = "#f8766d", size = 3.5) +
-   annotate("text", x = x_val, y = max_y + offset, label = paste("Max Y =", round(max_y,3 ))) +
+   annotate("text", x = x_val, y = max_y + offset, label = paste("max(Y) =", round(max_y,3 ))) +
    labs(title = "Trigonometric Function",
        subtitle = "Y as a function of X over the interval [-2, 2]",
        caption = "MSDS 401: R Programming 1", x = "X", y = "Y")
@@ -218,10 +218,11 @@ ggplot(trig.data, aes(x, y), label = "f(x)", show.legend = T) +
 
 -----
 
-##### (3) 
+## 3.)
+
 (4 points) This problem requires finding the point of intersection of two functions. 
 Using the function *y = cos(x/2)\*sin(x/2)*, 
-find where the curved line *y = -(x/2)\**3* intersects it within the range of values used in part (2) 
+find where the curved line *y = -(x/2)\*3* intersects it within the range of values used in part (2) 
     _(i.e. 4001 equally-spaced values from -2 to 2)_.
 
 + Plot both functions on the same display, and show the point of intersection.  
@@ -229,6 +230,22 @@ find where the curved line *y = -(x/2)\**3* intersects it within the range of va
 
 ```{r test3}
 
+f1 <- function(x) {
+	cos(x / 2) * sin(x / 2)
+}
+
+f2 <- function(x) {
+    -(x / 2) * 3
+}
+
+fun.values <- melt(data.table(x, y1 = f1(x), y2 = f2(x), diff = abs(y1 - y2)), id = "x")
+
+intercept <- min( fun.values[,fun.values$variable == "diff"] )
+
+ggplot(fun.values, aes(x = x, y = value, color = variable, group = as.factor(variable), show.legend = T)) +
+	geom_line(lwd = 1.4) +
+    scale_fill_manual(values = c('y1', 'y2', 'diff'), labels = c('1', '2', '3')) +
+    scale_color_manual(name = "variable", values = c("#9D1F04", "#479C67", "#3F2188"))
 
 ```
 

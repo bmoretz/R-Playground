@@ -1,5 +1,7 @@
 # Utility Functions
 
+library(data.table)
+
 getMode <- function(values) {
 	tbl.vals <- data.frame(table(values))
 	tbl.vals$values <- as.numeric(levels(tbl.vals$values))[tbl.vals$values]
@@ -96,9 +98,7 @@ boxplot(values)
 q1 <- quantile(values, .25)
 q2 <- quantile(values, .75)
 
-summary(values)
-
-outlier_range <- q2 + 1.5 * (q2 - q1)
+outlier_range <- q2 + 3 * (q2 - q1)
 
 200 > outlier_range
 
