@@ -117,7 +117,7 @@ Read each question carefully and address each element.  Do not output contents o
 
 ```
 
-(2)(b) Create a vector, x, of 4001 equally-spaced values from -2 to 2, inclusive. Compute values for y using the vector x and your function from (2)(a).  **Do not output x or y.**  Find the value in the vector x that corresponds to the maximum value in the vector y. Restrict attention to only the values of x and y you have computed; i.e. do not interpolate. Round to 3 decimal places and output both the minimum y and corresponding x value.
+(2)(b) Create a vector, x, of 4001 equally-spaced values from -2 to 2, inclusive. Compute values for y using the vector x and your function from (2)(a).  **Do not output x or y.** Find the value in the vector x that corresponds to the maximum value in the vector y. Restrict attention to only the values of x and y you have computed; i.e. do not interpolate. Round to 3 decimal places and output both the maximum y and corresponding x value.
 
 Finding the two desired values can be accomplished in as few as two lines of code.  Do not use packages or programs you may find on the internet or elsewhere. Do not output the other elements of the vectors x and y. Use coding methods shown in the *Quick Start Guide for R*.
 
@@ -126,7 +126,7 @@ Finding the two desired values can be accomplished in as few as two lines of cod
 
 ```
 
-(2)(c) Plot y versus x in color, with x on the horizontal axis. Show the location of the minimum value of y determined in 2(b).  Show the values of x and y corresponding to the minimum value of y in the display. Add a title and other features such as text annotations. Text annotations may be added via *text()* for base R plots and *geom_text()* or *geom_label()* for ggplots.
+(2)(c) Plot y versus x in color, with x on the horizontal axis. Show the location of the maximum value of y determined in 2(b).  Show the values of x and y corresponding to the maximum value of y in the display. Add a title and other features such as text annotations. Text annotations may be added via *text()* for base R plots and *geom_text()* or *geom_label()* for ggplots.
 
 ```{r test2c}
 
@@ -135,7 +135,9 @@ Finding the two desired values can be accomplished in as few as two lines of cod
 
 -----
 
-##### (3) (4 points) This problem requires finding the point of intersection of two functions.  Using the function *y = cos(x/2)\*sin(x/2)*, find where the curved line *y = -(x/2)\**3* intersects it within the range of values used in part (2) (i.e. 4001 equally-spaced values from -2 to 2).  Plot both functions on the same display, and show the point of intersection.  Present the coordinates of this point as text in the display.    
+##### (3) (4 points) This problem requires finding the point of intersection of two functions.  Using the function `y = cos(x/2)*sin(x/2)`, find where the curved line `y = -(x/2)**3` intersects it within the range of values used in part (2) (i.e. 4001 equally-spaced values from -2 to 2).  Plot both functions on the same display, and show the point of intersection.  Present the coordinates of this point as text in the display.
+
+NOTE:  the functions to implement are enclosed in backticks. Ignore the backticks when implementing in code.
 
 ```{r test3}
 

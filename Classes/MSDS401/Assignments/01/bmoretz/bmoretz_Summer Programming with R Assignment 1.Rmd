@@ -212,18 +212,24 @@ ggplot(trig.data, aes(x, y), label = "f(x)", show.legend = T) +
    annotate("text", x = x_val, y = max_y + offset, label = paste("max(Y) =", round(max_y,3 ))) +
    labs(title = "Trigonometric Function",
        subtitle = "Y as a function of X over the interval [-2, 2]",
-       caption = "MSDS 401: R Programming 1", x = "X", y = "Y")
+       caption = "MSDS 401: R Programming 1, Q2", x = "X", y = "Y")
 
 ```
 
 -----
 
-## 3.)
+## 3.) Function Intersection
 
-(4 points) This problem requires finding the point of intersection of two functions. 
-Using the function *y = cos(x/2)\*sin(x/2)*, 
-find where the curved line *y = -(x/2)\*3* intersects it within the range of values used in part (2) 
-    _(i.e. 4001 equally-spaced values from -2 to 2)_.
+This problem requires finding the point of intersection of two functions. 
+Using the function `y = cos(x/2)*sin(x/2)`, 
+
++ find where the curved line `y = -(x/2)**3` intersects it within the range of values used in part (2) 
+_(i.e. 4001 equally-spaced values from -2 to 2)_.  
++ Plot both functions on the same display, and show the point of intersection. 
++ Present the coordinates of this point as text in the display.
+
+NOTE:  the functions to implement are enclosed in backticks. Ignore the backticks when implementing in code.
+
 
 + Plot both functions on the same display, and show the point of intersection.  
 + Present the coordinates of this point as text in the display.
@@ -235,50 +241,95 @@ f1 <- function(x) {
 }
 
 f2 <- function(x) {
-    -(x / 2) * 3
+    -(x / 2) ** 3
 }
 
-fun.values <- melt(data.table(x, y1 = f1(x), y2 = f2(x), diff = abs(y1 - y2)), id = "x")
+fun.values <- melt(data.table(x, y1 <- f1(x), y2 <- f2(x),
+   diff <- y2 + y1)[,
+        .(x, y1, y2, diff)], id = "x")
 
-intercept <- min( fun.values[,fun.values$variable == "diff"] )
+fun.values$Type <- ifelse(fun.values$variable == 'diff', 'solid', 'dashed')
 
-ggplot(fun.values, aes(x = x, y = value, color = variable, group = as.factor(variable), show.legend = T)) +
-	geom_line(lwd = 1.4) +
-    scale_fill_manual(values = c('y1', 'y2', 'diff'), labels = c('1', '2', '3')) +
-    scale_color_manual(name = "variable", values = c("#9D1F04", "#479C67", "#3F2188"))
+fun.intercept <- fun.values[variable == "diff" & value == 0,][, .(x, y = value)]
+
+ggplot(fun.values, aes(x = x, y = value, color = variable, linetype = Type, group = as.factor(variable))) +
+    geom_line(lwd = 1.4) +
+    geom_point(aes(x = fun.intercept$x, y = fun.intercept$y), size = 2.5, color = "#8E44AD", alpha = .8) +
+    geom_vline(xintercept = fun.intercept$x, linetype = 'dashed', alpha = .3) +
+    scale_linetype(guide = 'none') +
+    labs(title = "Function Intersection",
+       subtitle = paste("Intersect: x =", fun.intercept$x, ", y =", fun.intercept$y),
+       caption = "MSDS 401: R Programming 1, Q3", x = "X", y = "Y")
+
+#     scale_color_manual(name = "variable", values = c("#9D1F04", "#479C67", "#BDBDBD", "#8E44AD")) +
 
 ```
 
 -----
 
-## 4.) 
+## 4.) Trees
 
-(6 points) Use the "trees" dataset for the following items. 
+(6 points) Use the "trees" dataset for the following items.
 
 _This dataset has three variables (Girth, Height, Volume) on 31 felled black cherry trees._
 
-(4)(a) Use *data(trees)* to load the dataset. Check and output the structure with *str()*. Use *apply()* to return the median values for the three variables. Output these values.  Using R and logicals, output the row number and the three measurements - Girth, Height and Volume - of any trees with Girth equal to median Girth.  It is possible to accomplish this last request with one line of code.  
+### a.)
+
++ Use *data(trees)* to load the dataset. 
++ Check and output the structure with *str()*. 
++ Use *apply()* to return the median values for the three variables. Output these values.  
++ Using R and logicals, output the row number and the three measurements - Girth, Height and Volume - of any trees with Girth equal to median Girth. 
+
+_It is possible to accomplish this last request with one line of code._ 
 
 ```{r test3a}
 
+trees <- as.data.table(trees)
+
+str(trees)
+
+# base R way
+base_medians <- apply(trees, 2, median)
+
+# data.table way
+medians <- trees[, lapply(.SD, median, na.rm = TRUE)]
+
+trees[, Row := .I][Girth == medians$Girth][, .(Row, Girth, Height, Volume)] # 1 liner
 
 ```
 
-(4)(b) Girth is defined as the diameter of a tree taken at 4 feet 6 inches from the ground. Convert each diameter to a radius, r. Calculate the cross-sectional area of each tree using pi times the squared radius. Present a stem-and-leaf plot of the radii, and a histogram of the radii in color. Plot Area (y-axis) versus Radius (x-axis)  in color showing the individual data points.  Label appropriately.
+### b.)
+
+Girth is defined as the diameter of a tree taken at 4 feet 6 inches from the ground. 
+
++ Convert each diameter to a radius, r. 
++ Calculate the cross-sectional area of each tree using pi times the squared radius. 
++ Present a stem-and-leaf plot of the radii, and a histogram of the radii in color. 
++ Plot Area (y-axis) versus Radius (x-axis) in color showing the individual data points. 
+
+_Label appropriately._
 
 ```{r test3b}
 
 
 ```
 
-(4)(c) Present a horizontal, notched, colored boxplot of the areas calculated in (b). Title and label the axis.
+### c.) 
+
++ Present a horizontal, notched, colored boxplot of the areas calculated in (b). Title and label the axis.
 
 ```{r test3c}
 
 
 ```
 
-(4)(d) Demonstrate that the outlier revealed in the boxplot of Volume is not an extreme outlier.  It is possible to do this with one line of code using *boxplot.stats()* or 'manual' calculation and logicals. Identify the tree with the largest area and output on one line its row number and three measurements.
+### d.) 
+
++ Demonstrate that the outlier revealed in the boxplot of Volume is not an extreme outlier.  
+
+_It is possible to do this with one line of code using *boxplot.stats()* or 'manual' calculation and logicals._
+
++ Identify the tree with the largest area and output on one line its row number and three measurements.
 
 ```{r test3d}
 
@@ -287,7 +338,7 @@ _This dataset has three variables (Girth, Height, Volume) on 31 felled black che
 
 -----
 
-## 4.) 
+## 5.) Exponential Distribution
 
 (6 points) The exponential distribution is an example of a right-skewed distribution with outliers.  
 This problem involves comparing it with a normal distribution which typically has very few outliers.  
@@ -307,14 +358,26 @@ _For information about *rexp()*, use *help(rexp)* or *?rexp()*.  **Do not output
 
 ```
 
-### b.) This item will illustrate the difference between a right-skewed distribution and a symmetric one.  For base R plots, use *par(mfrow = c(2, 2))* to generate a display with four diagrams; *grid.arrange()* for ggplots. On the first row, for the normal results, present a histogram and a horizontal boxplot for x in color.  For the exponential results, present a histogram and a horizontal boxplot for y in color.
+### b.) 
+
+This item will illustrate the difference between a right-skewed distribution and a symmetric one. 
+
++ For base R plots, use *par(mfrow = c(2, 2))* to generate a display with four diagrams; *grid.arrange()* for ggplots. 
++ On the first row, for the normal results, present a histogram and a horizontal boxplot for x in color.  
++ For the exponential results, present a histogram and a horizontal boxplot for y in color.
 
 ```{r test5b}
 
 
 ```
 
-### c.) QQ plots are useful for detecting the presence of heavy-tailed distributions. Present side-by-side QQ plots, one for each sample, using *qqnorm()* and *qqline()*.  Add color and titles. In base R plots, "cex" can be used to control the size of the plotted data points and text. Lastly, determine if there are any extreme outliers in either sample.
+### c.) 
+
+QQ plots are useful for detecting the presence of heavy-tailed distributions. 
+
++ Present side-by-side QQ plots, one for each sample, using *qqnorm()* and *qqline()*.  
++ Add color and titles. In base R plots, "cex" can be used to control the size of the plotted data points and text.
++ Lastly, determine if there are any extreme outliers in either sample.
 
 ```{r test5c}
 

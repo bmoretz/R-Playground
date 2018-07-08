@@ -1,0 +1,19 @@
+# Core packages need by basically everything.
+
+install.packages("Hmisc")
+install.packages("RColorBrewer")
+install.packages("plyr")
+install.packages("reshape2")
+install.packages("vcd")
+install.packages("vcdExtra")
+install.packages("data.table")
+install.packages("ggplot2")
+install.packages("tidyverse")
+install.packages("ggthemes")
+install.packages("gridExtra")
+install.packages("lubridate")
+install.packages("knitr")
+install.packages("rmarkdown")
+install.packages("pander")
+install.packages("quantmod")
+
