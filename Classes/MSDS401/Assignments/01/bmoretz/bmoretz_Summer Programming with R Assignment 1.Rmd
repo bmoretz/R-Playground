@@ -255,13 +255,11 @@ fun.intercept <- fun.values[variable == "diff" & value == 0,][, .(x, y = value)]
 ggplot(fun.values, aes(x = x, y = value, color = variable, linetype = Type, group = as.factor(variable))) +
     geom_line(lwd = 1.4) +
     geom_point(aes(x = fun.intercept$x, y = fun.intercept$y), size = 2.5, color = "#8E44AD", alpha = .8) +
-    geom_vline(xintercept = fun.intercept$x, linetype = 'dashed', alpha = .3) +
+    geom_vline(xintercept = fun.intercept$x, linetype = 'dashed', alpha = .5) +
     scale_linetype(guide = 'none') +
     labs(title = "Function Intersection",
        subtitle = paste("Intersect: x =", fun.intercept$x, ", y =", fun.intercept$y),
        caption = "MSDS 401: R Programming 1, Q3", x = "X", y = "Y")
-
-#     scale_color_manual(name = "variable", values = c("#9D1F04", "#479C67", "#BDBDBD", "#8E44AD")) +
 
 ```
 
@@ -311,6 +309,20 @@ _Label appropriately._
 
 ```{r test3b}
 
+trees[, Radius := Girth / 2][, Area := pi* Radius ** 2 ]
+
+stem(trees$Radius)
+
+ggplot(trees, aes(Radius, fill = ..count..)) +
+	geom_histogram(breaks = pretty(trees$Radius)) +
+	labs(title = "Tree Radius Distribution",
+	   caption = "MSDS 401: R Programming 1, Q4")
+
+ggplot(trees, aes(x = Radius, y = Area)) +
+	geom_point() +
+	labs(title = "Tree Girth",
+        subtitle = "Radis vs Area",
+	   caption = "MSDS 401: R Programming 1, Q4")
 
 ```
 
@@ -320,6 +332,12 @@ _Label appropriately._
 
 ```{r test3c}
 
+ggplot(trees, aes( "", y = Area)) +
+	geom_boxplot( outlier.colour = "red", outlier.shape = 1, notch = T) +
+    coord_flip() +
+	labs(title = "Tree Area",
+	   caption = "MSDS 401: R Programming 1, Q4") +
+   	theme(axis.text.x = element_blank())
 
 ```
 
@@ -333,6 +351,27 @@ _It is possible to do this with one line of code using *boxplot.stats()* or 'man
 
 ```{r test3d}
 
+ggplot(trees, aes("", y = Volume)) +
+	geom_boxplot(outlier.colour = "red", outlier.shape = 1) +
+	coord_flip() +
+	labs(title = "Tree Volume",
+	   caption = "MSDS 401: R Programming 1, Q4") +
+   	theme(axis.text.x = element_blank())
+
+ex_outlier_coef <- 3
+
+q1 <- quantile(trees$Volume, .25)
+q2 <- quantile(trees$Volume, .75)
+
+ex_outlier_range <- q2 + ex_outlier_coef * (q2 - q1)
+
+max_vol <- max(trees$Volume)
+
+max_vol > ex_outlier_range
+
+boxplot.stats(trees$Volume, coef = ex_outlier_coef)
+
+head(trees[order(-trees$Area)], 1) # 1 liner
 
 ```
 
@@ -349,12 +388,21 @@ This problem involves comparing it with a normal distribution which typically ha
 + Generate a second random sample designated as x with *set.seed(127)* and *rnorm()* using n = 100, mean = 0 and sd = 0.15.  
 + Generate a new object using *cbind(x, y)*. __Do not output this object__; instead, assign it to a new name. 
 Pass this object to *apply()* and compute the inter-quartile range (IQR) for each column:  x and y. 
-+ Use the function *IQR()* for this purpose. Round the results to four decimal places and present (this exercise shows the similarity of the IQR values.).
++ Use the function *IQR()* for this purpose. __Round the results to four decimal places and present__ (this exercise shows the similarity of the IQR values.).
 
 _For information about *rexp()*, use *help(rexp)* or *?rexp()*.  **Do not output x or y.**_
 
 ```{r test5a}
 
+set.seed(124)
+y <- rexp(n = 100, rate = 5.5)
+
+set.seed(127)
+x <- rnorm(n = 100, mean = 0, sd = 0.15)
+
+values <- cbind(x, y)
+
+sapply(apply(values, 2, IQR), FUN = function(val) { round( val, 4 )})
 
 ```
 
@@ -368,6 +416,25 @@ This item will illustrate the difference between a right-skewed distribution and
 
 ```{r test5b}
 
+values <- as.data.table(values)
+
+p1 <- ggplot(values, aes(x = x, fill = ..count..)) +
+	geom_histogram(breaks = pretty(values$x))
+
+p2 <- ggplot(values, aes("", x)) +
+	geom_boxplot(outlier.colour = "red", outlier.shape = 1) +
+	coord_flip() +
+	theme(axis.text.x = element_blank())
+
+p3 <- ggplot(values, aes(x = y, fill = ..count..)) +
+	geom_histogram(breaks = pretty(values$y))
+
+p4 <- ggplot(values, aes("", y)) +
+	geom_boxplot(outlier.colour = "red", outlier.shape = 1) +
+	coord_flip() +
+	theme(axis.text.x = element_blank())
+
+grid.arrange(p1, p2, newpage = TRUE, p3, p4, top = "Distributions")
 
 ```
 
@@ -381,5 +448,19 @@ QQ plots are useful for detecting the presence of heavy-tailed distributions.
 
 ```{r test5c}
 
+q1 <- ggplot(values, aes(sample = x)) +
+	geom_qq() +
+	geom_abline(intercept = mean(values$x), slope = sd(values$x), color = "blue", lwd = 1.5, alpha = 0.3) +
+	labs(title = "Normal Distribution")
+
+q2 <- ggplot(values, aes(sample = y)) +
+	geom_qq() +
+	geom_abline(intercept = mean(values$y), slope = sd(values$y), color = "blue", lwd = 1.5, alpha = 0.3) +
+	labs(title = "Exponential  Distribution")
+
+grid.arrange(q1, q2, ncol = 2, top = "QQ Plot X & Y")
+
+boxplot.stats(values$x, coef = ex_outlier_coef)
+boxplot.stats(values$y, coef = ex_outlier_coef)
 
 ```
