@@ -1,5 +1,5 @@
 ---
-title: 'Moretz_Brandon'
+title: 'Moretz Brandon, Programming with R Assignment #1'
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
@@ -44,8 +44,6 @@ display_vector <- function(vec, label = "") {
 
 ```
 
-__Summer Programming with R Assignment 1__
-
 ### Test Items
 
 Read each question carefully and address each element.  Do not output contents of vectors or data frames unless requested.
@@ -76,11 +74,10 @@ display_vector(values)
 
 ### b.)
 
-+ Sort the vector created in _(1)(a)_ in ascending order.  Output this result.  
++ Sort the vector created in __(1)(a)__ in ascending order.  Output this result.  
 + Determine the length of the resulting vector and assign to "L". Output L. 
 + Generate a descending sequence starting with L and ending with 1.  
-+ Add this descending sequence arithmetically the sorted vector.
-+ This is __vector addition__, _not vector combination_. Output the contents. 
++ Add this descending sequence arithmetically the sorted vector. This is __vector addition__, _not vector combination_. Output the contents. 
 
 _Do not round any values._
 
@@ -124,7 +121,7 @@ display_vector(result.exc)
 
 ### d.) 
 
-+ Use the vectors from (c) to reconstruct the vector in (b).
++ Use the vectors from __(c)__ to reconstruct the vector in __(b)__.
 + Output this vector. 
 + Sum the elements and round to two decimal places.
 
@@ -187,15 +184,15 @@ x_val <- x[y == max_y]
 
 stopifnot( trig_fun(x_val) == max_y )
 
-display_vector(round(c(max_y, x_val), digits = 3 ))
+display_vector(round(c(x_val, max_y), digits = 3))
 
 ```
 
 ### c.) 
 
 + Plot y versus x in color, with x on the horizontal axis. 
-+ Show the location of the __minimum__ value of y determined in __2(b)__.  
-+ Show the values of x and y corresponding to the minimum value of y in the display.
++ Show the location of the __maximum__ value of y determined in __2(b)__.  
++ Show the values of x and y corresponding to the __maximum__ value of y in the display.
 + Add a title and other features such as text annotations. 
 
 _Text annotations may be added via *text()* for base R plots and *geom_text()* or *geom_label()* for ggplots._
@@ -211,7 +208,7 @@ ggplot(trig.data, aes(x, y), label = "f(x)", show.legend = T) +
    geom_point(aes(x_val, max_y), color = "#f8766d", size = 3.5) +
    annotate("text", x = x_val, y = max_y + offset, label = paste("max(Y) =", round(max_y,3 ))) +
    labs(title = "Trigonometric Function",
-       subtitle = "Y as a function of X over the interval [-2, 2]",
+       subtitle = paste("Max Y value (", round(max_y, 3), ") occures at x value (", round(x_val, 3), ")"),
        caption = "MSDS 401: R Programming 1, Q2", x = "X", y = "Y")
 
 ```
@@ -248,6 +245,8 @@ fun.values <- melt(data.table(x, y1 <- f1(x), y2 <- f2(x),
    diff <- y2 + y1)[,
         .(x, y1, y2, diff)], id = "x")
 
+offset <- .15
+
 fun.values$Type <- ifelse(fun.values$variable == 'diff', 'solid', 'dashed')
 
 fun.intercept <- fun.values[variable == "diff" & value == 0,][, .(x, y = value)]
@@ -257,6 +256,7 @@ ggplot(fun.values, aes(x = x, y = value, color = variable, linetype = Type, grou
     geom_point(aes(x = fun.intercept$x, y = fun.intercept$y), size = 2.5, color = "#8E44AD", alpha = .8) +
     geom_vline(xintercept = fun.intercept$x, linetype = 'dashed', alpha = .5) +
     scale_linetype(guide = 'none') +
+    annotate("text", x = fun.intercept$x, y = fun.intercept$y + offset, parse = TRUE, label = paste0("Intersect (", fun.intercept$x, ",", fun.intercept$y, ")")) +
     labs(title = "Function Intersection",
        subtitle = paste("Intersect: x =", fun.intercept$x, ", y =", fun.intercept$y),
        caption = "MSDS 401: R Programming 1, Q3", x = "X", y = "Y")
@@ -291,6 +291,8 @@ base_medians <- apply(trees, 2, median)
 
 # data.table way
 medians <- trees[, lapply(.SD, median, na.rm = TRUE)]
+
+medians # display medians
 
 trees[, Row := .I][Girth == medians$Girth][, .(Row, Girth, Height, Volume)] # 1 liner
 
@@ -448,9 +450,27 @@ QQ plots are useful for detecting the presence of heavy-tailed distributions.
 
 ```{r test5c}
 
-# qqline equivilant function using ggplot & geom_abline
+# base R
+
+opar = par(mfrow = c(1, 2))
+
+qqnorm(values$x, col = "black",  main = "Normal Distribution", xlab = "", ylab = "sample")
+qqline(values$x, lty = 2, lwd = 2, col = "blue")
+
+qqnorm(values$y, col = "black", main = "Exponential Distribution", xlab = "", ylab = "sample")
+qqline(values$y, lty = 2, lwd = 2, col = "blue")
+
+mtext("QQ Plot, Normal & Exponential (base R)", side = 3, line = -1.5, outer = TRUE)
+
+par(opar)
+
+# ggplot
+
+# qqline equivilant function using ggplot & geom_abline. 
+# This should match base R functionaliy from my understanding of the documentation.
+
 geom_qqline <- function(data,
-    color = "red", line_width = 1, alpha = 1) {
+    color = "red", line_width = 1, alpha = 1, line_type = "dashed") {
 
     y <- quantile(data[!is.na(data)], c(0.25, 0.75))
 	x <- qnorm(c(0.25, 0.75))
@@ -460,7 +480,7 @@ geom_qqline <- function(data,
 	int <- first(y) - slope * first(x)
 
 	# qq-line, in ggplot form.
-	geom_abline(slope = slope, intercept = int, color = color, lwd = line_width, alpha = alpha )
+  geom_abline(slope = slope, intercept = int, color = color, lwd = line_width, alpha = alpha, linetype = line_type)
 }
 
 q1 <- ggplot(values, aes(sample = x)) +
@@ -470,10 +490,10 @@ q1 <- ggplot(values, aes(sample = x)) +
 
 q2 <- ggplot(values, aes(sample = y)) +
 	stat_qq() +
-	geom_qqline(values$y, color = "blue", alpha = .8) +
+	geom_qqline(values$y, color = "blue", alpha = .8 ) +
 	labs(title = "Exponential Distribution", x = "", Y = "Exponential Values")
 
-grid.arrange(q1, q2, ncol = 2, top = "QQ Plot, Normal & Exponential")
+grid.arrange(q1, q2, ncol = 2, top = "QQ Plot, Normal & Exponential (ggplot)")
 
 boxplot.stats(values$x, coef = ex_outlier_coef)
 boxplot.stats(values$y, coef = ex_outlier_coef)
