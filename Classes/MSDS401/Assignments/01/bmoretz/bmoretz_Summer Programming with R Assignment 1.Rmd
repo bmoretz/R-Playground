@@ -112,7 +112,7 @@ display_vector(result)
 
 ```{r test1c}
 
-result.fl <- c(head(result, 1), tail(result, 1))
+result.fl <- c(first(result), last(result))
 
 display_vector(result.fl)
 
