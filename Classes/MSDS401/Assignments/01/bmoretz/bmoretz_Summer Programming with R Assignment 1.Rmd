@@ -448,6 +448,7 @@ QQ plots are useful for detecting the presence of heavy-tailed distributions.
 
 ```{r test5c}
 
+# qqline equivilant function using ggplot & geom_abline
 geom_qqline <- function(data,
     color = "red", line_width = 1, alpha = 1) {
 
