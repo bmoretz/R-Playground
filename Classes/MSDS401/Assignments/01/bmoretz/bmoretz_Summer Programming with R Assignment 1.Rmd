@@ -448,17 +448,31 @@ QQ plots are useful for detecting the presence of heavy-tailed distributions.
 
 ```{r test5c}
 
+geom_qqline <- function(data,
+    color = "red", line_width = 1, alpha = 1) {
+
+    y <- quantile(data[!is.na(data)], c(0.25, 0.75))
+	x <- qnorm(c(0.25, 0.75))
+
+	# calculate slope and y-intercept
+	slope <- diff(y) / diff(x)
+	int <- first(y) - slope * first(x)
+
+	# qq-line, in ggplot form.
+	geom_abline(slope = slope, intercept = int, color = color, lwd = line_width, alpha = alpha )
+}
+
 q1 <- ggplot(values, aes(sample = x)) +
-	geom_qq() +
-	geom_abline(intercept = mean(values$x), slope = sd(values$x), color = "blue", lwd = 1.5, alpha = 0.3) +
-	labs(title = "Normal Distribution")
+	stat_qq() +
+	geom_qqline( values$x, color = "blue", alpha = .8 ) +
+	labs(title = "Normal Distribution", x = "", Y = "Normal Values")
 
 q2 <- ggplot(values, aes(sample = y)) +
-	geom_qq() +
-	geom_abline(intercept = mean(values$y), slope = sd(values$y), color = "blue", lwd = 1.5, alpha = 0.3) +
-	labs(title = "Exponential  Distribution")
+	stat_qq() +
+	geom_qqline(values$y, color = "blue", alpha = .8) +
+	labs(title = "Exponential Distribution", x = "", Y = "Exponential Values")
 
-grid.arrange(q1, q2, ncol = 2, top = "QQ Plot X & Y")
+grid.arrange(q1, q2, ncol = 2, top = "QQ Plot, Normal & Exponential")
 
 boxplot.stats(values$x, coef = ex_outlier_coef)
 boxplot.stats(values$y, coef = ex_outlier_coef)
