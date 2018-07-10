@@ -214,8 +214,7 @@ ggplot(trig.data, aes(x, y), label = "f(x)", show.legend = T) +
 -----
 
 ## 3.) Function Intersection
-
-This problem requires finding the point of intersection of two functions. 
+(4 points) This problem requires finding the point of intersection of two functions. 
 Using the function `y = cos(x/2)*sin(x/2)`, 
 
 + find where the curved line `y = -(x/2)**3` intersects it within the range of values used in part (2) 
@@ -366,6 +365,8 @@ ggplot(trees, aes("", y = Volume)) +
 	   caption = "MSDS 401: R Programming 1, Q4") +
    	theme(axis.text.x = element_blank())
 
+# manual calculation:
+
 ex_outlier_coef <- 3
 
 q1 <- quantile(trees$Volume, .25)
@@ -375,11 +376,14 @@ ex_outlier_range <- q2 + ex_outlier_coef * (q2 - q1)
 
 max_vol <- max(trees$Volume)
 
-max_vol > ex_outlier_range
+max_vol > ex_outlier_range # Not extreme.
 
-boxplot.stats(trees$Volume, coef = ex_outlier_coef)
+# boxplot.stats method.
 
-head(trees[order(-trees$Area)][, .(Girth, Height, Volume)], 1) # 1 liner
+vol_extremes <- boxplot.stats(trees$Volume, coef = ex_outlier_coef)
+vol_extremes$out # Not extreme.
+
+head(trees[order(-trees$Area)][, .(Row, Girth, Height, Volume)], 1) # 1 liner
 
 ```
 
