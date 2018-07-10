@@ -54,7 +54,7 @@ Read each question carefully and address each element.  Do not output contents o
 
 ### a.)
 
-Create a vector that contains the following, in this order, and output the final, resulting vector.
+Create a vector that contains the following, in this order, and __output the final, resulting vector__.
 
 __Do not round any values, unless requested.__
 
@@ -74,10 +74,10 @@ display_vector(values)
 
 ### b.)
 
-+ Sort the vector created in __(1)(a)__ in ascending order.  Output this result.  
-+ Determine the length of the resulting vector and assign to "L". Output L. 
++ Sort the vector created in __(1)(a)__ in ascending order.  __Output this result__.  
++ Determine the length of the resulting vector and assign to "L". __Output L__. 
 + Generate a descending sequence starting with L and ending with 1.  
-+ Add this descending sequence arithmetically the sorted vector. This is __vector addition__, _not vector combination_. Output the contents. 
++ Add this descending sequence arithmetically the sorted vector. This is __vector addition__, _not vector combination_. __Output the contents__. 
 
 _Do not round any values._
 
@@ -93,8 +93,6 @@ display_vector(L)
 
 values.desc <- seq(from = L, to = 1)
 
-display_vector(values.desc)
-
 result <- values.desc + values.sorted
 
 display_vector(result)
@@ -105,7 +103,7 @@ display_vector(result)
 
 + Extract the first and last elements of the vector you have created in __(1)(b)__ to form another vector with the extracted elements. 
 + Form a third vector from the elements not extracted. 
-+ Output these vectors.
++ __Output these vectors__.
 
 ```{r test1c}
 
@@ -122,7 +120,7 @@ display_vector(result.exc)
 ### d.) 
 
 + Use the vectors from __(c)__ to reconstruct the vector in __(b)__.
-+ Output this vector. 
++ __Output this vector__. 
 + Sum the elements and round to two decimal places.
 
 ```{r test1d}
@@ -160,7 +158,7 @@ trig_fun <- function(x) {
 
 + Create a vector, x, of 4001 equally-spaced values from -2 to 2, inclusive. 
 
-+ Compute values for y using the vector x and your function from _(2)(a)_.  **Do not output x or y.**
++ Compute values for y using the vector x and your function from __(2)(a)__.  **Do not output x or y.**
 
 + Find the value in the vector x that corresponds to the __maximum__ value in the vector y. 
 Restrict attention to only the values of x and y you have computed; i.e. do not interpolate. 
@@ -201,13 +199,13 @@ _Text annotations may be added via *text()* for base R plots and *geom_text()* o
 
 trig.data <- data.table(x,y)
 
-offset <- .075
+offset <- .125
 
 ggplot(trig.data, aes(x, y), label = "f(x)", show.legend = T) +
-   geom_line(color = "#00ba38", lwd = 2) +
-   geom_point(aes(x_val, max_y), color = "#f8766d", size = 3.5) +
-   annotate("text", x = x_val, y = max_y + offset, label = paste("max(Y) =", round(max_y,3 ))) +
-   labs(title = "Trigonometric Function",
+	geom_line(color = "#00ba38", lwd = 2) +
+	geom_point(aes(x_val, max_y), color = "#f8766d", size = 3.5) +
+    annotate("text", x = x_val, y = max_y + offset, label = paste("max(Y) =", round(max_y,3 ))) + 
+    labs(title = "Trigonometric Function",
        subtitle = paste("Max Y value (", round(max_y, 3), ") occures at x value (", round(x_val, 3), ")"),
        caption = "MSDS 401: R Programming 1, Q2", x = "X", y = "Y")
 
@@ -242,23 +240,30 @@ f2 <- function(x) {
 }
 
 fun.values <- melt(data.table(x, y1 <- f1(x), y2 <- f2(x),
-   diff <- y2 + y1)[,
-        .(x, y1, y2, diff)], id = "x")
+   mid <- y2 + y1)[,
+        .(x, y1, y2, mid)], id = "x")
 
-offset <- .15
+offset <- .25
 
-fun.values$Type <- ifelse(fun.values$variable == 'diff', 'solid', 'dashed')
+fun.values$Type <- ifelse(fun.values$variable == 'mid', 'solid', 'dotdash')
 
-fun.intercept <- fun.values[variable == "diff" & value == 0,][, .(x, y = value)]
+fun.intercept <- fun.values[variable == "mid" & value == 0,][, .(x, y = value)]
 
 ggplot(fun.values, aes(x = x, y = value, color = variable, linetype = Type, group = as.factor(variable))) +
-    geom_line(lwd = 1.4) +
-    geom_point(aes(x = fun.intercept$x, y = fun.intercept$y), size = 2.5, color = "#8E44AD", alpha = .8) +
-    geom_vline(xintercept = fun.intercept$x, linetype = 'dashed', alpha = .5) +
+	geom_line(lwd = 1.4) +
+	geom_point(aes(x = fun.intercept$x, y = fun.intercept$y), size = 3, color = "#8E44AD", alpha = .8) +
+
+	# These two lines also mark the intersection.
+	geom_vline(xintercept = fun.intercept$x, linetype = 'longdash', alpha = .5, lwd = .25) +
+	geom_hline(yintercept = fun.intercept$y, linetype = 'longdash', alpha = .5, lwd = .25) +
+
+	# I think this looks better with text in the title area only, with the following line commented out.
+	# but wanted to make sure I followed instructions.
+	annotate("text", x = fun.intercept$x, y = fun.intercept$y + offset, parse = TRUE, label = paste0("Intersect (", fun.intercept$x, ",", fun.intercept$y, ")")) +
+
     scale_linetype(guide = 'none') +
-    annotate("text", x = fun.intercept$x, y = fun.intercept$y + offset, parse = TRUE, label = paste0("Intersect (", fun.intercept$x, ",", fun.intercept$y, ")")) +
     labs(title = "Function Intersection",
-       subtitle = paste("Intersect: x =", fun.intercept$x, ", y =", fun.intercept$y),
+       subtitle = paste0("Intersection occurs at point: (", fun.intercept$x, ",", fun.intercept$y, ")"),
        caption = "MSDS 401: R Programming 1, Q3", x = "X", y = "Y")
 
 ```
@@ -275,13 +280,14 @@ _This dataset has three variables (Girth, Height, Volume) on 31 felled black che
 
 + Use *data(trees)* to load the dataset. 
 + Check and output the structure with *str()*. 
-+ Use *apply()* to return the median values for the three variables. Output these values.  
++ Use *apply()* to return the median values for the three variables. __Output these values__.  
 + Using R and logicals, output the row number and the three measurements - Girth, Height and Volume - of any trees with Girth equal to median Girth. 
 
 _It is possible to accomplish this last request with one line of code._ 
 
 ```{r test3a}
 
+# same as data(trees)
 trees <- as.data.table(trees)
 
 str(trees)
@@ -317,7 +323,7 @@ stem(trees$Radius)
 
 ggplot(trees, aes(Radius, fill = ..count..)) +
 	geom_histogram(breaks = pretty(trees$Radius)) +
-	labs(title = "Tree Radius Distribution",
+	labs(title = "Tree Radii Distribution",
 	   caption = "MSDS 401: R Programming 1, Q4")
 
 ggplot(trees, aes(x = Radius, y = Area)) +
@@ -373,7 +379,7 @@ max_vol > ex_outlier_range
 
 boxplot.stats(trees$Volume, coef = ex_outlier_coef)
 
-head(trees[order(-trees$Area)], 1) # 1 liner
+head(trees[order(-trees$Area)][, .(Girth, Height, Volume)], 1) # 1 liner
 
 ```
 
@@ -450,7 +456,7 @@ QQ plots are useful for detecting the presence of heavy-tailed distributions.
 
 ```{r test5c}
 
-# base R
+# base R method. This is to ensure I followed instructions.
 
 opar = par(mfrow = c(1, 2))
 
@@ -460,15 +466,25 @@ qqline(values$x, lty = 2, lwd = 2, col = "blue")
 qqnorm(values$y, col = "black", main = "Exponential Distribution", xlab = "", ylab = "sample")
 qqline(values$y, lty = 2, lwd = 2, col = "blue")
 
-mtext("QQ Plot, Normal & Exponential (base R)", side = 3, line = -1.5, outer = TRUE)
+mtext("QQ Plot, Normal & Exponential", side = 3, line = -1.5, outer = TRUE)
 
 par(opar)
 
-# ggplot
+# ggplot method, this is my perfered method which I believe to be identical.
 
-# qqline equivilant function using ggplot & geom_abline. 
-# This should match base R functionaliy from my understanding of the documentation.
-
+#' Title
+#' geom_qqline
+#' @param data - vector of data used to generate line.
+#' @param color - color of the qq line
+#' @param line_width - width of the qq line
+#' @param alpha - transparency of the qq line
+#' @param line_type - qq line display type
+#'
+#' @return geom object that can be used in ggplot layering. This should be identical to the qqline in base R,
+#' based upon by understanding of ?qqline
+#' @export
+#'
+#' @examples see below:
 geom_qqline <- function(data,
     color = "red", line_width = 1, alpha = 1, line_type = "dashed") {
 
@@ -493,9 +509,13 @@ q2 <- ggplot(values, aes(sample = y)) +
 	geom_qqline(values$y, color = "blue", alpha = .8 ) +
 	labs(title = "Exponential Distribution", x = "", Y = "Exponential Values")
 
-grid.arrange(q1, q2, ncol = 2, top = "QQ Plot, Normal & Exponential (ggplot)")
+grid.arrange(q1, q2, ncol = 2, top = "QQ Plot, Normal & Exponential")
 
-boxplot.stats(values$x, coef = ex_outlier_coef)
-boxplot.stats(values$y, coef = ex_outlier_coef)
+# Detect any extreme outliers in x or y.
+x_extremes <- boxplot.stats(values$x, coef = ex_outlier_coef) # no extreme outliers
+x_extremes$out
+
+y_extremes <- boxplot.stats(values$y, coef = ex_outlier_coef) # 1 extreme outlier, 
+y_extremes$out
 
 ```

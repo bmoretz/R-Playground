@@ -77,6 +77,7 @@ pkgs
 > How could you convert cty and hwy into the European standard of 1/100km?
     
 > __Answer__: 
+ 
 
 ```{r ch_2.2.1_2}
 
