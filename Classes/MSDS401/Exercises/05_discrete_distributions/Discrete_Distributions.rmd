@@ -1,5 +1,5 @@
 ---
-title: "Lesson 04: Probability"
+title: "Lesson 05: Discrete Distributions"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
