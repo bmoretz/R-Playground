@@ -60,22 +60,15 @@ loadDataFile <- function(file_name) {
 
 ```
 
-## 1.) Shoppers
+## 1.) Races
 
-+ __Dataset__: _shoppers.csv_
-
-```{r ex_1_data, echo = FALSE}
-
-shoppers <- loadDataFile("shoppers.csv")
-
-```
-
-Assume the fifty shoppers exit the store individually in random order.
+Suppose a gambler goes to the race track to bet on four races. There are six horses in each race. He
+picks one at random out of each race and bets on each of the four selections. Assuming a binomial
+distribution, answer the following questions.
 
 ### a.)
 
-> If one shopper is picked at random, what is the probability of picking a shopper who spent
-$40 or more dollars? What is the probability of picking a shopper who spent less than $10?
+> The gambler wins all four races.
 
 ```{r ex_1_a, echo = T}
 
@@ -83,9 +76,82 @@ $40 or more dollars? What is the probability of picking a shopper who spent less
 
 ### b.)
 
-> If two shoppers are picked at random, what is the probability the pair will include a shopper
-who spent $40 or more dollars and one who spent less than $10?
+> The gambler loses all four races.
 
 ```{r ex_1_b, echo = T}
+
+```
+
+### c.)
+
+> The gambler wins exactly one race.
+
+```{r ex_1_c, echo = T}
+
+```
+
+### d.)
+
+> The gambler wins at least one race.
+
+```{r ex_1_d, echo = T}
+
+```
+
+## 2.)
+
+A woman claims she can tell by taste if cream is added before a tea bag is placed in a tea cup containing
+hot water. An experiment is designed. A series of cups of tea will be prepared with n of them having
+the cream added prior to the tea bag and n of them with the cream added after the tea bag. This gives
+a total of 2n cups of tea. The sequence of tea cups is presented in random order. If the woman cannot
+discriminate it will be expected on average she would guess at random and be correct on half the tea
+cups. Answer the following questions assuming the number of successes follows a binomial distribution
+with probability equal to 0.5 and 2n total binomial trials.
+
+> If the total number of binomial trials is 2n = 20, what is the probability the woman is correct
+more than 15 out of 20 times?
+
+```{r ex_2_a, echo = T}
+
+```
+
+### b.)
+
+> To reduce the amount of labor, how small can the total number of binomial trials be while
+keeping the probability of 2n consecutive successes at or below 0.05? (We use 2n = the
+number of trials since half have the cream before and half after the tea bag.)
+
+```{r ex_2_b, echo = T}
+
+```
+
+## 3.)
+An emergency room has 4.6 serious accidents to handle on average each night. Using the Poisson
+distribution, calculate the distribution of accidents per night. (In other words, what is the probability
+of 0, 1, 2, . accidents per night?) Plot the result.
+
+> If the total number of binomial trials is 2n = 20, what is the probability the woman is correct
+more than 15 out of 20 times?
+
+```{r ex_3, echo = T}
+
+```
+
+## 4.)
+
+A production process occasionally produces at random a defective product at a rate of 0.001. If these
+products are packaged 100 at a time in a box and sold, answer the following questions and compare
+your answers. Plot the distributions for each type of variable over the range 0, 1, 2, 3, 4. What do you
+conclude?
+
+> Using the binomial distribution, calculate the probability a box has zero defectives.
+
+```{r ex_4_a, echo = T}
+
+```
+
+> Using the Poisson distribution, calculate the probability a box has zero defectives.
+
+```{r ex_4_b, echo = T}
 
 ```

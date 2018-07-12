@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 
 ```
 
-```{r additional-libraries, echo=FALSE}
+```{r analysis_setup1, message = FALSE, warning = FALSE}
 
 library(data.table, quietly = TRUE, warn.conflicts = FALSE)
 
@@ -26,6 +26,7 @@ library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
 library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
 library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(knitr)
 
 theme_set(theme_fivethirtyeight())
 
@@ -35,89 +36,23 @@ theme_update(plot.title = element_text(hjust = 0.5),
              axis.text.y = element_text(face = "bold", size = 12),
              legend.position = "top", legend.title = element_blank())
 
-#base.dir <- "E:/GitHub/R-Playground/"
-base.dir <- "C:/Projects/R/Playground"
+base.dir <- "E:/GitHub/R-Playground"
+#base.dir <- "C:/Projects/R/Playground"
 
-data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/Data Analysis/data")
+data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/DataAnalysis_01/data/")
 
 loadDataFile <- function(file_name) {
-	data.raw <- fread(paste0(data.path, file_name),
-		header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
+  data.raw <- fread(paste0(data.path, file_name),
+    header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
 
-	data <- setNames(data.raw, tools::toTitleCase(tolower(names(data.raw))))
+  data <- setNames(data.raw, tools::toTitleCase(tolower(names(data.raw))))
 
-	return(data)
+  return(data)
 }
-
-```
-
-R markdown is a plain-text file format for integrating text and R code, and creating transparent, reproducible and interactive reports. An R markdown file (.Rmd) contains metadata, markdown and R code "chunks,"" and can be "knit" into numerous output types. Answer the test questions by adding R code to the fenced code areas below each item. There are questions that require a written answer that also need to be answered. Enter your comments in the space provided as shown below:
-
-***Answer: (Enter your answer here.)    *** 
-
-Once completed, you will "knit" and submit the resulting .html document and the .Rmd file. The .html will present the output of your R code and your written answers, but your R code will not appear.  Your R code will appear in the .Rmd file. The resulting .html document will be graded and a feedback report returned with comments.  Points assigned to each item appear in this template.
-
-**Before proceeding, look to the top of the .Rmd for the (YAML) metadata block, where the *title*, *author* and *output* are given. Please change *author* to include your name, with the format 'lastName, firstName.'**
-
-If you encounter issues with knitting the .html, please send an email via Canvas to your TA.
-
-Each code chunk is delineated by six (6) backticks; three (3) at the start and three (3) at the end. After the opening ticks, arguments are passed to the code chunk and in curly brackets. **Please do not add or remove backticks, or modify the arguments or values inside the curly brackets.** An example code chunk is included here: 
-
-```{r exampleCodeChunk, eval = FALSE, echo = TRUE}
-# Comments are included in each code chunk, simply as prompts
-
-#...R code placed here
-
-#...R code placed here
-
-```
-
-R code only needs to be added inside the code chunks for each assignment item. However, there are questions that follow many assignment items. Enter your answers in the space provided. An example showing how to use the template and respond to a question follows.
-
------
-
-**Example Problem with Solution:**
-
-Use *rbinom()* to generate two random samples of size 10,000 from the binomial distribution. For the first sample, use p = 0.45 and n = 10. For the second sample, use p = 0.55 and n = 10. Convert the sample frequencies to sample proportions and compute the mean number of successes for each sample. Present these statistics.
-
-```{r Example, eval = TRUE, echo = TRUE}
-
-set.seed(123)
-sample.one <- table(rbinom(10000, 10, 0.45)) / 10000
-sample.two <- table(rbinom(10000, 10, 0.55)) / 10000
-
-successes <- seq(0, 10)
-
-round(sum(sample.one*successes), digits = 1) # [1] 4.5
-round(sum(sample.two*successes), digits = 1) # [1] 5.5
-```
-
-**Question:  How do the simulated expectations compare to calculated binomial expectations?**
-
-***Answer:  The calculated binomial expectations are 10(0.45) = 4.5 and 10(0.55) = 5.5.  After rounding the simulated results, the same values are obtained.***
-
------
-
-Submit both the .Rmd and .html files for grading. You may remove the instructions and example problem above, but do not remove the YAML metadata block or the first, "setup" code chunk.  Address the steps that appear below and answer all the questions. Be sure to address each question with code and comments as needed.  You may use either base R functions or ggplot2 for the visualizations.
-
------
-
-The following code chunk will (a) load the "ggplot2", "gridExtra" and "knitr" packages, assuming each has been installed on your machine, (b) read-in the abalones dataset, defining a new data frame, "mydata," (c) return the structure of that data frame, and (d) calculate new variables, VOLUME and RATIO. If either package has not been installed, you must do so first via *install.packages()*; e.g. *install.packages("ggplot2")*. Do not include installation code in this document. Packages should be installed via the Console or 'Packages' tab. You will also need to download the abalones.csv from the course site to a known location on your machine.
-
-```{r analysis_setup1, message = FALSE, warning = FALSE}
-
-# a) Load the ggplot2 and gridExtra packages.
-
-library(ggplot2)
-library(gridExtra)
-library(knitr)
 
 # b) Use read.csv() to read the abalones.csv into R, assigning the data frame to "mydata."
 
-# mydata <- read.csv(file.path("c:/Rabalone_new/", "abalones.csv"), sep = ",")
-mydata <- loadDataFile("abalones.csv")
-
-    read.csv("abalones.csv", sep = ",")
+mydata <- loadDataFile("abalones.csv") # this is equivilant to read.csv, however it returns a data.table.
 
 # c) Use the str() function to verify the structure of "mydata." You should have 1036 observations
 # of eight variables.
@@ -134,7 +69,12 @@ mydata$RATIO <- mydata$SHUCK / mydata$VOLUME
 
 -----
 
-(1)(a) (2 points) Use *summary()* to obtain and present descriptive statistics from mydata.  Use table() to present a frequency table using CLASS and RINGS. There should be 115 cells in the table you present.  
+## (1)
+
+## a.)
+
++ (2 points) Use *summary()* to obtain and present descriptive statistics from mydata.  
++ Use table() to present a frequency table using CLASS and RINGS. _There should be 115 cells in the table you present._
 
 ```{r Part_1a, eval = TRUE, echo = FALSE}
 

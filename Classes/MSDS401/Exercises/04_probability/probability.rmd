@@ -39,8 +39,8 @@ theme_update(plot.title = element_text(hjust = 0.5),
              axis.text.y = element_text(face = "bold", size = 12),
              legend.position = "top", legend.title = element_blank())
 
-#base.dir <- "E:/GitHub/R-Playground/"
-base.dir <- "C:/Projects/R/Playground"
+base.dir <- "E:/GitHub/R-Playground/"
+#base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/04_probability/data/")
 
@@ -68,6 +68,8 @@ loadDataFile <- function(file_name) {
 
 shoppers <- loadDataFile("shoppers.csv")
 
+glimpse(shoppers)
+
 ```
 
 Assume the fifty shoppers exit the store individually in random order.
@@ -79,6 +81,12 @@ $40 or more dollars? What is the probability of picking a shopper who spent less
 
 ```{r ex_1_a, echo = T}
 
+n <- length(shoppers$Spending)
+
+gte_40 <- sum(shoppers$Spending >= 40) / n
+
+lt_10 <- sum(shoppers$Spending < 10) / n
+
 ```
 
 ### b.)
@@ -87,5 +95,7 @@ $40 or more dollars? What is the probability of picking a shopper who spent less
 who spent $40 or more dollars and one who spent less than $10?
 
 ```{r ex_1_b, echo = T}
+
+gte_40 * lt_10 / (n * ( gte_40 - 1 ) )
 
 ```
