@@ -39,8 +39,8 @@ theme_update(plot.title = element_text(hjust = 0.5),
              axis.text.y = element_text(face = "bold", size = 12),
              legend.position = "top", legend.title = element_blank())
 
-base.dir <- "E:/GitHub/R-Playground/"
-#base.dir <- "C:/Projects/R/Playground"
+#base.dir <- "E:/GitHub/R-Playground/"
+base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/04_probability/data/")
 
@@ -83,9 +83,11 @@ $40 or more dollars? What is the probability of picking a shopper who spent less
 
 n <- length(shoppers$Spending)
 
-gte_40 <- sum(shoppers$Spending >= 40) / n
+gte_40 <- sum(shoppers$Spending >= 40)
+gte_40 / n
 
-lt_10 <- sum(shoppers$Spending < 10) / n
+lt_10 <- sum(shoppers$Spending < 10)
+lt_10 / n
 
 ```
 
@@ -96,6 +98,66 @@ who spent $40 or more dollars and one who spent less than $10?
 
 ```{r ex_1_b, echo = T}
 
-gte_40 * lt_10 / (n * ( gte_40 - 1 ) )
+gte_40 * lt_10 / ( n * ( n - 1 ) / 2 )
+
+```
+
+_Hint : For parts c) and d) it will be necessary to assume sampling without replacement._
+
+### c.) 
+
+> If two shoppers are picked at random, what is the probability the pair will include two
+shoppers who spent no less than $10 and no more than $40?
+
+```{r}
+
+m <- sum( (shoppers$Spending >= 10) & (shoppers$Spending <= 40))
+
+m * (m - 1) / ( n * (n - 1) )
+
+```
+
+### d.)
+
+> If four shoppers are picked at random, what is the probability one shopper will have spent
+less than $10, one shopper will have spent $40 or more dollars and two shoppers will have
+spent no less than $10 and no more than $40?
+
+```{r}
+
+successful_combinations <- gte_40 * lt_10 * m * (m - 1) / 2
+total_combinations <- dim( combn( n, 4 ) )[ 2 ]
+
+successful_combinations / total_combinations
+
+```
+
+## e.)
+
+> If we know a randomly picked shopper has spent more than $30, what is the probability that
+shopper has spent more than $40?
+
+```{r}
+
+g1 <- sum(shoppers$Spending > 30)
+g2 <- sum(shoppers$Spending > 40)
+
+g2 / g1
+
+```
+
+## 2.)
+
+# Use R to answer these questions
+
+### a.) 
+
+Draw 100 samples with replacement of size 22 from the 365 integers (i.e. 1,2,.,365). Count
+the number of samples in which one or more of the numbers sampled is duplicated. Divide
+by 100 to estimate the probability of such duplication occurring. (If 22 people are selected
+at random, what is the probability of two or more matching birthdays?)
+
+```{r}
+
 
 ```

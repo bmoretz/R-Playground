@@ -36,8 +36,8 @@ theme_update(plot.title = element_text(hjust = 0.5),
              axis.text.y = element_text(face = "bold", size = 12),
              legend.position = "top", legend.title = element_blank())
 
-base.dir <- "E:/GitHub/R-Playground"
-#base.dir <- "C:/Projects/R/Playground"
+#base.dir <- "E:/GitHub/R-Playground"
+base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/DataAnalysis_01/data/")
 
@@ -62,14 +62,14 @@ str(mydata)
 # d) Define two new variables, VOLUME and RATIO. Use the following statements to define VOLUME and
 # RATIO as variables appended to the data frame "mydata."
 
-mydata$VOLUME <- mydata$LENGTH * mydata$DIAM * mydata$HEIGHT
-mydata$RATIO <- mydata$SHUCK / mydata$VOLUME
+mydata$Volume <- mydata$Length * mydata$Diam * mydata$Height
+mydata$Ratio <- mydata$Shuck / mydata$Volume
 
 ```
 
 -----
 
-## (1)
+## 1.)
 
 ## a.)
 
@@ -78,6 +78,13 @@ mydata$RATIO <- mydata$SHUCK / mydata$VOLUME
 
 ```{r Part_1a, eval = TRUE, echo = FALSE}
 
+summary(mydata)
+
+freq_tbl <- table(mydata$Class, mydata$Rings)
+
+stopifnot(nrow(freq_tbl) * ncol(freq_tbl) == 115)
+
+freq_tbl
 
 ```
 
