@@ -16,4 +16,3 @@ install.packages("knitr")
 install.packages("rmarkdown")
 install.packages("pander")
 install.packages("quantmod")
-
