@@ -1,0 +1,211 @@
+---
+title: "Using R for Statistics"
+author: "Moretz, Brandon"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: spacelab
+    df_print: paged
+---
+
+## Probability Distributions in R
+
+### 1.)
+
+> Suppose that a fair die is rolled 10 times. What is the probability of throwing exactly two sixes?
+
+```{r}
+    dbinom(2, 10, 1/6)
+```
+
+### 2.)
+> The number of lobster ordered in a restaurant on a given day is known to follow a Poisson distribution with a mean of 20.
+What is the probability that exactly eighteen lobsters will be ordered tomorrow?
+
+```{r}
+    dpois(18, 20)
+```
+
+### 3.)
+
+> To find the value of the pdf at 'x = 2.5' for a normal distribution with a mean of 5 and a
+standard deviation of 2, use:
+
+```{r}
+    dnorm(2.5, mean = 5, sd = 2)
+```
+
+## Finding Probabilities
+
+__Normal Distribution__
+
+> To find the probability that a randomly selected value will be less than or eq1ual to 2.5 on the 
+
+```{r}
+    pnorm(2.5)
+```
+> Find a probability for a nonstandard normal distribution, add mean and sd params:
+
+```{r}
+    pnorm( 6, mean = 5, sd = 2)
+```
+
+> To find the complementary probability that the value will be _greater_ than 6, set lower.tail = F.
+
+```{r}
+    pnorm(6, 5, 2, lower.tail = F)
+```
+
+__which is equivalent to__
+
+```{r}
+    1 - pnorm(6, 5, 2)
+```
+
+### The Normal Distribution
+
+> Suppose the height of men in the United Kingdom is known to be normally distributed with a mean of 177 centimeters a
+and a standard deviation of 10 centimeters. If you were to select a man from the United Kiungdom population at random,
+what is the probability that he would be more than 200 centimeters tall?
+
+```{r}
+    pnorm(200, mean = 177, sd = 10, lower.tail = F)
+```
+
+> What is the probability that he would be less than 150 centimeters tall?
+
+```{r}
+    pnorm(150, mean = 177, sd = 10)
+```
+
+### Binomial Distribution
+
+> If you were to roll a fair six-sided die, 100 times, what is the probability of rolling a six no more than 10 times?
+
+_the number of sixes in 100 dice roll rollows a binomial distribution, so you can answer the question with pbinom._
+
++ The reasoning for this is that we are interested in a binary event, is the die a 6? __Yes | no__
++ How many rolls must equal 6, out of how many total rolls?
++ What's the chance of rolling a 6? 1/6
+
+```{r}
+    pbinom(10, 100, 1/6)
+```
+
+> What is the probability of rolling a six more than 20 times?
+
+```{r}
+    pbinom(20, 100, 1/6, lower.tail = F)
+```
+
+### Exponential Distribution
+
+Malfunctions in a particular type of electronic device are known to follow an exponential distribution with a mean time of 24
+months until the device malfunctions. What is the probability that a randomly selected device will malfunction within the
+first 6 months?
+
+```{r}
+    pexp(6, 1/24)
+```
+
+> What is the probability that a randomly selected device will last more than 5 years (60 months) without malfunction?
+
+```{r}
+    pexp(60, 1/24, lower.tail = F)
+```
+
+## Quantiles
+
+> To find quantiles of the Normal Distribution, we can use the qnorm function:
+
+```{r}
+    qnorm(.95)
+```
+
+> For nonstandard normal distributions, use the mean and sd arguments to specifiy the parameters for the distribution.
+
+```{r}
+    qnorm(.95, mean = 5, sd = 2)
+```
+
+> To find the value _above_ which 95% of the population falls, set the lower.tail = F.
+
+```{r}
+    qnorm( .95, mean = 5, sd = 2, lower.tail = F)
+```
+
+> To find the value below which 0.5 percent of the population falls, use the command:
+
+```{r}
+    qnorm(0.005, 195, 17)
+```
+
+
+```{r}
+    qnorm(0.005, 195, 17, lower.tail = F)
+```
+
+> To find the length of time within with 40% of devices will have malfunctioned, use the command:
+
+```{r}
+    qexp(0.4, 1/24)
+```
+_40% of devices will fail within 12.3 months._
+
+> The number of lobsters ordered in a resturant on a given day is known to follow a Poisson distribution with
+a mean of 20. If the manager wants to be able to satisfy all requests for lobster on at least 80% of days,
+how many lobsters should they order each day?
+
+
+```{r}
+    qpois(.8, 20)
+```
+_by ordering 24 lobsters per day, the restaurant will be able to satisfy all requesat for lobster on at least 80% of days._
+
+## Random Numbers
+
+> To generate 100 random numbers from a standard normal distribution:
+
+```{r}
+    rnorm(100)
+```
+
+> To generate a simple random sample from a range of numbers, you can use the sample function. 
+
+For example, to select 20 random numbers between 1 and 100 without replacement:
+
+```{r}
+    sample(1:100, 20, replace = T)
+```
+
+### Random Normal
+
+```{r}
+    rnorm(3, 195, 17)
+```
+
+### Binomial
+
+```{r}
+    rbinom(1, 10, 1/6)
+```
+
+### Poisson
+
+```{r}
+    rpois(7, 20)
+```
+
+### Exponental
+
+```{r}
+    rexp(10, 1/24)
+```
+
+## Curves
+
+```{r}
+    curve(dnorm(x))
+```
