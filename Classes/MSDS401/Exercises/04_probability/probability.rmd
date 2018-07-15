@@ -183,7 +183,7 @@ _Suppose that 60% of marbles in a bag are black and 40% are white._
 
 ```{r}
 
-population_size <- 1000
+population_size <- 50
 
 gen_marbles <- function() { 
 	sample <- sample(runif(population_size), size = 20, replace = T)
@@ -228,21 +228,3 @@ What have you estimated? Expand the number of trials to 10,000.
 ```
 
 The exact binomial estimated probability is 0.755 and the expectation is 12.
-
-> __Observation__: Through some trial an error, it appears that the sample probability converges to the expected probability with 
-a greater initial population, rather than more samples of a smaller initial population.
-
-
-```{r}
-
-t_prob <- .6
-trials <- c(0:20)
-probabilities <- dbinom(trials, size = 20, prob = t_prob, log = FALSE)
-
-successes <- trials[5:20]
-binomial_probabilities <- probabilities[5:20]
-successes <- factor(successes)
-barplot(binomial_probabilities, names.arg = successes, xlab = "successes",
-ylab = "binomial probabilities")
-
-```
