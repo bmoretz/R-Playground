@@ -124,7 +124,7 @@ sprintf("%.4f", q1d)
 
 ```
 
-## 2.)
+## 2.) Tea Tasting
 
 A woman claims she can tell by taste if cream is added before a tea bag is placed in a tea cup containing
 hot water. An experiment is designed. A series of cups of tea will be prepared with n of them having
@@ -196,7 +196,7 @@ cat("\n\nLady Tasting Tea Solution: ", n, "Consecutive Cups Correctly Labeled",
 
 ```
 
-## 3.)
+## 3.) ER Visits
 
 An emergency room has 4.6 serious accidents to handle on average each night. 
 
@@ -220,7 +220,7 @@ curve(dnorm(x, u, sqrt(u)), lwd = 2, col = "red", add = T)
 
 ```
 
-## 4.)
+## 4.) Production Defects
 
 A production process occasionally produces at random a defective product at a rate of 0.001. If these
 products are packaged 100 at a time in a box and sold, answer the following questions and compare
