@@ -68,9 +68,32 @@ standard deviation of $20.71. Find the following probabilities using R.
 
 ### a.)
 
+
+```{r ex_1_vis}
+
+range <- -10:10
+
+u <- 81.14
+sd <- 20.71
+
+x <- ( range - u ) / sd
+
+probs <- dnorm(range, u, sd)
+
+plot(x, probs, type = "h", lwd = 3, col = "blue",
+  main = "Shopping Distribution", xlab = "Spent", ylab = "Probability")
+abline(h = 0, col = "green2")
+
+curve(dnorm(x, u, sqrt(u)), lwd = 2, col = "red", add = T)
+
+```
+
 > What is the probability that a randomly chosen shopper spends less than $75.00
 
 ```{r ex_1_a, echo = T}
+
+q1a <- pnorm(75, mean = u, sd = sd, lower.tail = T)
+round(q1a, 4)
 
 ```
 
@@ -80,6 +103,9 @@ standard deviation of $20.71. Find the following probabilities using R.
 
 ```{r ex_1_b, echo = T}
 
+q1b <- pnorm(100, mean = u, sd = sd, lower.tail = F)
+round(q1b, 4)
+
 ```
 
 ### c.)
@@ -87,6 +113,9 @@ standard deviation of $20.71. Find the following probabilities using R.
 > What proportion of shoppers spends between $50.00 and $100.00?
 
 ```{r ex_1_c, echo = T}
+
+q1c <- pnorm(50, mean = u, sd = sd, lower.tail = F) - pnorm(100, mean = u, sd = sd, lower.tail = F)
+round(q1c, 4)
 
 ```
 
