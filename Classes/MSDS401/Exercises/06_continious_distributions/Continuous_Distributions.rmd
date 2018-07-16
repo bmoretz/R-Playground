@@ -71,20 +71,17 @@ standard deviation of $20.71. Find the following probabilities using R.
 
 ```{r ex_1_vis}
 
-range <- -10:10
-
 u <- 81.14
 sd <- 20.71
 
-x <- ( range - u ) / sd
+x <- seq(from = u - ( sd * 3 ), to = u + ( sd * 3), by = 1)
 
-probs <- dnorm(range, u, sd)
+probs <- dnorm(x, u, sd)
 
 plot(x, probs, type = "h", lwd = 3, col = "blue",
   main = "Shopping Distribution", xlab = "Spent", ylab = "Probability")
 abline(h = 0, col = "green2")
-
-curve(dnorm(x, u, sqrt(u)), lwd = 2, col = "red", add = T)
+curve(dnorm(x, u, sd), lwd = 2, col = "red", add = T)
 
 ```
 
