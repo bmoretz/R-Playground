@@ -55,11 +55,6 @@ loadDataFile <- function(file_name) {
 
 ```
 
-
-```{r ex_3_util, echo = FALSE}
-
-```
-
 ## 1.) Shoppers
 
 Assume the purchases of shoppers in a store have been studied for a period of time and it is determined
@@ -74,7 +69,7 @@ standard deviation of $20.71. Find the following probabilities using R.
 u <- 81.14
 sd <- 20.71
 
-x <- seq(from = u - ( sd * 3 ), to = u + ( sd * 3), by = 1)
+x <- seq(from = u - ( sd * 3 ), to = u + ( sd * 3), by = 2.5)
 
 probs <- dnorm(x, u, sd)
 
@@ -120,6 +115,22 @@ round(q1c, 4)
 
 Assume that the shopper’s purchases are normally distributed with a mean of $97.11 and a standard
 deviation of $39.46. Find the following scores using R.
+
+```{r ex_2_vis}
+
+u <- 97.11
+sd <- 39.46
+
+x <- seq(from = u - ( sd * 3 ), to = u + ( sd * 3), by = 2.5)
+
+probs <- dnorm(x, u, sd)
+
+plot(x, probs, type = "h", lwd = 3, col = "blue",
+  main = "Shopping Distribution", xlab = "Spent", ylab = "Probability")
+abline(h = 0, col = "green2")
+curve(dnorm(x, u, sd), lwd = 2, col = "red", add = T)
+
+```
 
 ### a.) 
 

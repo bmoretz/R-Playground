@@ -14,4 +14,21 @@ p <- .86
 q <- 1 - p
 sqrt(n * q * p)
 
-# 
+# Basic Statistics
+
+x <- c(1, 5, 10)
+p <- c(.2, .5, .3)
+
+ev <- sum(x * p)
+
+x <- 0:3
+p <- c(.1, .3, .4, .2)
+
+ev <- sum(x * p)
+var <- sum((x - ev) ** 2 * p)
+
+x <- 0:3
+p <- c(.1, .3, .4, .2)
+
+ev <- sum(x * p)
+var <- sum((x - ev) ** 2 * p)
