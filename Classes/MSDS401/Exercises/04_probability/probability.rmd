@@ -39,8 +39,8 @@ theme_update(plot.title = element_text(hjust = 0.5),
              axis.text.y = element_text(face = "bold", size = 12),
              legend.position = "top", legend.title = element_blank())
 
-#base.dir <- "E:/GitHub/R-Playground/"
-base.dir <- "C:/Projects/R/Playground"
+base.dir <- "E:/GitHub/R-Playground/"
+#base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/04_probability/data/")
 
@@ -89,6 +89,7 @@ gte_40 / n
 lt_10 <- sum(shoppers$Spending < 10)
 lt_10 / n
 
+
 ```
 
 ### b.)
@@ -129,6 +130,7 @@ successful_combinations <- gte_40 * lt_10 * m * (m - 1) / 2
 total_combinations <- dim( combn( n, 4 ) )[ 2 ]
 
 successful_combinations / total_combinations
+
 
 ```
 

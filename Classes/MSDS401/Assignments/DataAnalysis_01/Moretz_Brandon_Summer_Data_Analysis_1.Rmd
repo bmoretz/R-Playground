@@ -1,6 +1,6 @@
 ---
 title: 'Data Analysis Assignment #1 (50 points total)'
-author: "Moretz, Brandon"
+author: "Moretz_Brandon"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
@@ -36,11 +36,12 @@ theme_update(plot.title = element_text(hjust = 0.5),
              axis.text.y = element_text(face = "bold", size = 12),
              legend.position = "top", legend.title = element_blank())
 
-#base.dir <- "E:/GitHub/R-Playground"
-base.dir <- "C:/Projects/R/Playground"
+base.dir <- "E:/GitHub/R-Playground"
+#base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/DataAnalysis_01/data/")
 
+# simple replacement for read.csv that returns a data.table.
 loadDataFile <- function(file_name) {
   data.raw <- fread(paste0(data.path, file_name),
     header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
@@ -54,12 +55,18 @@ loadDataFile <- function(file_name) {
 
 mydata <- loadDataFile("abalones.csv") # this is equivilant to read.csv, however it returns a data.table.
 
-# c) Use the str() function to verify the structure of "mydata." You should have 1036 observations
+# c) Use the str() function to verify the structure of "mydata."
+glimpse(mydata)
+
+# You should have 1036 observations.
+stopifnot(nrow(mydata) == 1036) # verify observations.
+
 # of eight variables.
+stopifnot(ncol(mydata) == 8) # verify variables.
 
-str(mydata)
+# d) Define two new variables, VOLUME and RATIO. 
 
-# d) Define two new variables, VOLUME and RATIO. Use the following statements to define VOLUME and
+# Use the following statements to define VOLUME and
 # RATIO as variables appended to the data frame "mydata."
 
 mydata$Volume <- mydata$Length * mydata$Diam * mydata$Height
@@ -69,30 +76,46 @@ mydata$Ratio <- mydata$Shuck / mydata$Volume
 
 -----
 
-## 1.)
+## 1.) Data Summary
 
-## a.)
+### a.)
+__(2 points)__
 
-+ (2 points) Use *summary()* to obtain and present descriptive statistics from mydata.  
-+ Use table() to present a frequency table using CLASS and RINGS. _There should be 115 cells in the table you present._
++ Use _summary()_ to obtain and present descriptive statistics from __mydata__.
 
-```{r Part_1a, eval = TRUE, echo = FALSE}
 
-summary(mydata)
+```{r Part_1a_summary}
 
-freq_tbl <- table(mydata$Class, mydata$Rings)
+    kable(summary(mydata), caption = "Summary")
+
+```
+
++ Use _table()_ to present a frequency table using __CLASS__ and __RINGS__. _There should be 115 cells in the table you present._
+
+```{r Part_1a_ft, eval = TRUE, echo = FALSE}
+
+freq_tbl <- with(mydata, table(Class, Rings))
 
 stopifnot(nrow(freq_tbl) * ncol(freq_tbl) == 115)
 
-freq_tbl
+kable(addmargins(freq_tbl), caption = "Frequency Table: Class ~ Rings")
 
 ```
 
 **Question (1 point):  Briefly discuss the variable types and distributional implications such as potential skewness and outliers.**
 
-***Answer: (Enter your answer here.)***
+__Answer:__ 
 
-(1)(b) (1 point) Generate a table of counts using SEX and CLASS. Add margins to this table (Hint: There should be 15 cells in this table plus the marginal totals. Apply *table()* first, then pass the table object to *addmargins()* (Kabacoff Section 7.2 pages 144-147)).  Lastly, present a barplot of these data; ignoring the marginal totals.  
+### b.)
+__(1 point)__ 
+
++ Generate a table of counts using SEX and CLASS. 
+
++ Add margins to this table (Hint: There should be 15 cells in this table plus the marginal totals. 
+
++ Apply *table()* first, then pass the table object to *addmargins()* (Kabacoff Section 7.2 pages 144-147)).
+
++ Lastly, present a barplot of these data; ignoring the marginal totals.  
 
 ```{r Part_1b}
 
