@@ -32,3 +32,15 @@ p <- c(0.779, 0.195, 0.024, 0.002)
 
 ev <- sum(x * p)
 var <- sum((x - ev) ** 2 * p)
+
+# Theorm 7.2,
+
+ev <- 133
+u <- 125
+sd <- 30
+n <- 40
+
+z <- (ev - u) / (sd / sqrt(n))
+
+round(1 - pnorm(z), 4)
+
