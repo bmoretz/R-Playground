@@ -16,7 +16,9 @@ knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 
 ```
 
-```{r analysis_setup1, message = FALSE, warning = FALSE}
+# _Abalones Data_
+
+```{r analysis_setup, message = FALSE, warning = FALSE}
 
 library(data.table, quietly = TRUE, warn.conflicts = FALSE)
 
@@ -26,7 +28,9 @@ library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
 library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
 library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(GGally, quietly = TRUE, warn.conflicts = FALSE)
 library(knitr)
+library(RColorBrewer)
 
 theme_set(theme_fivethirtyeight())
 
@@ -36,8 +40,8 @@ theme_update(plot.title = element_text(hjust = 0.5),
              axis.text.y = element_text(face = "bold", size = 12),
              legend.position = "top", legend.title = element_blank())
 
-base.dir <- "E:/GitHub/R-Playground"
-#base.dir <- "C:/Projects/R/Playground"
+#base.dir <- "E:/GitHub/R-Playground"
+base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/DataAnalysis_01/data/")
 
@@ -72,17 +76,22 @@ stopifnot(ncol(mydata) == 8) # verify variables.
 mydata$Volume <- mydata$Length * mydata$Diam * mydata$Height
 mydata$Ratio <- mydata$Shuck / mydata$Volume
 
+# Fix Sex Factor
+mydata$Sex <- factor(x = mydata$Sex, labels = c("Infant", "Female", "Male"))
+
+# Add row numbers to be used in sampling later.
+mydata[, Num := .I]
+
 ```
 
 -----
 
-## 1.) Data Summary
+## 1.) Summary
 
 ### a.)
 __(2 points)__
 
 + Use _summary()_ to obtain and present descriptive statistics from __mydata__.
-
 
 ```{r Part_1a_summary}
 
@@ -109,9 +118,9 @@ __Answer:__
 ### b.)
 __(1 point)__ 
 
-+ Generate a table of counts using SEX and CLASS. 
++ Generate a table of counts using __SEX__ and __CLASS__.
 
-+ Add margins to this table (Hint: There should be 15 cells in this table plus the marginal totals. 
++ _Add margins to this table (Hint: There should be 15 cells in this table plus the marginal totals_.
 
 + Apply *table()* first, then pass the table object to *addmargins()* (Kabacoff Section 7.2 pages 144-147)).
 
@@ -119,25 +128,58 @@ __(1 point)__
 
 ```{r Part_1b}
 
+mytable <- with(mydata, table(Sex, Class))
+kable(addmargins(mytable), caption = "Sex ~ Class")
+
+# Side-by-side Stacked
+ggplot(mydata, aes( Sex, fill = Sex)) +
+	geom_bar() +
+	facet_grid(~Class) +
+	labs(title = "Comparison Abalone Sex Frequencies", x = "Age Class", y = "Frequency",
+	    caption = "MSDS 401: Data Analysis 1, Q1_b") +
+		theme(axis.text.x = element_text(size = 8))
 
 ```
 
 **Question (2 points):  Discuss the sex distribution of abalones.  What stands out about the distribution of abalones by CLASS?**
 
-***Answer: (Enter your answer here.)***
+__Answer:__
 
-(1)(c) (1 point) Select a simple random sample of 200 observations from "mydata" and identify this sample as "work." Use *set.seed(123)* prior to drawing this sample. Do not change the number 123. Note that *sample()* "takes a sample of the specified size from the elements of x." We cannot sample directly from "mydata." Instead, we need to sample from the integers, 1 to 1036, representing the rows of "mydata." Then, select those rows from the data frame (Kabacoff Section 4.10.5 page 87). 
 
-Using "work", construct a scatterplot matrix of variables 2-6 with *plot(work[, 2:6])* (these are the continuous variables excluding VOLUME and RATIO). The sample "work" will not be used in the remainder of the assignment. 
+### c.)
+
+(1 point) 
+
++ Select a simple random sample of 200 observations from "__mydata__" and identify this sample as "__work__." 
++ Use *set.seed(123)* prior to drawing this sample. __Do not change the number 123__.
++ Note that *sample()* "takes a sample of the specified size from the elements of x." We cannot sample directly from "mydata." 
+    Instead, we need to sample from the integers, 1 to 1036, representing the rows of "mydata." 
+    Then, select those rows from the data frame (Kabacoff Section 4.10.5 page 87). 
+
+__Using "work", construct a scatterplot matrix of variables 2-6 with *plot(work[, 2:6])*__
+ 
+_(these are the continuous variables excluding VOLUME and RATIO). The sample "work" will not be used in the remainder of the assignment._
 
 ```{r Part_1c}
 
+set.seed(123)
+
+data.sample <- sample(x = 1:nrow(mydata), size = 200)
+
+work <- mydata[Num %in% data.sample, .(Length, Diam, Height, Whole, Shuck)]
+
+ggpairs(work) +
+	labs(title = "Scatterplot Matrix",
+		caption = "MSDS 401: Data Analysis 1, Q1.c") +
+		theme(axis.text.x = element_text(size = 8), axis.text.y = element_text(size = 8))
 
 ```
 
 -----
 
-(2)(a) (1 point) Use "mydata" to plot WHOLE versus VOLUME. Color code data points by CLASS.
+## 2.)
+
+(a) (1 point) Use "mydata" to plot WHOLE versus VOLUME. Color code data points by CLASS.
 
 ```{r Part_2a}
 
