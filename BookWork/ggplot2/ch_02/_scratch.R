@@ -169,8 +169,26 @@ summary(p)
 # Cars with Theme Example
 
 ggplot(mtcars, aes(x = wt, y = mpg, colour = factor(gear))) +
-	geom_point() +
-	ggtitle("Cars") +
-	geom_smooth(method = "lm", se = FALSE) +
-	scale_color_fivethirtyeight("cyl") +
-	theme_fivethirtyeight()
+  geom_point() +
+  ggtitle("Cars") +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_fivethirtyeight("cyl") +
+  theme_fivethirtyeight()
+
+
+require(ggplot2)
+require(GGally)
+data(diamonds, package = "ggplot2")
+diamonds.samp <- diamonds[sample(1:dim(diamonds)[1], 200),]
+
+# Custom Example  ( almost directly from help page)
+pm <- ggpairs(
+ diamonds.samp[, 1:5],
+ mapping = ggplot2::aes(color = cut),
+ upper = list(continuous = wrap("density", alpha = 0.5), combo = "box"),
+ lower = list(continuous = wrap("points", alpha = 0.3, size = 0.1),
+              combo = wrap("dot", alpha = 0.4, size = 0.2)),
+ title = "Diamonds"
+)
+
+pm

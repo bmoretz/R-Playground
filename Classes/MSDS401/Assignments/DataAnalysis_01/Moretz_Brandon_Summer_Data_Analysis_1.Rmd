@@ -36,12 +36,13 @@ theme_set(theme_fivethirtyeight())
 
 # Theme Overrides
 theme_update(plot.title = element_text(hjust = 0.5),
-             axis.text.x = element_text(face = "bold", size = 12),
-             axis.text.y = element_text(face = "bold", size = 12),
+             axis.text.x = element_text(size = 10),
+             axis.text.y = element_text(size = 10),
+             axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
              legend.position = "top", legend.title = element_blank())
 
-#base.dir <- "E:/GitHub/R-Playground"
-base.dir <- "C:/Projects/R/Playground"
+base.dir <- "E:/GitHub/R-Playground"
+#base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/DataAnalysis_01/data/")
 
@@ -148,7 +149,7 @@ __Answer:__
 
 ### c.)
 
-(1 point) 
+__(1 point)__
 
 + Select a simple random sample of 200 observations from "__mydata__" and identify this sample as "__work__." 
 + Use *set.seed(123)* prior to drawing this sample. __Do not change the number 123__.
@@ -171,7 +172,7 @@ work <- mydata[Num %in% data.sample, .(Length, Diam, Height, Whole, Shuck)]
 ggpairs(work) +
 	labs(title = "Scatterplot Matrix",
 		caption = "MSDS 401: Data Analysis 1, Q1.c") +
-		theme(axis.text.x = element_text(size = 8), axis.text.y = element_text(size = 8))
+        theme(axis.text.x = element_text(size = 8), axis.text.y = element_text(size = 8))
 
 ```
 
@@ -179,18 +180,44 @@ ggpairs(work) +
 
 ## 2.)
 
-(a) (1 point) Use "mydata" to plot WHOLE versus VOLUME. Color code data points by CLASS.
+### a.) 
+
+__(1 point)__
+
+Use "mydata" to plot __WHOLE__ versus __VOLUME__. Color code data points by __CLASS__.
 
 ```{r Part_2a}
 
+ggplot(mydata, aes(Volume, Whole, color = Class)) +
+    geom_jitter() + # jitter to help with the overlap in the lower left near the origin
+    labs(title = "Whole weight, in grams | Volume cm³",
+      x = "Volume", y = "Whole Weight",
+        caption = "MSDS 401: Data Analysis 1, Q2.a")
 
 ```
 
 
-(2)(b) (2 points) Use "mydata" to plot SHUCK versus WHOLE with WHOLE on the horizontal axis. Color code data points by CLASS. As an aid to interpretation, determine the maximum value of the ratio of SHUCK to WHOLE.  Add to the chart a straight line with zero intercept using this maximum value as the slope of the line. If you are using the 'base R' *plot()* function, you may use *abline()* to add this line to the plot. Use *help(abline)* in R to determine the coding for the slope and intercept arguments in the functions. If you are using ggplot2 for visualizations, *geom_abline()* should be used.
+### b.) 
+__(2 points)__
+
++ Use "mydata" to plot SHUCK versus WHOLE with WHOLE on the horizontal axis. 
++ Color code data points by CLASS. 
++ As an aid to interpretation, determine the maximum value of the ratio of SHUCK to WHOLE.
++ Add to the chart a straight line with zero intercept using this maximum value as the slope of the line. 
++ If you are using the 'base R' *plot()* function, you may use *abline()* to add this line to the plot. Use *help(abline)* in R to determine the coding for the 
+    slope and intercept arguments in the functions. 
+    If you are using ggplot2 for visualizations, *geom_abline()* should be used.
 
 ```{r Part_2b}
 
+slope <- first(mydata[, .(Y = Shuck / Whole)][ order(-Y)]$Y)
+
+ggplot(mydata, aes(x = Whole, y = Shuck, color = Class)) +
+    geom_point() +
+    geom_abline(slope = slope, intercept = 0, linetype = "dotdash", size = 1.2, color = "steelblue4", alpha = .7) +
+    labs(title = "Shuck weight, in grams | Whole weight, in grams",
+      x = "Volume", y = "Whole Weight",
+        caption = "MSDS 401: Data Analysis 1, Q2.a")
 
 ```
 

@@ -52,3 +52,13 @@ readData <- function(file.path) {
 
 	output
 }
+
+loadDataFile <- function(file_name) {
+  data.raw <- fread(paste0(data.path, file_name),
+    header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
+
+  data <- setNames(data.raw, tools::toTitleCase(tolower(names(data.raw))))
+
+  return(data)
+}
+
