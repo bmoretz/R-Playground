@@ -1,5 +1,5 @@
 ---
-title: "Lesson 06: Continuous Distributions"
+title: "Lesson 07: Sampling and Sampling Distributions"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
@@ -35,99 +35,58 @@ theme_set(theme_fivethirtyeight())
 
 # Theme Overrides
 theme_update(plot.title = element_text(hjust = 0.5),
-             axis.text.x = element_text(face = "bold", size = 12),
-             axis.text.y = element_text(face = "bold", size = 12),
-             legend.position = "top", legend.title = element_blank())
+			 axis.text.x = element_text(size = 10),
+			 axis.text.y = element_text(size = 10),
+			 axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+			 legend.position = "top", legend.title = element_blank())
 
-#base.dir <- "E:/GitHub/R-Playground/"
-base.dir <- "C:/Projects/R/Playground"
-
-data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/04_probability/data/")
-
-loadDataFile <- function(file_name) {
-	data.raw <- fread(paste0(data.path, file_name),
-		header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
-
-	data <- setNames(data.raw, tools::toTitleCase(tolower(names(data.raw))))
-
-	return(data)
-}
 
 ```
 
+## 1.) Uniform Sampling
 
-```{r ex_3_util, echo = FALSE}
+Use the uniform distribution over the interval 0 to 1.
 
-```
++ Draw 100 random samples of size 10. 
++ Calculate the means for each sample. 
++ Using the 100 mean values plot a histogram. 
++ Repeat with 100 random samples of size 50. 
++ Repeat with 100 samples of size 500. 
++ Present the three histograms using par().
 
-## 1.) Shoppers
+Calculate the variance of each histogram and compare to the original uniform distribution. What do
+you conclude?
 
-Assume the purchases of shoppers in a store have been studied for a period of time and it is determined
-the daily purchases by individual shoppers are normally distributed with a mean of $81.14 and a
-standard deviation of $20.71. Find the following probabilities using R.
+```{r ex_1, echo = T}
 
-### a.)
+x <- 1:100
 
-> What is the probability that a randomly chosen shopper spends less than $75.00
+m <- sapply(x, FUN = function(x) {
+	mean( runif(10, 0, 1) )
+} )
 
-```{r ex_1_a, echo = T}
-
-```
-
-### b.)
-
-> What proportion of shoppers spends more than $100.00?
-
-```{r ex_1_b, echo = T}
-
-```
-
-### c.)
-
-> What proportion of shoppers spends between $50.00 and $100.00?
-
-```{r ex_1_c, echo = T}
+ggplot( )
 
 ```
 
 ## 2.)
 
-Assume that the shopper’s purchases are normally distributed with a mean of $97.11 and a standard
-deviation of $39.46. Find the following scores using R.
+> Using the histogram determined above for samples of size 50, find the quartiles. Using the normal
+distribution with the true mean and variance for a uniform distribution over the interval 0 to 1,
+determine the theoretical quartiles for a sample mean from 50 observations. Compare the two sets of
+quartiles. What do you conclude?
 
-### a.) 
-
-> What weight is the 90th Percentile of the shoppers’ purchases? That is, find the score P90
-that separates the bottom 90% of shoppers’ purchases from the top 10%
-
-```{r ex_2_a, echo = T}
+```{r ex_2, echo = T}
 
 ```
 
-### b.)
+## 3.) 
 
-> What is the median shoppers’ purchase? (Find the score P50 that separates the bottom 50%
-of shoppers’ purchases from the top 50%.) What is important about this number?
-
-```{r ex_2_b, echo = T}
-
-```
-
-## 3.)
-
-+ Generate a sample of size 50 from a normal distribution with a mean of 100 and a standard deviation of 4.
-
-+ What is the sample mean and sample standard deviation? Calculate the standard error of the mean for this sample. 
-Generate a second sample of size 50 from the same normal population. 
-
-+ What is the sample mean and sample standard deviation? Calculate the standard error of the mean for this sample.
-
-+ Compare your results. Are the sample means and sample standard deviations of random samples of the same size taken 
-from the same population identical? Why or why not?
-
-+ Now, repeat this process generating a sample of size 5000. 
-+ Calculate the sample mean, sample standard deviation and standard error of the mean for this third sample and compare to the
-previous samples.
+> Use the binomial distribution with p = 0.5. Draw 100 random samples of size 10. Calculate the means
+for each sample. Using the 100 mean values plot a histogram. Repeat with 100 random samples of
+size 50. Repeat with 100 samples of size 500. Present the three histograms using par(). Calculate the
+variance of each histogram and compare to the original mean and variance for the binomial. What do
+you conclude?
 
 ```{r ex_3, echo = T}
 
@@ -135,10 +94,10 @@ previous samples.
 
 ## 4.)
 
-Assume a biased coin when flipped will generate heads one third of the time. Estimate the probability
-of getting at least 250 heads out of 600 flips using the normal distribution approximation. Compare to
-the exact probability using the binomial distribution
-
+> Using the histogram determined above for samples of size 50, find the quartiles. Using the normal
+distribution with the true mean and variance for a binomial distribution with p = 0.5, determine the
+theoretical quartiles for a sample mean from 50 observations. Compare the two sets of quartiles. What
+do you conclude?
 
 ```{r ex_4, echo = T}
 
@@ -146,8 +105,11 @@ the exact probability using the binomial distribution
 
 ## 5.)
 
-Use the uniform distribution over 0 to 1. Generate three separate simple random samples of size n =
-25, n = 100, n = 400. Plot histograms for each and comment on what you observe.
+> Use the binomial distribution with p = 0.1. Draw 100 random samples of size 10. Calculate the means
+for each sample. Using the 100 mean values plot a histogram. Repeat with 100 random samples of
+size 50. Repeat with 100 samples of size 500. Present the three histograms using par(). Calculate the
+variance of each histogram and compare to the original mean and variance for the binomial. What do
+you conclude?
 
 ```{r ex_5, echo = T}
 
@@ -155,8 +117,10 @@ Use the uniform distribution over 0 to 1. Generate three separate simple random 
 
 ## 6.)
 
-salaries.csv gives the CEO age and salary for 60 small business firms. Construct QQ plots and histograms.
-Is the distribution of ages a normal distribution? Explain your answer.
+> Using the histogram determined above for samples of size 50, find the quartiles. Using the normal
+distribution with the true mean and variance for a binomial distribution with p = 0.1, determine the
+theoretical quartiles for a sample mean from 50 observations. Compare the two sets of quartiles. What
+do you conclude?=
 
 ```{r ex_6, echo = T}
 

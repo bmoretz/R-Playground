@@ -41,8 +41,8 @@ theme_update(plot.title = element_text(hjust = 0.5),
              axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
              legend.position = "top", legend.title = element_blank())
 
-base.dir <- "E:/GitHub/R-Playground"
-#base.dir <- "C:/Projects/R/Playground"
+#base.dir <- "E:/GitHub/R-Playground"
+base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/DataAnalysis_01/data/")
 
@@ -96,7 +96,7 @@ __(2 points)__
 
 ```{r Part_1a_summary}
 
-    kable(summary(mydata), caption = "Summary")
+kable(summary(mydata), caption = "Summary")
 
 ```
 
@@ -146,6 +146,7 @@ ggplot(mydata, aes( Sex, fill = Sex)) +
 
 __Answer:__
 
+>
 
 ### c.)
 
@@ -191,13 +192,14 @@ Use "mydata" to plot __WHOLE__ versus __VOLUME__. Color code data points by __CL
 ggplot(mydata, aes(Volume, Whole, color = Class)) +
     geom_jitter() + # jitter to help with the overlap in the lower left near the origin
     labs(title = "Whole weight, in grams | Volume cm³",
-      x = "Volume", y = "Whole Weight",
+        x = "Volume", y = "Whole Weight",
         caption = "MSDS 401: Data Analysis 1, Q2.a")
 
 ```
 
 
 ### b.) 
+
 __(2 points)__
 
 + Use "mydata" to plot SHUCK versus WHOLE with WHOLE on the horizontal axis. 
@@ -213,32 +215,78 @@ __(2 points)__
 slope <- first(mydata[, .(Y = Shuck / Whole)][ order(-Y)]$Y)
 
 ggplot(mydata, aes(x = Whole, y = Shuck, color = Class)) +
-    geom_point() +
+    geom_jitter() +
     geom_abline(slope = slope, intercept = 0, linetype = "dotdash", size = 1.2, color = "steelblue4", alpha = .7) +
     labs(title = "Shuck weight, in grams | Whole weight, in grams",
-      x = "Volume", y = "Whole Weight",
+        x = "Whole Weight", y = "Shuck Weight",
         caption = "MSDS 401: Data Analysis 1, Q2.a")
 
 ```
 
-**Question (2 points):  How does the variability in this plot differ from the plot in (a)?  Compare the two displays.  Keep in mind that SHUCK is a part of WHOLE.  Consider the location of the different age classes.**
+**Question (2 points):  How does the variability in this plot differ from the plot in (a)?  
+Compare the two displays.  Keep in mind that SHUCK is a part of WHOLE. 
+Consider the location of the different age classes.**
 
-***Answer: (Enter your answer here.)***
+__Answer:__
+
+> 
 
 -----
 
-(3)(a) (2 points) Use "mydata" to create a multi-figured plot with histograms, boxplots and Q-Q plots of RATIO differentiated by sex. This can be done using *par(mfrow = c(3,3))* and base R or *grid.arrange()* and ggplot2. The first row would show the histograms, the second row the boxplots and the third row the Q-Q plots. Be sure these displays are legible.  
+## 3.)
 
-```{r Part_3a}
+### a.) 
+(2 points) 
 
++ Use "mydata" to create a multi-figured plot with histograms, boxplots and Q-Q plots of RATIO differentiated by sex. 
++ This can be done using *par(mfrow = c(3,3))* and base R or *grid.arrange()* and ggplot2.
++ The first row would show the histograms, the second row the boxplots and the third row the Q-Q plots. 
++ Be sure these displays are legible.  
+
+```{r Part_3a_hist}
+
+# I broke these 3 out into seperate R chuncks to give natural borders to the consecutive plots.
+
+ggplot(mydata, aes(x = Ratio, fill = ..count..)) +
+	geom_histogram(bins = 15) +
+	facet_wrap(aes(Sex)) +
+    labs( main = "Sex ~ Ratio Distribution" ) +
+	theme(axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"))
+
+```
+
+
+```{r Part_3a_box}
+
+ggplot(mydata, aes(x = Sex, y = Ratio)) +
+	geom_boxplot(outlier.colour = "red", fill = "#20D4EA", outlier.shape = 1)
+
+
+```
+
+
+```{r Part_3a_qq}
+
+ggplot(mydata, aes(sample = Ratio)) +
+	stat_qq(color = "steelblue4") +
+	stat_qq_line(lwd = .8, alpha = .8) +
+	facet_wrap(aes(Sex))
 
 ```
 
 **Question (2 points): Compare the displays.  How do the distributions compare to normality? Take into account the criteria discussed in the sync sessions to evaluate non-normality.**
 
-***Answer: (Enter your answer here.)***
+__Answer:__
 
-(3)(b) (2 points) Use the boxplots to identify RATIO outliers (mild and extreme both) for each sex. Present the abalones with these outlying RATIO values along with their associated variables in "mydata" (Hint:  display the observations by passing a data frame to the kable() function).  
+***(Enter your answer here.)***
+
+### b.)
+(2 points) 
+
++ Use the boxplots to identify RATIO outliers (mild and extreme both) for each sex. 
++ Present the abalones with these outlying RATIO values along with their associated variables in "mydata"
+
+_(Hint:display the observations by passing a data frame to the kable() function)._
 
 ```{r Part_3b}
 
@@ -247,7 +295,9 @@ ggplot(mydata, aes(x = Whole, y = Shuck, color = Class)) +
 
 **Question (2 points):  What are your observations regarding the results in (3)(b)?**
 
-***Answer: (Enter your answer here.)***
+__Answer:__
+
+***(Enter your answer here.)***
 
 -----
 

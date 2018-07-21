@@ -1,0 +1,43 @@
+---
+title: "Lesson 08: Statistical Inference Estimation for Single Populations"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: spacelab
+    df_print: paged
+---
+
+```{r knitr-setup, include = FALSE}
+library(knitr)
+
+knitr::opts_chunk$set(eval = TRUE)
+
+opts_chunk$set(fig.align = "center", fig.height = 4, fig.width = 8) # for html
+opts_knit$set(progress = FALSE, verbose = TRUE)
+
+```
+
+
+```{r additional-libraries, echo=FALSE}
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+
+assignInNamespace("cedta.pkgEvalsUserCode", c(data.table:::cedta.pkgEvalsUserCode, "rtvs"), "data.table")
+
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+
+theme_set(theme_fivethirtyeight())
+
+# Theme Overrides
+theme_update(plot.title = element_text(hjust = 0.5),
+			 axis.text.x = element_text(size = 10),
+			 axis.text.y = element_text(size = 10),
+			 axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+			 legend.position = "top", legend.title = element_blank())
+
+```

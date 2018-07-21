@@ -40,7 +40,6 @@ u <- 125
 sd <- 30
 n <- 40
 
-z <- (ev - u) / (sd / sqrt(n))
+z <- round( (ev - u) / (sd / sqrt(n)), 2 )
 
-round(1 - pnorm(z), 4)
-
+round(pnorm(z, lower.tail = F), 4)
