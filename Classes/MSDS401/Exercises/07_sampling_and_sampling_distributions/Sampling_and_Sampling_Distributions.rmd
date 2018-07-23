@@ -60,7 +60,7 @@ you conclude?
 ```{r ex_1, echo = T}
 
 unif_means <- function(n, s) { 
-	m <- sapply(seq(from = 1, to = n, by = 1), FUN = function(x) {
+	sapply(seq(from = 1, to = n, by = 1), FUN = function(x) {
 	    mean( runif(s, 0, 1) )
 	})
 }
@@ -81,6 +81,7 @@ m50 <- unif_means(100, s)
 plot_means(m50, s)
 
 s <- 500
+
 m500 <- unif_means(100, s)
 plot_means(m500, s)
 
@@ -98,7 +99,7 @@ quartiles. What do you conclude?
 quantile(m50)
 
 get_true_means <- function(n, u, sd) {
-	m <- sapply(seq(from = 1, to = n, by = 1),
+	sapply(seq(from = 1, to = n, by = 1),
         FUN = function(x) {
 		    mean( rnorm( n, mean = u, sd))
 	    })
@@ -123,7 +124,7 @@ you conclude?
 ```{r ex_3, echo = T}
 
 binom_means <- function(n, s, p) {
-	m <- sapply(seq(from = 1, to = n, by = 1), FUN = function(x) {
+	sapply(seq(from = 1, to = n, by = 1), FUN = function(x) {
 		mean(rbinom(s, 1, p))
 	})
 }

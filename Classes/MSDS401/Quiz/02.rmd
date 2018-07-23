@@ -1,0 +1,267 @@
+---
+title: 'Problem Set #2'
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: spacelab
+    df_print: paged
+---
+
+## 1.)
+
+Assume the outcomes from an experiment with a trials conform to a Poisson distribution with lambda equal to 1. 
+
+__Determine the probability of obtaining an outcome greater than 3.__
+
+_(Round to four decimal places.)_
+
+
+```{r echo = T}
+
+# method a, use lower.tail = F
+prob <- ppois(3, lambda = 1, lower.tail = F)
+round(prob, 4)
+
+# method 2, use 1 - prob(3)
+round(1 - ppois(3, lambda = 1), 4)
+
+lam <- 1
+x = seq( from = 0, to = 5, by = 1)
+
+pdf = dpois(x, lambda = lam)
+plot(x, pdf, type = "h", lwd = 3, col = "blue",
+  main = paste("PDF of POIS(", lam,") with Approximating Normal Density"))
+abline(h = 0, col = "green2")
+curve(dnorm(x, 1, sqrt(1)), lwd = 2, col = "red", add = T)
+
+```
+
+## 2.)
+
+__Use Bayes' theorem to find the indicated probability.__
+
+5.8% of a population is infected with a certain disease. 
+
+There is a test for the disease, however the test is not completely accurate. 
+
+93.9% of those who have the disease test positive. 
+However 4.1% of those who do not have the disease also test positive (false positives).
+A person is randomly selected and tested for the disease.
+
+> __What is the probability that the person has the disease given that the test result is positive?__
+
+
+```{r echo = T}
+
+d <- 0.058
+dNot <- (1 - d)
+
+dHaveTrue <- 0.939
+dHaveFalse <- (1 - dHaveTrue)
+
+dNotTrue <- 0.041 #False Positive
+dNotFalse <- (1 - dNotTrue)
+
+Q2 <- (d * dHaveTrue) / ((dNot * dNotTrue) + (d * dHaveTrue))
+round(Q2, 3)
+
+```
+
+## 3.)
+
+> Given the following probability distribution for the variable x, compute the expected value and variance of x using the distribution below.  
+
+<table style="width: 516px;">
+<tbody>
+<tr>
+<td style="width: 137px; text-align: center;">x</td>
+<td style="width: 77px; text-align: center;">0</td>
+<td style="width: 86px; text-align: center;">1</td>
+<td style="width: 82px; text-align: center;">2</td>
+<td style="width: 89px; text-align: center;">3</td>
+</tr>
+<tr>
+<td style="width: 137px; text-align: center;">probability</td>
+<td style="width: 77px; text-align: center;">0.779</td>
+<td style="width: 86px; text-align: center;">0.195</td>
+<td style="width: 82px; text-align: center;">0.024</td>
+<td style="width: 89px; text-align: center;">0.002</td>
+</tr>
+</tbody>
+</table>
+<p>
+
+_Round to two decimal places._
+
+```{r echo = T}
+
+# Basic Statistics, p49-50
+
+vals <- c(0, 1, 2, 3)
+probs <- c(0.779, 0.195, 0.024, 0.002)
+
+ev <- sum( vals * probs )
+
+round(ev, 2)
+
+var <- sum((vals - ev) ** 2 * probs)
+round(var, 2)
+
+```
+
+
+## 4.)
+
+_Solve the problem._
+
+Given the following sample data: __1.3, 2.2, 2.7, 3.1, 3.3, 3.7__, use quantile() in R with type = 7 to find the estimated 33rd percentile.
+
+_Round to 2 decimal places._
+
+```{r echo = T}
+
+sample_data <- c(1.3, 2.2, 2.7, 3.1, 3.3, 3.7)
+
+prob <- quantile(x = sample_data, probs = .33, type = 7)
+
+round(prob, 2)
+
+```
+
+## 5.)
+
+__Solve the problem.__
+
+A study of the amount of time it takes a mechanic to rebuild the transmission for a 2005 Chevrolet Cavalier shows that 
+the mean is 8.4 hours and the standard deviation is 1.8 hours. 
+
+> If a random sample of 36 mechanics is selected, find the probability that their mean rebuild time exceeds 8.7 hours.  
+
+_Assume the mean rebuild time has a normal distribution.  (Hint, interpolate in the tables or use pnorm().)_
+
+```{r echo = T}
+
+# Business Statistics, 7.2, p.219
+
+ev <- 8.7
+u <- 8.4
+sd <- 1.8
+n <- 36
+
+z <- (ev - u) / (sd / sqrt(n))
+
+round( pnorm( z, lower.tail = F ), 3)
+
+```
+
+## 6.)
+
+> Use the normal distribution to estimate the probability of 50 successes for a 
+binomial distribution with n = 67 and the probability of success p = 0.7.
+
+_Round to four decimal places._
+
+```{r echo = T}
+
+# Business Statistics, Section 6.6, p.188
+n <- 67
+p = 0.7
+q <- 1 - p
+
+value <- 50
+
+u <- n * p
+sd <- sqrt(n * p * q)
+
+stopifnot(u + 3 * sd < n)
+stopifnot(u - 3 * sd < n)
+
+z_1 <- (value - .5 - u) / sd
+prob_1 <- pnorm(z_1, lower.tail = T)
+
+z_2 <- (value + .5 - u) / sd
+prob_2 <- pnorm(z_2, lower.tail = T)
+
+round( prob_2 - prob_1, 4 )
+
+```
+
+## 7.)
+
+_The given values are discrete (binomial outcomes)._
+
+__Use the continuity correction and describe the region of the normal distribution that corresponds to the indicated probability.__
+
+> The probability of less than 44 correct answers.
+
+```{r echo = T}
+
+# "Correcting for Continuity", Business Statistics, p.186
+# The area to the left of 43.5
+
+vals <- 1:100
+probs <- dnorm(vals, mean = 50, 15 )
+area_split <- 43.5
+
+stopifnot(round(sum(probs)) == 1)
+
+plot(vals, probs, type = "h", lwd = 3, col = ifelse(vals < area_split, "red", "blue"),
+  main = "Probability of Values", xlab = "Value", ylab = "Probability")
+
+abline(h = 0, col = "green2")
+
+```
+
+
+## 8.)
+
+_Solve the problem. Round to the nearest tenth unless indicated otherwise._
+
+> In one region, the September energy consumption levels for single-family homes are found to be 
+normally distributed with a mean of 1050 kWh and a standard deviation of 218 kWh. Find P45 (45th percentile).
+
+```{r}
+
+Q8 <- qnorm(.45, mean = 1050, sd = 218, lower.tail = T)
+round(Q8, 1)
+
+```
+
+## 9.)
+
+_Find the indicated probability._
+
+> In a taste test, five different customers are each presented with 3 different soft drinks
+The same soft drinks are used with each customer, but presented in random order. 
+If the selections were made by random guesses, find the probability that all five customers witnesses would pick the same soft drink as their favorite.  
+
+_(There is more than one way the customers can agree.)_
+
+```{r}
+
+Q9 <- dbinom(x = 4, size = 4, prob = 1 / 3)
+round(Q9, 5)
+
+# or, 4 consecutive picks of the same drink (same as the first).
+round( (1 / 3) ^ 4, 5)
+
+```
+
+## 10.)
+
+_Find the indicated probability._
+
+> As a prize for winning a contest, the contestant is blindfolded and allowed to draw 3 dollar bills one at a time out of an urn.
+The urn contains forty $1 bills and ten $100 bills. 
+The urn is churned before each selection so that the selection would be at random.
+What is the probability that none of the $100 bills are selected? 
+
+_(Round to four decimal places.)_
+
+```{r}
+
+Q10 <- dhyper( x = 0, m = 10, n = 40, k = 3 )
+round(Q10, 4)
+
+```

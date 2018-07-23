@@ -48,7 +48,6 @@ microwave_oven <- microwave_oven_factory$new()
 # Call cook method for 1 second
 microwave_oven$cook(1)
 
-
 # *********************
 # Active Bindings
 # *********************
