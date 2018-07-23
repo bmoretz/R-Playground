@@ -73,7 +73,6 @@ winsorize <- function(vals, pct) {
 group_statistics <- function(data) {
 	colnames(data) <- c("Low", "High", "F")
 
-
 	data[, M := (Low + High) / 2][, FM := M * F]
 	data[, FMS := F * M ** 2]
 
