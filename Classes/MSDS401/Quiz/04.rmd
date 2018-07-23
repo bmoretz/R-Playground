@@ -1,0 +1,82 @@
+---
+title: 'Problem Set #4'
+author: "Moretz_Brandon"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: spacelab
+    df_print: paged
+---
+
+
+## 1.)
+
+```{r echo = T}
+
+```
+
+## 2.)
+
+```{r echo = T}
+
+```
+
+## 3.)
+
+
+```{r echo = T}
+
+
+```
+
+
+## 4.)
+
+```{r echo = T}
+
+
+```
+
+## 5.)
+
+```{r echo = T}
+
+
+```
+
+## 6.)
+
+```{r echo = T}
+
+
+```
+
+## 7.)
+
+```{r echo = T}
+
+```
+
+
+## 8.)
+
+```{r}
+
+
+```
+
+## 9.)
+
+```{r}
+
+
+```
+
+## 10.)
+
+```{r}
+
+
+```

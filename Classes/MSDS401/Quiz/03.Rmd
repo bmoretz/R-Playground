@@ -1,0 +1,124 @@
+﻿---
+title: 'Problem Set #3'
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: spacelab
+    df_print: paged
+---
+
+```{r setup, include = FALSE}
+# DO NOT ADD OR REVISE CODE HERE
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
+
+```
+
+# _Problem Set 3_
+
+## 1.)
+
++ Assume a random sample of size n is from a normal population.
++ Assume a single sample t test is used to for hypothesis testing.
++ The null hypothesis is that the population mean is zero versus the alternative hypothesis that it is not zero.
+
+If the sample size is decreased, and the Type I error rate is unchanged, then the Type II error rate will increase.    
+
+```{r echo = T}
+
+```
+
+## 2.)
+
++ Assume the population has a normal distribution and the number of observations in a random sample is greater than fifty.
+
+If a z test is used to test a null hypothesis about the population mean versus the alternative that the true mean is greater than that specified by the null hypothesis, what is the critical value for a one-tailed test?  
+
+_Assume the type one-error rate is 0.05._
+
+```{r echo = T}
+
+```
+
+## 3.)
+
+Use the degree of confidence and sample data to construct a confidence interval for the population proportion p.
+
+n = 56, x = 30; 95% confidence
+
+_(Use the procedure in Business Statistics Section 8.3.)_
+
+```{r echo = T}
+
+```
+
+## 4.)
+
+Use the given data to find the sample size required to estimate the population proportion.
+
+Margin of error: 0.012; confidence level: 98%; p and q unknown
+
+```{r echo = T}
+
+```
+
+## 5.)
+
+```{r echo = T}
+
+```
+
+## 6.)
+
+Use the information to find the minimum sample size required to estimate an unknown population mean µ. 
+
+Margin of error: $135, confidence level: 95%, σ = $500.
+
+```{r echo = T}
+
+```
+
+## 7.)
+
+_Use the information provided to determine a 95% confidence interval for the population variance._
+
++ A researcher was interested in the variability in service time (in hours) spent by mechanics fixing the same automotive problem. 
++ A random sample was taken resulting in a sample of size 20 from a substantial file of reported experience.
++ The summary statistics are as follows:  n = 20, sample mean = 13.8 hours, sample standard deviation = 3.9 hours.
++ Assume service time follows a normal distribution.  
+
+__Round to two decimal places.__
+
+```{r echo = T}
+
+```
+
+
+## 8.)
+
+_Solve the problem._
+
++ A 99% confidence interval (in inches) for the mean height of a population is 65.7 < µ < 67.3.
++ This result is based on a sample of size 144. Construct the 95% confidence interval. 
+
+_(Hint: you will first need to find the sample mean and sample standard deviation)._
+
+```{r echo = T}
+
+```
+
+## 9.)
+
+```{r echo = T}
+
+```
+
+## 10.)
+
++ Assume normality and use the information given to find the p-value.
+
+Based on the p-value estimated, determine if the null hypothesis should be rejected at a 0.1 significance level.  Select the correct answer if the test statistic in a two-tailed test is z= -1.63.  Follow the procedure shown in Business Statistics.
+
+```{r echo = T}
+
+```
