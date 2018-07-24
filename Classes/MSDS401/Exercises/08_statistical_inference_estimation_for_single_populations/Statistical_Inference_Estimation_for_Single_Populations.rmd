@@ -31,7 +31,7 @@ library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
 library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
 library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
 
-theme_set(theme_fivethirtyeight())
+theme_set(theme_light())
 
 # Theme Overrides
 theme_update(plot.title = element_text(hjust = 0.5),
@@ -39,5 +39,76 @@ theme_update(plot.title = element_text(hjust = 0.5),
 			 axis.text.y = element_text(size = 10),
 			 axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
 			 legend.position = "top", legend.title = element_blank())
+
+```
+
+# Estimation for Single Populations
+
+## 1.) 
+
+> Assume a random sample of size 100 is drawn from a normal distribution with variance 1. The average
+value of the sample is 50. Find a 95% confidence interval for the mean.
+
+```{r echo=T}
+
+```
+
+## 2.)
+
+> Assume the standard deviation for a normal distribution is equal to 100 units. Also assume we want
+to estimate the unknown mean with a 95% confidence interval of total width 8 units. Calculate the
+sample size required.
+
+
+```{r echo=T}
+
+```
+
+## 3.) 
+
+> A random sample of 1600 registered voters are contacted and asked a variety of questions. For one
+question, 60% of the voters expressed approval and 40% disapproval. Calculate a 95% confidence
+interval for the proportion expressing approval.
+
+
+```{r echo=T}
+
+```
+
+## 4.)
+
+> A random sample of consumers are presented with two beverages in random order and asked which
+they prefer most. All the consumers expressed a preference. One beverage was preferred 85% of the
+time. Use this number to determine how large a sample of consumers would be needed to generate a
+95% confidence interval with an overall width just less than 2% (i.e. from 84% to 86%)?
+
+```{r echo=T}
+
+```
+
+# Data Analysis
+
+> Results of a laboratory analysis of calories and sodium content of major hot dog brands.
+Researchers for Consumer Reports analyzed three types of hot dog: beef, poultry, and meat (mostly pork
+and beef, but up to 15% poultry meat). Fifty four observations are reported.
+
+## 1.)
+
+> Create boxplots and find 95% confidence intervals for the mean amount of calories in each Type of hot
+dog: beef, meat and poultry. Construct 99% one-sided lower confidence intervals for the mean amount
+of calories in each Type of hot dog: beef, meat and poultry.
+
+
+```{r echo=T}
+
+```
+
+## 2.)
+
+> Find a 95% confidence interval for the variance in the amount of calories found for each type of hotdog:
+beef, meat and poultry.
+
+
+```{r echo=T}
 
 ```

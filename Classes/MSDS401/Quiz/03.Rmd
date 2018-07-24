@@ -1,5 +1,5 @@
 ﻿---
-title: 'Problem Set #3'
+title: 'Week 5-6 Reading'
 output:
   html_document:
     toc: true
@@ -12,6 +12,11 @@ output:
 # DO NOT ADD OR REVISE CODE HERE
 knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 
+```
+
+
+```{r}
+#rm(list = ls()) # Clear Workspace
 ```
 
 # _Problem Set 3_
@@ -49,6 +54,8 @@ n = 56, x = 30; 95% confidence
 _(Use the procedure in Business Statistics Section 8.3.)_
 
 ```{r echo = T}
+
+qnorm(.95)
 
 ```
 
