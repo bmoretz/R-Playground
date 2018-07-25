@@ -18,6 +18,8 @@ knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 
 # _Abalones_
 
+_Raw Data_
+
 ```{r analysis_setup, message = FALSE, warning = FALSE}
 
 library(data.table, quietly = TRUE, warn.conflicts = FALSE)
@@ -148,7 +150,25 @@ The distribution of Rings by Age Class is also curious, as the majority, 64%, of
 A disproportionate amount of abalones are also represented by the A3 class with 32%, where we might expect around ~25%, this could be due to a function of harvesting 
 limiting older populations.
 
+
+```{r normality}
+
+norm_shuck <- shapiro.test(mydata$Shuck)
+round(norm_shuck$p.value, 13)
+
+ggplot(mydata, aes(sample = Shuck)) +
+	stat_qq() +
+    stat_qq_line()
+
+
+shapiro.test(mydata$Diam)
+shapiro.test(mydata$Length)
+shapiro.test(mydata$Height)
+
+```
+
 ### b.)
+
 __(1 point)__ 
 
 + Generate a table of counts using __SEX__ and __CLASS__.
@@ -537,22 +557,26 @@ adults <- base[Sex != "Infant"]
 
 p5_1 <- ggplot(infants, aes(x = Rings, y = Volume, group = Rings)) +
 	geom_boxplot(outlier.colour = "red", fill = "steelblue3") +
-	scale_x_continuous( breaks = pretty(infants$Rings)) +
+	scale_x_continuous(breaks = pretty(infants$Rings)) +
+	scale_y_continuous(limits = c(0, 1000)) +
     labs( subtitle = "Infant Volume | Rings" )
 
 p5_2 <- ggplot(adults, aes(x = Rings, y = Volume, group = Rings)) +
 	geom_boxplot(outlier.colour = "red", fill = "firebrick3") +
 	scale_x_continuous(breaks = pretty(adults$Rings)) +
+	scale_y_continuous(limits = c(0, 1000)) +
 	labs(subtitle = "Adult Volume | Rings")
 
 p5_3 <- ggplot(infants, aes(x = Rings, y = Whole, group = Rings)) +
 	geom_boxplot(outlier.colour = "red", fill = "steelblue3") +
 	scale_x_continuous(breaks = pretty(infants$Rings)) +
-	labs(subtitle = "Infant Whole weight | Rings")
+	scale_y_continuous(limits = c(0, 400)) +
+    labs(subtitle = "Infant Whole weight | Rings")
 
 p5_4 <- ggplot(adults, aes(x = Rings, y = Whole, group = Rings)) +
 	geom_boxplot(outlier.colour = "red", fill = "firebrick3") +
 	scale_x_continuous(breaks = pretty(adults$Rings)) +
+    scale_y_continuous(limits = c(0,400)) +
 	labs(subtitle = "Adult Whole weight | Rings")
 
 grid.arrange(p5_1, p5_2, p5_3, p5_4, ncol = 2)

@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 
 
 ```{r}
-#rm(list = ls()) # Clear Workspace
+
 ```
 
 # _Problem Set 3_
@@ -27,9 +27,11 @@ knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 + Assume a single sample t test is used to for hypothesis testing.
 + The null hypothesis is that the population mean is zero versus the alternative hypothesis that it is not zero.
 
-If the sample size is decreased, and the Type I error rate is unchanged, then the Type II error rate will increase.    
+If the sample size is decreased, and the Type I error rate is unchanged, then the Type II error rate will increase.
 
 ```{r echo = T}
+
+# This is addressed in the sync session, page #2.
 
 ```
 
