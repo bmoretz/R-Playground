@@ -19,7 +19,6 @@ opts_knit$set(progress = FALSE, verbose = TRUE)
 
 ```
 
-
 ```{r additional-libraries, echo=FALSE}
 
 library(data.table, quietly = TRUE, warn.conflicts = FALSE)
@@ -42,14 +41,30 @@ theme_update(plot.title = element_text(hjust = 0.5),
 
 ```
 
+```{r utility}
+
+normal_z <- function(pct, mean = 0, sd = 1) {
+    qnorm( 1 - (( 1 - pct ) / 2), mean, sd, lower.tail = T)
+}
+
+```
+
 # Estimation for Single Populations
 
-## 1.) 
+## 1.) Confidence Interval
 
 > Assume a random sample of size 100 is drawn from a normal distribution with variance 1. The average
 value of the sample is 50. Find a 95% confidence interval for the mean.
 
 ```{r echo=T}
+
+n <- 100 # sample size
+mean <- 50 # mean of sample
+sd <- sqrt(1) # standard deviation of population
+margin.of.error <- normal_z(.95) * sd / sqrt(n)
+
+conf.int <- c(mean - margin.of.error, mean + margin.of.error)
+conf.int
 
 ```
 
@@ -61,6 +76,8 @@ sample size required.
 
 
 ```{r echo=T}
+
+std <- 100
 
 ```
 

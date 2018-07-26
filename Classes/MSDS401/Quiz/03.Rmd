@@ -14,8 +14,33 @@ knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 
 ```
 
+```{r additional-libraries, echo=FALSE}
 
-```{r}
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+
+assignInNamespace("cedta.pkgEvalsUserCode", c(data.table:::cedta.pkgEvalsUserCode, "rtvs"), "data.table")
+
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(plot.title = element_text(hjust = 0.5),
+			 axis.text.x = element_text(size = 10),
+			 axis.text.y = element_text(size = 10),
+			 axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+			 legend.position = "top", legend.title = element_blank())
+
+```
+
+```{r utility}
+
+normal_z <- function(pct, mean = 0, sd = 1) {
+    qnorm( 1 - (( 1 - pct ) / 2), mean, sd, lower.tail = T)
+}
 
 ```
 
@@ -57,7 +82,6 @@ _(Use the procedure in Business Statistics Section 8.3.)_
 
 ```{r echo = T}
 
-qnorm(.95)
 
 ```
 
@@ -66,6 +90,8 @@ qnorm(.95)
 Use the given data to find the sample size required to estimate the population proportion.
 
 Margin of error: 0.012; confidence level: 98%; p and q unknown
+
+
 
 ```{r echo = T}
 
@@ -100,6 +126,18 @@ __Round to two decimal places.__
 
 ```{r echo = T}
 
+ci.pct = .95
+
+n <- 20
+mu <- 13.8
+std <- 3.9
+
+z <- normal_z(ci.pct)
+
+margin.of.error <- z * std / sqrt(n)
+
+c(mu - margin.of.error, mu + margin.of.error)
+
 ```
 
 
@@ -114,13 +152,40 @@ _(Hint: you will first need to find the sample mean and sample standard deviatio
 
 ```{r echo = T}
 
+n <- 144
+
+ci.l <- 65.7
+ci.h <- 67.3
+
+margin.of.error <- ( ci.h - ci.l ) / 2
+
+mu_1 <- ci.l + margin.of.error
+mu_2 <- ci.h + margin.of.error
+
+stopifnot(mu1 == mu2)
+
+mu <- mu1
+
+std <- margin.of.error / normal_z(.99) * sqrt(n)
+
+moe <- normal_z(.95) * std / sqrt(n)
+
+round( c(mu - moe, mu + moe), 1 )
+
 ```
 
 ## 9.)
 
-```{r echo = T}
+Which of the following statements is __not true__ for sampling distributions?
 
-```
++ A sampling distribution is necessary for making confidence statements about an unknown population parameter.
++ Depending on the population, it may not be possible to express the sampling distribution for a statistic in closed form mathematically.
++ A sampling distribution depends on the nature of the population being sampled.
++ When sampling at random from a normal population, the sampling distribution for the sample average is a normal distribution.
++ None of the above.
+
+> __Answer:__
+
 
 ## 10.)
 

@@ -1,5 +1,5 @@
 ---
-title: "Lesson 08: Statistical Inference Estimation for Single Populations"
+title: "Lesson 09: Statistical Inference Hypothesis Testing for Single Populations"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:

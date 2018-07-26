@@ -47,8 +47,8 @@ theme_update(plot.title = element_text(hjust = 0.5),
              axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
              legend.position = "top", legend.title = element_blank())
 
-base.dir <- "E:/GitHub/R-Playground"
-#base.dir <- "C:/Projects/R/Playground"
+#base.dir <- "E:/GitHub/R-Playground"
+base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/DataAnalysis_01/data/")
 
@@ -156,17 +156,13 @@ limiting older populations.
 
 ```{r normality}
 
-norm_shuck <- shapiro.test(mydata$Shuck)
-round(norm_shuck$p.value, 13)
+data.continuous <- mydata[, .(Length, Diam, Height, Whole, Shuck)]
 
-ggplot(mydata, aes(sample = Shuck)) +
-	stat_qq() +
-    stat_qq_line()
+shapiro.test <- data.continuous[, lapply(.SD, shapiro.test)]
 
+suppressWarnings(shapiro.test[4] <- ifelse(shapiro.test[2] > 0.05, "Reject Null", "Cannot Reject Null"))
 
-shapiro.test(mydata$Diam)
-shapiro.test(mydata$Length)
-shapiro.test(mydata$Height)
+pretty_kable(shapiro.test, "Shapiro-Wilk Normality Test for Normality")
 
 ```
 
@@ -359,6 +355,19 @@ the majority of the data is clustered about the mean in a normal fashion.
 The boxplot and QQ-plots do a good job of pointing out the outliers in the sample. The QQ for female is interesting as it follows basically a straight line until the
 presents of outliers start to show at around 1.75, then outliers begin to form frequently. Suprisingly, Infants have the most deviated distribution, having outliers
 in both positive and negative directions. This could be attributed to the older, A4 and A5 Class Infants, as one would expect a lower deviation in younger specimen.
+
+
+```{r question4_support}
+
+q4a_1 <- ggplot(mydata, aes( x = Whole / Volume, fill = ..count..)) +
+	geom_histogram( bins = 20)
+
+q4a_2 <- ggplot(mydata, aes(x = Shuck / Whole, fill = ..count..)) +
+	geom_histogram(bins = 20)
+
+grid.arrange(q4a_1, q4a_2, ncol = 2)
+
+```
 
 ### b.)
 (2 points) 
