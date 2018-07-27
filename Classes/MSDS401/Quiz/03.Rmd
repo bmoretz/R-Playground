@@ -9,7 +9,7 @@ output:
 ---
 
 ```{r setup, include = FALSE}
-# DO NOT ADD OR REVISE CODE HERE
+
 knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 
 ```
@@ -82,6 +82,14 @@ _(Use the procedure in Business Statistics Section 8.3.)_
 
 ```{r echo = T}
 
+n <- 56
+x <- 30
+zValue <- normal_z(.95)
+pHat <- x / n
+moe <- zValue * sqrt((pHat * ((1 - pHat) / n)))
+ciLower <- pHat - moe
+ciUpper <- pHat + moe
+round(c(ciLower, pHat, ciUpper), 3)
 
 ```
 
@@ -90,8 +98,6 @@ _(Use the procedure in Business Statistics Section 8.3.)_
 Use the given data to find the sample size required to estimate the population proportion.
 
 Margin of error: 0.012; confidence level: 98%; p and q unknown
-
-
 
 ```{r echo = T}
 

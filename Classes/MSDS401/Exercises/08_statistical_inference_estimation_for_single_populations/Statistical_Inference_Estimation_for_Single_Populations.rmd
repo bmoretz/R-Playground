@@ -77,7 +77,10 @@ sample size required.
 
 ```{r echo=T}
 
-std <- 100
+z_score <- qnorm(0.025, mean = 0, sd = 1, lower.tail = F)
+sample_size <- sample_size <- ( z_score * 100 / 4 ) ** 2
+
+round(sample_size)
 
 ```
 
@@ -90,6 +93,37 @@ interval for the proportion expressing approval.
 
 ```{r echo=T}
 
+# Here we will use a built-in R function for testing a proportion.
+# prop.test(x, n, p = NULL,
+# alternative = c("two.sided", "less", "greater"),
+# conf.level = 0.95, correct = TRUE
+# x a vector of counts of successes, a one-dimensional table with two entries,
+# or a two-dimensional table (or matrix) with 2 columns, giving the counts of
+# successes and failures, respectively.
+# n a vector of counts of trials; ignored if x is a matrix or a table.
+# p a vector of probabilities of success. The length of p must be the same
+# as the number of groups specified by x, and its elements must be greater
+# than 0 and less than 1.
+# alternative: a character string specifying the alternative hypothesis,
+# must be one of "two.sided" (default), "greater" or "less". You can specify
+# just the initial letter. Only used for testing the null that a single proportion
+# equals a given value, or that two proportions are equal; ignored otherwise.
+# conf.level: confidence level of the returned confidence interval.
+# Must be a single number between 0 and 1. Only used when testing the
+# null that a single proportion equals a given value, or that two proportions
+# are equal; ignored otherwise.
+# correct: a logical indicating whether Yates' continuity correction should be
+# applied where possible.
+
+prop_test_object <- prop.test(x = 1600 * 0.6, n = 1600,
+    alternative = "two.sided", conf.level = 0.95)
+
+print(str(prop_test_object))
+
+# Notice that this object is a list and the confidence interval lower
+# and uppler limits themselves can be extracted from the object as
+as.numeric(prop_test_object$conf.int)
+
 ```
 
 ## 4.)
@@ -101,6 +135,14 @@ time. Use this number to determine how large a sample of consumers would be need
 
 ```{r echo=T}
 
+p <- 0.85
+z_score <- qnorm(0.025, mean = 0, sd = 1, lower.tail = FALSE)
+sample_size <- (z_score ** 2) * p * (1 - p) / (0.01) ** 2
+round(sample_size)
+
+sample_size <- (z_score ** 2) * (0.25) / (0.01) ** 2
+round(sample_size)
+ 
 ```
 
 # Data Analysis

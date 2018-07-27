@@ -14,12 +14,18 @@ se <- sqrt(var / n)
 
 margin.of.error <- round(normal_z(ci.pct) * std / sqrt(n), 2)
 
-c(mu - margin.of.error, mu + margin.of.error)
+a <- c(mu - margin.of.error, mu + margin.of.error)
+
+(a[2] - a[1])/2
 
 # Example 2,
 
 ci.pct <- .9
 n <- 16
+mu <- 32
 std <- 4
 
-z <- normal_z(ci.pct)
+margin.of.error <- normal_z(ci.pct) * std / sqrt(n)
+
+c(mu - margin.of.error, mu + margin.of.error)
+.
