@@ -242,6 +242,7 @@ fun.values <- melt(data.table(x, y1 <- f1(x), y2 <- f2(x),
    mid <- y2 + y1)[,
         .(x, y1, y2, mid)], id = "x")
 
+
 offset <- .25
 
 fun.values$Type <- ifelse(fun.values$variable == 'mid', 'solid', 'dotdash')
@@ -259,7 +260,6 @@ ggplot(fun.values, aes(x = x, y = value, color = variable, linetype = Type, grou
 	# I think this looks better with text in the title area only, with the following line commented out.
 	# but wanted to make sure I followed instructions.
 	annotate("text", x = fun.intercept$x, y = fun.intercept$y + offset, parse = TRUE, label = paste0("Intersect (", fun.intercept$x, ",", fun.intercept$y, ")")) +
-
     scale_linetype(guide = 'none') +
     labs(title = "Function Intersection",
        subtitle = paste0("Intersection occurs at point: (", fun.intercept$x, ",", fun.intercept$y, ")"),

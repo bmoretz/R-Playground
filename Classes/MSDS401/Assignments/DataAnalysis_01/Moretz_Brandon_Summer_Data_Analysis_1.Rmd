@@ -47,8 +47,8 @@ theme_update(plot.title = element_text(hjust = 0.5),
              axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
              legend.position = "top", legend.title = element_blank())
 
-#base.dir <- "E:/GitHub/R-Playground"
-base.dir <- "C:/Projects/R/Playground"
+base.dir <- "E:/GitHub/R-Playground"
+#base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/DataAnalysis_01/data/")
 
@@ -159,6 +159,11 @@ limiting older populations.
 data.continuous <- mydata[, .(Length, Diam, Height, Whole, Shuck)]
 
 shapiro.test <- data.continuous[, lapply(.SD, shapiro.test)]
+
+rbindlist(shapiro.test[,],
+          use.names = TRUE, fill = TRUE, idcol = "shapiro.test")
+
+shapiro.test[, c('Stat', 'Value') := do.call(Map)]
 
 suppressWarnings(shapiro.test[4] <- ifelse(shapiro.test[2] > 0.05, "Reject Null", "Cannot Reject Null"))
 

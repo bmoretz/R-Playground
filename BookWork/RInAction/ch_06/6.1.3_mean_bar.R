@@ -1,4 +1,5 @@
 library(data.table)
+library(ggplot2)
 
 # Base R
 states <- data.frame(state.region, state.x77)
@@ -28,7 +29,8 @@ ggplot(states, aes(x = reorder(state.region, Illiteracy, mean), y = Illiteracy))
 	theme(plot.title = element_text(hjust = 0.5))
 
 # Right -> Left
-ggplot(states, aes(x = reorder(state.region, -Illiteracy, mean), y = Illiteracy)) +
-	geom_bar(stat = "summary", fun.y = "mean", position = "dodge") +
-	labs(title = "Mean Illiteracy Rate") +
-	theme(plot.title = element_text(hjust = 0.5))
+ggplot(states, aes(x = reorder(state.region, - Illiteracy, mean), y = Illiteracy)) +
+  geom_bar(stat = "summary", fun.y = "mean", position = "dodge") +
+  labs(title = "Mean Illiteracy Rate") +
+  theme(plot.title = element_text(hjust = 0.5)
+
