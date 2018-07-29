@@ -30,6 +30,11 @@ library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
 library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
 library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(GGally, quietly = TRUE, warn.conflicts = FALSE)
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(RColorBrewer, quietly = TRUE, warn.conflicts = FALSE)
+library(moments, quietly = TRUE, warn.conflicts = FALSE)
 
 theme_set(theme_light())
 
@@ -39,5 +44,104 @@ theme_update(plot.title = element_text(hjust = 0.5),
 			 axis.text.y = element_text(size = 10),
 			 axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
 			 legend.position = "top", legend.title = element_blank())
+
+pretty_kable <- function(data, title, dig = 2) {
+	kable(data, caption = title, digits = dig, big.mark = "'") %>%
+		kable_styling(bootstrap_options = c("striped", "hover"))
+}
+
+pretty_vector <- function(vec, label = "") {
+	pander::pander(vec)
+}
+
+# simple replacement for read.csv that returns a data.table.
+loadDataFile <- function(file_name) {
+	data.raw <- fread(paste0(data.path, file_name),
+	header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
+
+	data <- setNames(data.raw, tools::toTitleCase(tolower(names(data.raw))))
+
+	return(data)
+}
+
+#base.dir <- "E:/GitHub/R-Playground"
+base.dir <- "C:/Projects/R/Playground"
+
+data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/09_statistical_inference_hypothesis_testing_for_single_poulations/data/")
+
+```
+
+
+```{r data_load, include = F}
+
+hotdogs <- loadDataFile("hot_dogs.csv")
+
+```
+
+# Questions
+
+Variable Names:
++ 1. Type = Type of hotdog (beef, meat, or poultry)
++ 2. Calories = Calories per hot dog
++ 3. Sodium = Milligrams of sodium per hot dog
+
+## 1.)
+
+Use hot_dogs.csv data and hypothesis tests to determine which type of hot dog has average calories
+less than 140 with 95% confidence. Present boxplots of calories by type of hot dog.
+
+```{r question1}
+
+```
+
+## 2.)
+
+Using hot_dogs.csv data and hypothesis tests at the 95% confidence level, determine which type of hot
+dog has an average Sodium level different from 425 milligrams.
+
+```{r question2}
+
+```
+
+## 3.)
+
+Using hot_dogs.csv data and hypothesis tests, determine if the variance in Sodium values for beef hot
+dogs is different from 6000 with 95% confidence.
+
+```{r question3}
+
+```
+
+## 4.)
+
+Assume a random sample of size 100 is drawn from a normal distribution for which the mean and
+variance are unknown. Assume the sample mean is 50 and the standard deviation of the sample is 2.
+Test the hypothesis that the true mean is 56, and also test the hypothesis the true mean is 40. Report
+p-values and comment on the results.
+
+```{r question4}
+
+```
+
+## 5.)
+
+A coin is flipped 100 times. If it is unbiased the probability of a heads should equal the probability of a
+tails. At the 95% confidence level, test the null hypothesis the coin is unbiased versus the alternative
+that it is biased if 43 heads are obtained. Test the same hypothesis if 63 heads are obtained. Use
+one-sided hypothesis tests.
+
+```{r question5}
+
+```
+
+## 6.)
+
+salaries.csv contains data derived from a November 8, 1993 article in Forbes titled “America’s Best
+Small Companies”. The file gives the CEO age and salary for 60 small business firms. Use these data to
+test the hypothesis at 95% confidence that at least 50% of the CEOs are 45 years old or older. Also
+test the hypothesis at 95% confidence that at least 50% of the CEOs earn less than $500,000 per year.
+Use one-sided hypothesis tests.
+
+```{r question6}
 
 ```
