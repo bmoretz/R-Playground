@@ -1,6 +1,6 @@
 ---
 title: 'Data Analysis Assignment #1'
-author: "Moretz_Brandon"
+author: "Moretz, Brandon"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 
 ```
 
-# _Abalones_ 
+# __Abalones__
 
 __50 points total__
 
@@ -47,8 +47,8 @@ theme_update(plot.title = element_text(hjust = 0.5),
              axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
              legend.position = "top", legend.title = element_blank())
 
-base.dir <- "E:/GitHub/R-Playground"
-#base.dir <- "C:/Projects/R/Playground"
+#base.dir <- "E:/GitHub/R-Playground"
+base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/DataAnalysis_01/data/")
 
@@ -65,6 +65,10 @@ loadDataFile <- function(file_name) {
 pretty_kable <- function(data, title, dig = 2) {
 	kable(data, caption = title, digits = dig, big.mark = "'") %>%
 	    kable_styling(bootstrap_options = c("striped", "hover"))
+}
+
+pretty_vector <- function(vec, label = "") {
+	pander::pander(vec)
 }
 
 # b) Use read.csv() to read the abalones.csv into R, assigning the data frame to "mydata."
@@ -98,9 +102,9 @@ mydata[, Num := .I]
 
 -----
 
-## 1.) Descriptive Statistics
+## 1.) __Data Set__
 
-### a.)
+### a.) _Summary_
 __(2 points)__
 
 + Use _summary()_ to obtain and present descriptive statistics from __mydata__.
@@ -136,42 +140,78 @@ __Question (1 point):__
 
 __Answer:__ 
 
+```{r question_1a_vis}
+
+data.continuous <- mydata[, .(Length, Diam, Height, Whole, Shuck)]
+
+p_height <- ggplot(data.continuous, aes(Height, fill = ..count..)) +
+	geom_histogram(breaks = pretty(data.continuous$Height)) +
+	labs(title = element_blank()) +
+	guides(fill = FALSE)
+
+p_length <- ggplot(data.continuous, aes(Length, fill = ..count..)) +
+	geom_histogram(breaks = pretty(data.continuous$Length)) +
+	labs(title = element_blank()) +
+	guides(fill = FALSE)
+
+p_diam <- ggplot(data.continuous, aes(Diam, fill = ..count..)) +
+	geom_histogram(breaks = pretty(data.continuous$Diam)) +
+	labs(title = element_blank()) +
+	guides(fill = FALSE)
+
+p_whole <- ggplot(data.continuous, aes(Whole, fill = ..count..)) +
+	geom_histogram(breaks = pretty(data.continuous$Whole)) +
+	labs(title = element_blank()) +
+	guides(fill = FALSE)
+
+p_shuck <- ggplot(data.continuous, aes(Shuck, fill = ..count..)) +
+	geom_histogram(breaks = pretty(data.continuous$Shuck)) +
+	labs(title = element_blank()) +
+	guides(fill = FALSE)
+
+p_rings <- ggplot(mydata, aes(Rings, fill = ..count..)) +
+	geom_bar() +
+	labs(title = element_blank()) +
+	guides(fill = FALSE)
+
+p_class <- ggplot(mydata, aes(Class, fill = Class)) +
+	geom_bar() +
+	labs(title = element_blank()) +
+	guides(fill = FALSE)
+
+p_sex <- ggplot(mydata, aes(Sex, fill = Sex)) +
+	geom_bar() +
+	labs(title = element_blank()) +
+	guides(fill = FALSE)
+
+grid.arrange(p_height, p_length, p_diam, p_whole, ncol = 2 )
+grid.arrange(p_shuck, p_rings, p_class, p_sex, ncol = 2)
+
+```
+
 > The base data set contains a total of 8 variables; 5 continuous which are Length, Diameter, Height, Whole and Shuck, 1 discrete variable, Rings, and 
 2 categorical variables Sex and Class. Sex is a regular nominal value, ordering doesn’t not apply to this variable in general. The Class variable is a bit more interesting, 
 in that is an ordered (Ordinal) level attribute that given to a given abalone based on the Rings attribute.
 <br/><br/>
-There are also two additional variables we explicitly add to the data for analysis, Volume and Ratio. Both variables are discrete because they are derived from 
-multiple underlying discrete variables. Volume is calculated for convince in later analysis from Length, Diameter and Height. Ratio is a discrete measure of the 
+There are also two additional variables we explicitly add to the data for analysis, Volume and Ratio. Both variables are continuous because they are derived from 
+multiple underlying continuous variables. Volume is calculated for convince in later analysis from Length, Diameter and Height. Ratio is a continuous measure of the 
 shucked weight (meat sans shell), in grams, to the volume of the shell.
 <br/><br/>
-All continuous variables have approximately normal distributions. Height exhibits the most normal shape being approximately symmetric about the mean, whole 
-and shuck are skewed to the right while length and diameter have larger left tails. Sex is evenly distributed with each sex representing approximately a third of the data set.
+All continuous variables have well behaved distributions. Height exhibits the most normality, given the shape being approximately symmetric about the mean, Whole and Shuck are 
+significantly skewed to the right, to the point they could almost fit an exponential distribution given their sharp descending shape, Shuck prominently display this characteristic. 
+Diameter and Length appear to be approximatley normal overall, however, the distribution do have some conciderable outliers, Length in particular. 
+<br/><br/>
+Sex is evenly distributed with each sex representing approximately a third of the data set as the distribution by sex is approximately uniform. Class is relatively normal, 
+with A3 being the dominant Age Class. Rings, the only discrete measure, has a relativly normal shape that is right-skewed.
 <br/><br/>
 Shuck and Length variables have a high probability of outliers given they have max values over 3 times their respective IQR, 40.99 and 3.57 respectively.
 <br/><br/>
 The distribution of Rings by Age Class is also curious, as the majority, 64%, of the abalones have between 8 and 12 rings irrespective of their Age Class. 
 A disproportionate amount of abalones are also represented by the A3 class with 32%, where we might expect around ~25%, this could be due to a function of harvesting 
-limiting older populations.
+limiting older populations, a side-effect of this sample or simply a characteristic of the true population.
 
 
-```{r normality}
-
-data.continuous <- mydata[, .(Length, Diam, Height, Whole, Shuck)]
-
-shapiro.test <- data.continuous[, lapply(.SD, shapiro.test)]
-
-rbindlist(shapiro.test[,],
-          use.names = TRUE, fill = TRUE, idcol = "shapiro.test")
-
-shapiro.test[, c('Stat', 'Value') := do.call(Map)]
-
-suppressWarnings(shapiro.test[4] <- ifelse(shapiro.test[2] > 0.05, "Reject Null", "Cannot Reject Null"))
-
-pretty_kable(shapiro.test, "Shapiro-Wilk Normality Test for Normality")
-
-```
-
-### b.)
+### b.) _Sex ~ Class_
 
 __(1 point)__ 
 
@@ -210,9 +250,9 @@ where there is a cross the board drop in abalones in both A4 and A5 (although th
 <br/><br/>
 The curious part of the above data is the persistance of Infants throughout all five Age Classes. Intuitivly, one would think they would drop off after A3, 
 turning either Male or Female. This could also be a function of how Sex is classified in abalone. As previously mentioned, the universal drop in A4 and A5 could 
-be due to harvesting.
+be due to harvesting or the sampling technique.
 
-### c.)
+### c.) _Sample Statistics_
 
 __(1 point)__
 
@@ -235,7 +275,7 @@ data.sample <- sample(x = 1:nrow(mydata), size = 200)
 work <- mydata[Num %in% data.sample, .(Length, Diam, Height, Whole, Shuck)]
 
 ggpairs(work) +
-	labs(title = "Scatterplot Matrix",
+	labs(title = "Scatterplot Matrix for Sample",
 		caption = "MSDS 401: Data Analysis 1, Q1.c") +
         theme(axis.text.x = element_text(size = 8), axis.text.y = element_text(size = 8))
 
@@ -243,9 +283,9 @@ ggpairs(work) +
 
 -----
 
-## 2.) Age Growth Patterns
+## 2.) __Growth Patterns__
 
-### a.) 
+### a.) _Whole ~ Volume_
 
 __(1 point)__
 
@@ -262,7 +302,7 @@ ggplot(mydata, aes(Volume, Whole, color = Class)) +
 ```
 
 
-### b.) 
+### b.) Shuck ~ Whole
 
 __(2 points)__
 
@@ -283,86 +323,34 @@ ggplot(mydata, aes(x = Whole, y = Shuck, color = Class)) +
     geom_abline(slope = slope, intercept = 0, linetype = "dotdash", size = 1.2, color = "steelblue4", alpha = .7) +
     labs(title = "Shuck weight, in grams | Whole weight, in grams",
         x = "Whole Weight", y = "Shuck Weight",
-        caption = "MSDS 401: Data Analysis 1, Q2.a")
+        caption = "MSDS 401: Data Analysis 1, Q2.b")
 
 ```
 
 __Question (2 points):__
 
-> How does the variability in this plot differ from the plot in (a)?  
+> How does the variability in this plot differ from the plot in __(a)__?  
 Compare the two displays.  Keep in mind that SHUCK is a part of WHOLE. 
 Consider the location of the different age classes.
 
 __Answer:__
 
-> There is a strong correlation between whole and shuck, .976, as we saw in the descriptive statitics section which is intuitive as Whole is composed from Shuck. The overall
-relationship in both charts is strongly linear.
+> There is a strong correlation between whole and shuck, __.973__, as we also saw this behavior in the sample statitics section, which is intuitive as Whole Wieght is composed from Shuck Weight. 
+The overall relationship in both charts is strongly linear.
 <br/><br/>
-The biggest variability is noticeably larger bewteen Whole Weight and Volume than in Shuck Weight to Whole Weight. The data points in Whole | Volume tend to be more 
-uniformly distributed above and below the mean, where as Shuck Weight to Whole Weight has a strong positive skew mean the distribution would have a very large right tail,
+The variability is noticeably larger between Whole Weight and Volume than in Shuck Weight to Whole Weight. The data points in Shuck | Whole tend to be more 
+normally distributed above and below the mean and approximately symmetrical, where as Whole Weight to Volume has a strong positive skew mean the distribution would have a long right tail,
 where Whole to Volume would be a more symmetric normal shape, sans some obvious outliers.
 <br/><br/>
-Additionally, I colored the points by Age Class and the dominant outliers in both sets reside in A4 and A5. This could be a naturally occuring phenomenon as abalones age, they
-will have unique size characteristics based on their genetics.
-
------
-
-## 3.) Sex Characteristics
-
-### a.) 
-(2 points) 
-
-+ Use "mydata" to create a multi-figured plot with histograms, boxplots and Q-Q plots of RATIO differentiated by sex. 
-+ This can be done using *par(mfrow = c(3,3))* and base R or *grid.arrange()* and ggplot2.
-+ The first row would show the histograms, the second row the boxplots and the third row the Q-Q plots. 
-+ Be sure these displays are legible.  
-
-```{r Part_3a_hist}
-
-# I broke these 3 out into seperate R chuncks to give natural borders to the consecutive plots.
-
-# Also, facet wrap is probably better for this than grid.arrange()
-ggplot(mydata, aes(x = Ratio, fill = ..count..)) +
-	geom_histogram(bins = 15) +
-	facet_wrap(aes(Sex)) +
-    labs( main = "Sex ~ Ratio Distribution" ) +
-	theme(axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"))
-
-```
-
-
-```{r Part_3a_box}
-
-ggplot(mydata, aes(x = Sex, y = Ratio)) +
-	geom_boxplot(outlier.colour = "red", fill = "steelblue3", outlier.shape = 1)
-
-```
-
-
-```{r Part_3a_qq}
-
-ggplot(mydata, aes(sample = Ratio)) +
-	stat_qq(color = "steelblue4") +
-	stat_qq_line(lwd = .8, alpha = .8) +
-	facet_wrap(aes(Sex))
-
-```
-
-__Question (2 points):__ 
-
-> Compare the displays. How do the distributions compare to normality? Take into account the criteria discussed in the sync sessions to evaluate non-normality.
-
-__Answer:__
-
-> The Ratio variable is approximately normally distributed between the sexes of abalone. All three sexes have a slightly right-skew to their distributions, however,
-the majority of the data is clustered about the mean in a normal fashion.
+Additionally, I colored the points by Age Class and the dominant outliers in both sets are dominant in the A4 and A5 Age Class. This could be a naturally occuring phenomenon as 
+abalones age, they will have unique size characteristics based on their genetics.
 <br/><br/>
-The boxplot and QQ-plots do a good job of pointing out the outliers in the sample. The QQ for female is interesting as it follows basically a straight line until the
-presents of outliers start to show at around 1.75, then outliers begin to form frequently. Suprisingly, Infants have the most deviated distribution, having outliers
-in both positive and negative directions. This could be attributed to the older, A4 and A5 Class Infants, as one would expect a lower deviation in younger specimen.
+It is interesting to note that the maximum weight, whole (109.25) and shuck (51.25), in A1 confines this age classes into basically the lower quarter of both displays. The rest
+of the abalone in classes A2-A5 are distributed pretty randomly above these thresholds.
 
+```{r question2b_support}
 
-```{r question4_support}
+pretty_vector(sprintf("Whole ~ Shuck Correlation: %.3f", cor(mydata$Whole, mydata$Shuck)))
 
 q4a_1 <- ggplot(mydata, aes( x = Whole / Volume, fill = ..count..)) +
 	geom_histogram( bins = 20)
@@ -372,10 +360,74 @@ q4a_2 <- ggplot(mydata, aes(x = Shuck / Whole, fill = ..count..)) +
 
 grid.arrange(q4a_1, q4a_2, ncol = 2)
 
+pretty_kable(mydata[, .(Whole = max(Whole), Shuck = max(Shuck)), by = Class], title = "Max Weight by Age Class")
+
 ```
 
-### b.)
-(2 points) 
+-----
+
+## 3.) Sex Characteristics
+
+### a.) Normality
+__(2 points)__
+
++ Use "mydata" to create a multi-figured plot with histograms, boxplots and Q-Q plots of RATIO differentiated by sex. 
++ This can be done using *par(mfrow = c(3,3))* and base R or *grid.arrange()* and ggplot2.
++ The first row would show the histograms, the second row the boxplots and the third row the Q-Q plots. 
++ Be sure these displays are legible.  
+
+```{r Part_3a_hist, fig.height = 11}
+
+# Also, facet wrap is probably better for this than grid.arrange()
+pq3_1 <- ggplot(mydata, aes(x = Ratio, fill = ..count..)) +
+	geom_histogram(bins = 15) +
+	facet_wrap(aes(Sex)) +
+    labs( main = "Sex ~ Ratio Distribution" ) +
+	theme(axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"))
+
+pq3_2 <- ggplot(mydata, aes(x = Sex, y = Ratio)) +
+	geom_boxplot(outlier.colour = "red", fill = "steelblue3", outlier.shape = 1)
+
+pq3_3 <- ggplot(mydata, aes(sample = Ratio)) +
+	stat_qq(color = "steelblue3") +
+	stat_qq_line(lwd = .8, alpha = .8) +
+	facet_wrap(aes(Sex))
+
+grid.arrange(pq3_1, pq3_2, pq3_3, ncol = 1)
+
+```
+
+__Question (2 points):__ 
+
+> Compare the displays. How do the distributions compare to normality? Take into account the criteria discussed in the sync sessions to evaluate non-normality.
+
+__Answer:__
+
+> The Ratio variable is a well-behaved distribution between the sexes of abalone. All three sexes have a slightly right-skew to their distributions, and even though
+the majority of the data is clustered about the mean in a normal fashion, there are a considerable amount of outliers in these data.
+<br/><br/>
+The boxplot and QQ-plots do a good job of pointing out the outliers in the sample. The QQ for female is interesting as it follows basically a straight line until the
+presents of outliers start to show at around 1.75, then outliers begin to form frequently. Suprisingly, Infants have the most deviated distribution, having outliers
+in both positive and negative directions. This could be attributed to the older, A4 and A5 Class Infants, as one would expect a lower deviation in younger specimen.
+
+```{r sex_normality}
+
+sex.ratio <- mydata[, .(Sex, Ratio)]
+shapiro.dt <- sex.ratio[, sapply(.SD,shapiro.test), by = Sex][, .(Sex, w = V1, p = V2)]
+shapiro.dt[, Result := ifelse(p <= 0.05, "Reject Null", "Cannot Reject Null")]
+
+pretty_kable(shapiro.dt, "Shapiro-Wilk Normality Test for Normality, 0.05 level", dig = 5)
+
+rm(sex.ratio)
+rm(shapiro.dt)
+
+```
+
+> The Shapiro-Wilk test on the Ratio variable by Sex shows that we should reject the null hypothesis that these data came from a normal distribution, so
+the chance is small that these data came from a truly normally distribution.
+
+### b.) Outliers
+__(2 points)__
 
 + Use the boxplots to identify RATIO outliers (mild and extreme both) for each sex.
 + Present the abalones with these outlying RATIO values along with their associated variables in "mydata"
@@ -413,22 +465,23 @@ __Answer:__
 
 > The Ratio boxplot by Sex highlights the dominance of outliers in the Infant abalones. Almost half of the total mild outliers belong to the Infants, almost as much as
 male and female combined. Interestingly, the detailed display here is helpful in that none of the outliers are in the A4 or A5 class, which is suprising to me. The Infant outliers
-are 75% A1, which could be derived from the variability amoung different species of abalone Infants. Notably, both of the exreme outliers are in A1/A2 as well.
+are 75% A1, which could be derived from the variability amoung different species of abalone Infants. Notably, both of the exreme outliers are in A1/A2 as well; highlighting 
+the variability among younger abalone.
 <br/><br/>
 In the Male and Female samples we see that the mild outliers are concentrated in the A3 Age Class.
 
 -----
 
-## 4.) Size ~ Age
+## 4.) Growth Prediction
 
-### a.) 
+### a.) Size ~ Rings
 (3 points) 
 
 With "mydata," 
 
-+ display side-by-side boxplots for VOLUME and WHOLE, each differentiated by CLASS (Davies Section 14.3.2). 
-There should be five boxes for VOLUME and five for WHOLE. 
-+ Also, display side-by-side scatterplots:  VOLUME and WHOLE versus RINGS. 
++ display side-by-side boxplots for __VOLUME__ and __WHOLE__, each differentiated by CLASS (_Davies Section 14.3.2_). 
+There should be five boxes for __VOLUME__ and five for __WHOLE__. 
++ Also, display side-by-side scatterplots:  __VOLUME__ and __WHOLE__ versus __RINGS__. 
 
 _Present these four figures in one graphic:  the boxplots in one row and the scatterplots in a second row. Base R or ggplot2 may be used._
 
@@ -462,18 +515,18 @@ has an abundance of outliers in every regard. The A1 Age Class in particular is 
 The overall variablility seems to stabilize somewhat in A3 continuing linearly into A4 where the mean peaks, then a downward trend into A5, although the existance of so many
 outliers makes it difficult so see any clear patterns.
 <br/><br/>
-Color coding the scatter plot in 4B by Age Class helps us to see the clusting of Volume/Whole to Rings by Age Class. The variabliity in both Volume and Whole is evident, 
-as the only clear pattern one can disconcern is the relationship between Age Class and Rings.
+Color coding the scatter plot in __4b__ by Age Class helps us to see the clusting of Volume/Whole to Rings by Age Class. The variabliity in both Volume and Whole is evident, 
+as the only clear pattern one can disconcern is the relationship between Age Class and Rings, which is not particularly helpful given that _Age Class_ is a function of _Rings_.
 <br/><br/>
 The overall relationship to both Volume and Whole weight to Age Class is not strong, and I think they would both peform poorly as predictors of Age given the information as provided
 due to the abundance of outliers and non-linear relationship to age.
 
 -----
 
-## 5.) Size ~ Sex
+## 5.) Age Characteristics
 
-### a. )
-(2 points) 
+### a.) Tabular
+__(2 points) __
 
 + Use *aggregate()* with "mydata" to compute the mean values of VOLUME, SHUCK and RATIO for each combination of SEX and CLASS. 
 + Then, using *matrix()*, create matrices of the mean values. 
@@ -509,8 +562,8 @@ for (var in pivot.vars) {
 
 ```
 
-### b.)
-(3 points) 
+### b.) Graphical
+__(3 points)__
 
 Present three graphs. Each graph should include three lines, one for each sex. 
 
@@ -520,40 +573,45 @@ Present three graphs. Each graph should include three lines, one for each sex.
 
 _This may be done with the 'base R' *interaction.plot()* function or with ggplot2 using *grid.arrange()*._
 
-```{r Part_5b, fig.width = 9}
+```{r Part_5b, fig.width = 9, fig.height=11}
 
-ggplot(abalones.melted[variable == "Ratio"], aes(x = Class, y = value, group = Sex, color = Sex)) +
+q5_p1 <- ggplot(abalones.melted[variable == "Ratio"], aes(x = Class, y = value, group = Sex, color = Sex)) +
 	geom_point(size = 4) +
 	geom_line(lwd = 1.25) +
 	labs(title = "Mean Ratio per Class", y = "Ratio")
     
-ggplot(abalones.melted[variable == "Volume"], aes(x = Class, y = value, group = Sex, color = Sex)) +
+q5_p2 <- ggplot(abalones.melted[variable == "Volume"], aes(x = Class, y = value, group = Sex, color = Sex)) +
 	geom_point(size = 4) +
 	geom_line(lwd = 1.25) +
 	labs(title = "Mean Volume per Class", y = "Volume")
 
-ggplot(abalones.melted[variable == "Shuck"], aes(x = Class, y = value, group = Sex, color = Sex)) +
+q5_p3 <- ggplot(abalones.melted[variable == "Shuck"], aes(x = Class, y = value, group = Sex, color = Sex)) +
 	geom_point(size = 4) +
 	geom_line(lwd = 1.25) +
 	labs(title = "Mean Shuck per Class", y = "Shuck")
+
+grid.arrange(q5_p1, q5_p2, q5_p3, ncol = 1)
 
 ```
 
 __Question (2 points):__
 _What questions do these plots raise?  Consider aging and sex differences._
 
-> From the first plot of Ratio to Age Class, I find it interesting that between A1 and A2, we see an increase in both Male and Female, but a
+> From the first plot of __Ratio__ to Age Class, I find it interesting that between A1 and A2, we see an increase in both Male and Female, but a
 sharp decline in Infants. Perhaps this has something to do with reproduction in young abalone? The strong universal decent in Ratio after A2 is
 basically identical between all Sexes otherwise if you account for the Offset jump with Males and Females in A1-A2.
 <br/><br/>
-Looking at Volume, it is interesting that Males have the lowest increase over the interval from A1-A2 expecially relative to Females and Infants, 
+Looking at __Volume__, it is interesting that Males have the lowest increase over the interval from A1-A2 expecially relative to Females and Infants, 
 howevever, have the overall largest volume irrespective of Sex.
 <br/><br/>
-In looking at Shuck to Class, it is interesting to note the strong linear relationship between Shuck and Volume by Sex, at least until A5 when there is an expecially 
+In looking at __Shuck__ to Class, it is interesting to note the strong linear relationship between Shuck and Volume by Sex, at least until A5 when there is an expecially 
 steep decline in Shuck for both Males and Females. The two charts would essentially overlap if you laid them on top of each other for the range A1-A4. These could 
 possibly be canidates for predictors of each other, would have to explore further.
+<br/><br/>
+Additionally, the fact that the shuck weight lowers in A4-A5 while the Volume stays relatively the same suggests that perhaps the actual abalone begin to shrink in older
+age, given the fact that they stay inside the same shell throughout their life.
 
-### c.)
+### c.) Infant ~ Adult
 (3 points) 
 
 Present four boxplots using *par(mfrow = c(2, 2)* or *grid.arrange()*. 
@@ -565,7 +623,7 @@ Present four boxplots using *par(mfrow = c(2, 2)* or *grid.arrange()*.
 
 _If you wish to reorder the displays for presentation purposes or use ggplot2 go ahead._
 
-```{r Part_5c}
+```{r Part_5c, fig.width = 9, fig.height=11}
 
 base <- mydata[Rings < 16]
 
@@ -604,7 +662,25 @@ __Question (2 points):__
 
 _What do these displays suggest about abalone growth?  Also, compare the infant and adult displays.  What differences stand out?_
 
-> 
+> These displays suggest that abalones have a similar growth pattern throughout their life. Both classifications of abalone demonstrate a clear linear
+growth trend until they hit an inflection point, around ~10-12 rings, in which they start to decline in size by both volume and whole weight. This further suggests that as
+abalone age they either shrink, or perhaps a side-effect of harvesting where larger abalone are taken from the population leaving only smaller samples to develop
+the upper end of the ring range.
+<br/><br/>
+The infants have an interesting characteristic in that at ~12 rings, there is an extremely large cluster of abalone relative to every other ring
+point. Notably, there are almost no adults with fewer than 6 rings, which suggests that at around 6 rings many abalone become either male or female. That
+does not explain the clear persistence of infant abalone with 8-12 rings, which is about 66% of all infant abalones.
+<br/><br/>
+The clearest difference between infant and adult abalone is the variance in size amongst the two groups per ring count. Infant abalone with 7-9 rings have a large variance,
+the rest of the ring categories are tightly clustered around the mean. While adult abalone have wild variance at every ring count where there is any significant portion, i.e., 6 rings or more.
+
+__Reference__
+
+```{r}
+
+pretty_vector( sprintf("Infant abalone with between 6 and 12 rings : %.2f", sum(6 < infants$Rings & infants$Rings < 12) / count(infants) * 100 ))
+
+```
 
 -----
 
@@ -612,15 +688,29 @@ _What do these displays suggest about abalone growth?  Also, compare the infant 
 
 Please respond to each of the following questions (10 points total):
 
-### 1.)
+### 1.) Study Observations
 __(5 points)__
 
 _Based solely on these data, what are plausible statistical reasons that explain the failure of the original study?_
 _Consider to what extent physical measurements may be used for age prediction._
 
-***Answer: (Enter your answer here.)***
+> It is not surprising to me that the original study failed to produce an accurate predictor of age from physical measurements given the characteristics of the data explore in this assignment. Initial 
+inspection of the overall summary of the sample provided at the beginning of this study suggest we have a relatively “good” sample of data. There is not an abundance of outliners in any 
+metric, the sample is evenly distributed between age class and sex. The continuous variables all have well behaved distribution characteristics and the random sample from our initial population 
+conformed approximately to the overall dataset.
+<br/><br/>
+Abalone growth patterns as they relate to age class do not have an obvious relationship. As we saw in the “Growth Patterns” section in this study, we noted that abalone that have weight 
+over ~109.25 whole or ~51.25 shucked, are essentially randomly distributed above this area with no apparent commonality.
+<br/><br/>
+Taking a deeper look at abalones by their physical age classifier, rings, we also noted similar behavior. Abalone physical metrics like volume and whole weight by ring size seems to be 
+stochastically distributed. We see abalones with less than 6 rings, tend to weigh less than ~100 grams, and after that we see that abalones weighing over ~100 grams can have anywhere 
+between 7 and 25 rings with no apparent relationship. This behavior is similar with the total volume of a given abalone.
+<br/><br/>
+Sex is another interesting characteristic in that while infant and adult abalone have some measure of distinguishability, particularly at younger age classifications, as abalone age the 
+overall variability in their size continues to increase. We can see a relatively clear classification of abalone infants and adults when they have under 6 rings, however, 
+after that point it becomes difficult to distinguish based on any physical measurement.
 
-### 2.) 
+### 2.) Sample Statistics
 __(3 points)__
 
 _Do not refer to the abalone data or study._
@@ -628,9 +718,18 @@ _Do not refer to the abalone data or study._
 If you were presented with an overall histogram and summary statistics from a sample of some population or phenomenon and no other information, 
 what questions might you ask before accepting them as representative of the sampled population or phenomenon?
 
-***Answer: (Enter your answer here.)***
+__Answer__:
 
-### 3.)
+> I would ask: 
+
++ What evidence do you have and what associated test have been performed to prove that the sample is representative of the overall population?
++ How did they derive this sample? 
++ What methodologies did your study implement as part of sample collection? 
++ What measures did you take to ensure that there is no inherit bias in the collected sample?
++ Has this sample been reproduced successfully outside your initial conditions?
++ What are some potential counfounding variables that attribute to these statistics? 
+
+### 3.) Observational Studies
 __(2 points)__
 
 _Do not refer to the abalone data or study._
@@ -639,4 +738,12 @@ What do you see as difficulties analyzing data derived from observational studie
 Can causality be determined?
 What might be learned from such studies?
 
-***Answer: (Enter your answer here.)***
+__Answer:__
+
+> From observational studies it is difficult to know how well the sample truly represents the larger population. This kind of study can raise many questions that the data at hand cannot 
+adequately answer. We can run several sets of summary statistics on our sample, however, we are unable to know if the sample was collected in a way that bias the data, thereby 
+invaliding our observational study.
+<br/><br/>
+For example, the entire data set could have been collected under the influence of a confounding factor, thereby tilting our conclusions. There is also a factor of random 
+error in every study, and it is difficult, if not impossible, to account for such occurrences; we can only execute the study to the mathematical rigors of our discipline and hope they we 
+catch such errors through validation and peer review.

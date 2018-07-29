@@ -26,6 +26,5 @@ p2 <- ggplot(future_data, aes(X, fill = ..count..)) +
        theme(plot.title = element_text(face = "bold", size = 20, colour = "steelblue4", hjust = 0.5),
              axis.text.x = element_blank(),
              axis.text.y = element_blank())
-p2
 
 grid.arrange(p1, p2, ncol = 1 )
