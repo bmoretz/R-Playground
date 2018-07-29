@@ -1,5 +1,6 @@
 ﻿---
 title: 'Week 5-6 Reading'
+author: Moretz, Brandon
 output:
   html_document:
     toc: true
@@ -54,11 +55,13 @@ normal_z <- function(pct, mean = 0, sd = 1) {
 
 If the sample size is decreased, and the Type I error rate is unchanged, then the Type II error rate will increase.
 
-```{r echo = T}
+__Answer__
 
-# This is addressed in the sync session, page #2.
+> True.
+<br/><br/>
+B varies inversely with the sample size. As the sample gets smaller, the chance of type II error increases.
 
-```
+_Business Statistics, p.275._
 
 ## 2.)
 
@@ -89,7 +92,7 @@ pHat <- x / n
 moe <- zValue * sqrt((pHat * ((1 - pHat) / n)))
 ciLower <- pHat - moe
 ciUpper <- pHat + moe
-round(c(ciLower, pHat, ciUpper), 3)
+pretty_vector(round(c(ciLower, pHat, ciUpper), 3))
 
 ```
 
@@ -105,9 +108,16 @@ Margin of error: 0.012; confidence level: 98%; p and q unknown
 
 ## 5.)
 
-```{r echo = T}
+Which of the following statements is not true?
 
-```
++ a.) The sampling distribution of a statistic is the probability distribution for that statistic based on all possible random samples from a population.
++ b.) A symmetric, heavy-tailed distribution cannot be detected using a boxplot and QQ chart.
++ c.) The t-statistic distribution is based upon the assumption of a random sample from a normal population.
++ d.) If the sample size is increased and the same test statistic and alpha level are used, the power of the test will increase.
+
+__Answer:__
+
+Choice __b.)__ is false. The QQ plot is used to determine wheather the data is normally distributed.
 
 ## 6.)
 
@@ -116,6 +126,12 @@ Use the information to find the minimum sample size required to estimate an unkn
 Margin of error: $135, confidence level: 95%, σ = $500.
 
 ```{r echo = T}
+
+moe <- 135
+zValue <- qnorm(1 - 0.05 / 2)
+sigma <- 500
+n <- ((zValue ** 2 * sigma ** 2) / (moe ** 2))
+pretty_vector(n)
 
 ```
 
@@ -132,17 +148,17 @@ __Round to two decimal places.__
 
 ```{r echo = T}
 
-ci.pct = .95
-
 n <- 20
 mu <- 13.8
 std <- 3.9
+conf.level = 0.95
 
-z <- normal_z(ci.pct)
-
-margin.of.error <- z * std / sqrt(n)
-
-c(mu - margin.of.error, mu + margin.of.error)
+df <- n - 1
+chilower <- qchisq((1 - conf.level) / 2, df, lower.tail = TRUE)
+chiupper <- qchisq((1 - conf.level) / 2, df, lower.tail = FALSE)
+v <- std ** 2
+conf.int <- c(df * v / chiupper, df * v / chilower)
+pretty_vector(round(conf.int, 2))
 
 ```
 
@@ -166,17 +182,17 @@ ci.h <- 67.3
 margin.of.error <- ( ci.h - ci.l ) / 2
 
 mu_1 <- ci.l + margin.of.error
-mu_2 <- ci.h + margin.of.error
+mu_2 <- ci.h - margin.of.error
 
-stopifnot(mu1 == mu2)
+stopifnot(mu_1 == mu_2)
 
-mu <- mu1
+mu <- mu_1
 
 std <- margin.of.error / normal_z(.99) * sqrt(n)
 
 moe <- normal_z(.95) * std / sqrt(n)
 
-round( c(mu - moe, mu + moe), 1 )
+pretty_vector(c(mu - moe, mu + moe))
 
 ```
 
@@ -192,6 +208,7 @@ Which of the following statements is __not true__ for sampling distributions?
 
 > __Answer:__
 
+__None of the above.__
 
 ## 10.)
 
@@ -200,5 +217,6 @@ Which of the following statements is __not true__ for sampling distributions?
 Based on the p-value estimated, determine if the null hypothesis should be rejected at a 0.1 significance level.  Select the correct answer if the test statistic in a two-tailed test is z= -1.63.  Follow the procedure shown in Business Statistics.
 
 ```{r echo = T}
+
 
 ```

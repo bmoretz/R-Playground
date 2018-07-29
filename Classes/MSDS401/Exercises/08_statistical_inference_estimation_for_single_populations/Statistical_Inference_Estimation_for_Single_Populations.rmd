@@ -9,7 +9,7 @@ output:
     df_print: paged
 ---
 
-```{r knitr-setup, include = FALSE}
+```{r knitr-setup, include = F}
 library(knitr)
 
 knitr::opts_chunk$set(eval = TRUE)
@@ -29,6 +29,11 @@ library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
 library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
 library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(GGally, quietly = TRUE, warn.conflicts = FALSE)
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(RColorBrewer, quietly = TRUE, warn.conflicts = FALSE)
+library(moments, quietly = TRUE, warn.conflicts = FALSE)
 
 theme_set(theme_light())
 
@@ -39,9 +44,33 @@ theme_update(plot.title = element_text(hjust = 0.5),
 			 axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
 			 legend.position = "top", legend.title = element_blank())
 
+pretty_kable <- function(data, title, dig = 2) {
+	kable(data, caption = title, digits = dig, big.mark = "'") %>%
+		kable_styling(bootstrap_options = c("striped", "hover"))
+}
+
+pretty_vector <- function(vec, label = "") {
+	pander::pander(vec)
+}
+
+# simple replacement for read.csv that returns a data.table.
+loadDataFile <- function(file_name) {
+	data.raw <- fread(paste0(data.path, file_name),
+	header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
+
+	data <- setNames(data.raw, tools::toTitleCase(tolower(names(data.raw))))
+
+	return(data)
+}
+
+#base.dir <- "E:/GitHub/R-Playground"
+base.dir <- "C:/Projects/R/Playground"
+
+data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/08_statistical_inference_estimation_for_single_populations/data/")
+
 ```
 
-```{r utility}
+```{r utility, include = F}
 
 normal_z <- function(pct, mean = 0, sd = 1) {
     qnorm( 1 - (( 1 - pct ) / 2), mean, sd, lower.tail = T)
@@ -56,7 +85,7 @@ normal_z <- function(pct, mean = 0, sd = 1) {
 > Assume a random sample of size 100 is drawn from a normal distribution with variance 1. The average
 value of the sample is 50. Find a 95% confidence interval for the mean.
 
-```{r echo=T}
+```{r ex_1, echo=T}
 
 n <- 100 # sample size
 mean <- 50 # mean of sample
@@ -64,7 +93,8 @@ sd <- sqrt(1) # standard deviation of population
 margin.of.error <- normal_z(.95) * sd / sqrt(n)
 
 conf.int <- c(mean - margin.of.error, mean + margin.of.error)
-conf.int
+
+pretty_vector( conf.int )
 
 ```
 
@@ -75,12 +105,12 @@ to estimate the unknown mean with a 95% confidence interval of total width 8 uni
 sample size required.
 
 
-```{r echo=T}
+```{r ex_2, echo=T}
 
 z_score <- qnorm(0.025, mean = 0, sd = 1, lower.tail = F)
 sample_size <- sample_size <- ( z_score * 100 / 4 ) ** 2
 
-round(sample_size)
+pretty_vector(sample_size)
 
 ```
 
@@ -118,11 +148,11 @@ interval for the proportion expressing approval.
 prop_test_object <- prop.test(x = 1600 * 0.6, n = 1600,
     alternative = "two.sided", conf.level = 0.95)
 
-print(str(prop_test_object))
+str(prop_test_object)
 
 # Notice that this object is a list and the confidence interval lower
 # and uppler limits themselves can be extracted from the object as
-as.numeric(prop_test_object$conf.int)
+pretty_vector( as.numeric(prop_test_object$conf.int))
 
 ```
 
@@ -151,14 +181,36 @@ round(sample_size)
 Researchers for Consumer Reports analyzed three types of hot dog: beef, poultry, and meat (mostly pork
 and beef, but up to 15% poultry meat). Fifty four observations are reported.
 
+
+```{r data_hotdog}
+
+hotdogs <- loadDataFile("hot_dogs.csv")
+
+```
+
 ## 1.)
 
 > Create boxplots and find 95% confidence intervals for the mean amount of calories in each Type of hot
 dog: beef, meat and poultry. Construct 99% one-sided lower confidence intervals for the mean amount
 of calories in each Type of hot dog: beef, meat and poultry.
 
+```{r data_1, echo=T}
 
-```{r echo=T}
+ggplot(hotdogs, aes(x = Type, y = Calories, group = Type)) +
+	geom_boxplot() +
+	labs(title = "Calories, by hotdog Type")
+
+beef <- hotdogs[Type == "Beef"]
+meat <- hotdogs[Type == "Meat"]
+poultry <- hotdogs[Type == "Poultry"]
+
+with(beef, t.test(Calories)$conf.int)
+with(meat, t.test(Calories)$conf.int)
+with(poultry, t.test(Calories)$conf.int)
+
+t.test(beef$Calories, alternative = "less", conf.int = 0.99)
+t.test(meat$Calories, alternative = "less", conf.int = 0.99)
+t.test(poultry$Calories, alternative = "less", conf.int = 0.99)
 
 ```
 
@@ -168,6 +220,18 @@ of calories in each Type of hot dog: beef, meat and poultry.
 beef, meat and poultry.
 
 
-```{r echo=T}
+```{r data_2, echo=T}
+
+var.conf.int = function(x, conf.level = 0.95) {
+	df <- length(x) - 1
+	chilower <- qchisq((1 - conf.level) / 2, df, lower.tail = TRUE)
+	chiupper <- qchisq((1 - conf.level) / 2, df, lower.tail = FALSE)
+	v <- var(x)
+	c(df * v / chiupper, df * v / chilower)
+}
+
+pretty_vector(with(beef, var.conf.int(Calories)))
+pretty_vector(with(meat, var.conf.int(Calories)))
+pretty_vector(with(poultry, var.conf.int(Calories)))
 
 ```
