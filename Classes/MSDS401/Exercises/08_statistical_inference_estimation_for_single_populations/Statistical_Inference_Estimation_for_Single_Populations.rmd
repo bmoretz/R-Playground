@@ -53,6 +53,11 @@ pretty_vector <- function(vec, label = "") {
 	pander::pander(vec)
 }
 
+base.dir <- "E:/GitHub/R-Playground"
+#base.dir <- "C:/Projects/R/Playground"
+
+data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/08_statistical_inference_estimation_for_single_populations/data/")
+
 # simple replacement for read.csv that returns a data.table.
 loadDataFile <- function(file_name) {
 	data.raw <- fread(paste0(data.path, file_name),
@@ -62,11 +67,6 @@ loadDataFile <- function(file_name) {
 
 	return(data)
 }
-
-#base.dir <- "E:/GitHub/R-Playground"
-base.dir <- "C:/Projects/R/Playground"
-
-data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/08_statistical_inference_estimation_for_single_populations/data/")
 
 ```
 

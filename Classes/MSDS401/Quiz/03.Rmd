@@ -35,6 +35,10 @@ theme_update(plot.title = element_text(hjust = 0.5),
 			 axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
 			 legend.position = "top", legend.title = element_blank())
 
+pretty_vector <- function(vec, label = "") {
+  pander::pander(vec)
+}
+
 ```
 
 ```{r utility}

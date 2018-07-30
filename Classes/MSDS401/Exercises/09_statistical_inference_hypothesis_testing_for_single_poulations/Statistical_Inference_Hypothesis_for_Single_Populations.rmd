@@ -54,20 +54,20 @@ pretty_vector <- function(vec, label = "") {
 	pander::pander(vec)
 }
 
+base.dir <- "E:/GitHub/R-Playground"
+#base.dir <- "C:/Projects/R/Playground"
+
+data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/09_statistical_inference_hypothesis_testing_for_single_poulations/data/")
+
 # simple replacement for read.csv that returns a data.table.
 loadDataFile <- function(file_name) {
 	data.raw <- fread(paste0(data.path, file_name),
-	header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
+	    header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
 
 	data <- setNames(data.raw, tools::toTitleCase(tolower(names(data.raw))))
 
 	return(data)
 }
-
-#base.dir <- "E:/GitHub/R-Playground"
-base.dir <- "C:/Projects/R/Playground"
-
-data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/09_statistical_inference_hypothesis_testing_for_single_poulations/data/")
 
 ```
 
@@ -85,43 +85,69 @@ Variable Names:
 + 2. Calories = Calories per hot dog
 + 3. Sodium = Milligrams of sodium per hot dog
 
-## 1.)
+## 1.) Hotdog Calories Mean
 
 Use hot_dogs.csv data and hypothesis tests to determine which type of hot dog has average calories
 less than 140 with 95% confidence. Present boxplots of calories by type of hot dog.
 
 ```{r question1}
 
+test.mu <- 140
+
 ggplot(hotdogs, aes(x = Type, y = Calories)) +
 	geom_boxplot() +
-    geom_abline( slope = 0, intercept = 140, lwd = 1, color = "firebrick3", linetype = 11) +
+    geom_abline( slope = 0, intercept = test.mu, lwd = 1, color = "firebrick3", linetype = 11) +
 	labs(title = "Hotdog Calories, by Type")
 
-beef = hotdogs[Type == "Beef"]
-meat = hotdogs[Type == "Meat"]
-poultry = hotdogs[Type == "Poultry"]
+test.cal <- hotdogs[, .(Calories, Type)][, lapply(.SD, FUN = function(x) {
+  t.test(Calories, mu = test.mu, alternative = "less")$conf.int[2] < test.mu
+}), by = list(Type)]
 
-with(beef, t.test(Calories, mu = 140, alternative = "less")$conf.int[2] < 140)
-with(meat, t.test(Calories, mu = 140, alternative = "less")$conf.int[2] < 140)
-with(poultry, t.test(Calories, mu = 140, alternative = "less")$conf.int[2] < 140)
+pretty_kable(test.cal, title = "T-test for Calories < 140, by type")
 
 ```
 
-## 2.)
+## 2.) Hotdog Sodium Mean
 
 Using hot_dogs.csv data and hypothesis tests at the 95% confidence level, determine which type of hot
 dog has an average Sodium level different from 425 milligrams.
 
 ```{r question2}
 
+test.mu <- 425
+
+ggplot(hotdogs, aes(x = Type, y = Sodium)) +
+   geom_boxplot() +
+    geom_abline(slope = 0, intercept = test.mu, lwd = 1, color = "firebrick3", linetype = 11) +
+    labs(title = "Hotdog Calories, by Type")
+
+test.cal <- hotdogs[, .(Sodium, Type)][, lapply(.SD, FUN = function(x) {
+  t.test(Sodium, mu = test.mu, alternative = "two.sided", var.equal = T)$conf.int[2] < test.mu
+}), by = list(Type)]
+
+pretty_kable(test.cal, title = "T-test for Sodium == 425, by type")
+
 ```
 
-## 3.)
+## 3.) Hotdog Sodium Variance
 
 Using hot_dogs.csv data and hypothesis tests, determine if the variance in Sodium values for beef hot
 dogs is different from 6000 with 95% confidence.
 
 ```{r question3}
+
+var.conf.int = function(x, conf.level = 0.95) {
+  df <- length(x) - 1
+  chilower <- qchisq((1 - conf.level) / 2, df, lower.tail = TRUE)
+  chiupper <- qchisq((1 - conf.level) / 2, df, lower.tail = FALSE)
+  v <- var(x)
+  data.frame( Lower = df * v / chiupper, Upper = df * v / chilower)
+}
+
+sodium.var <- hotdogs[, .(Sodium, Type)][, sapply(.SD, var.conf.int), by = Type][,
+   .(Type, Lower = V1, Upper = V2)]
+
+sodium.var[ Type == "beef" & (6000 < Lower) || (6000 > Upper)]
 
 ```
 
@@ -133,6 +159,29 @@ Test the hypothesis that the true mean is 56, and also test the hypothesis the t
 p-values and comment on the results.
 
 ```{r question4}
+
+samp.mean <- 50 # sample mean
+test.mean1 <- 56 # mean value to test
+test.mean2 <- 40 # alternate mean value to test
+samp.sd <- 2 # sample standard deviation
+
+n <- 100 # sample size
+t <- (samp.mean - test.mean1) / (samp.sd / sqrt(n)) # test statistic
+t #[1] -30
+
+## [1] -30
+p.value <- 2 * pt(-abs(t), df = n - 1) # we use -abs(t) because pt()
+# returns the probability that
+# the actual value is less than the
+# supplied t
+p.value # [1] 1.70085e-51
+## [1] 1.70085e-51
+# And, for test.mean2 (40)
+t <- (samp.mean - test.mean2) / (samp.sd / sqrt(n)) # test statistic
+t #[1] 50
+## [1] 50
+p.value <- 2 * pt(-abs(t), df = n - 1)
+p.value # [1] 4.595366e-72
 
 ```
 
