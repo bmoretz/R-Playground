@@ -92,6 +92,19 @@ less than 140 with 95% confidence. Present boxplots of calories by type of hot d
 
 ```{r question1}
 
+ggplot(hotdogs, aes(x = Type, y = Calories)) +
+	geom_boxplot() +
+    geom_abline( slope = 0, intercept = 140, lwd = 1, color = "firebrick3", linetype = 11) +
+	labs(title = "Hotdog Calories, by Type")
+
+beef = hotdogs[Type == "Beef"]
+meat = hotdogs[Type == "Meat"]
+poultry = hotdogs[Type == "Poultry"]
+
+with(beef, t.test(Calories, mu = 140, alternative = "less")$conf.int[2] < 140)
+with(meat, t.test(Calories, mu = 140, alternative = "less")$conf.int[2] < 140)
+with(poultry, t.test(Calories, mu = 140, alternative = "less")$conf.int[2] < 140)
+
 ```
 
 ## 2.)
