@@ -55,8 +55,8 @@ pretty_vector <- function(vec, label = "") {
 
 __(50 points total)__
 
-## 1.)
- 
+## 1.) Normality 
+
 > Skewness and kurtosis statistics are used to assess normality or lack thereof. These statistics are affected by distributional shape and sample size. 
 This exercise will investigate how variable the skewness and kurtosis statistics are when sampling from a standard normal distribution. 
 
@@ -85,7 +85,27 @@ sample160 <-generate(160)
 
 ```
 
-### a.)
+```{r q1_utility}
+
+# Utility function for part a and b.
+
+getValueHist <- function(data, desc, cap) {
+
+	lower_q <- quantile(data$Value, 0.025)
+	upper_q <- quantile(data$Value, 0.975)
+
+	ggplot(data, aes(Value, fill = ..count..)) +
+		geom_histogram(bins = 15) +
+		geom_vline(xintercept = lower_q, linetype = 11, color = "firebrick3") +
+		geom_vline(xintercept = upper_q, linetype = 11, color = "firebrick3") +
+		geom_rug(aes(x = Value), color = "firebrick", inherit.aes = FALSE) +
+		labs(title = paste("Histogram of", desc), caption = cap) +
+		theme(axis.text.x = element_text(size = 8))
+}
+
+```
+
+### a.) Skewness
 __(4 points)__
 
 + In the following code 'chunk,' you will need to add code passing each 1000 x *n* matrix to an instance of *apply()*. 
@@ -109,20 +129,6 @@ getSkewness <- function(x) {
 	stopifnot(skewness(x[1,]) == result[1])
 
     data.table( Value = result )
-}
-
-getValueHist <- function(data, desc, cap ) {
-
-	lower_q <- quantile(data$Value, 0.025)
-	upper_q <- quantile(data$Value, 0.975)
-
-	ggplot(data, aes(Value, fill = ..count..)) +
-		geom_histogram(bins = 15) +
-		geom_vline(xintercept = lower_q, linetype = 11, color = "firebrick3") +
-		geom_vline(xintercept = upper_q, linetype = 11, color = "firebrick3") +
-		geom_rug(aes(x = Value), color = "firebrick", inherit.aes = FALSE) +
-	    labs(title = paste("Histogram of", desc), caption = cap) +
-        theme(axis.text.x = element_text(size = 8))
 }
 
 theoretical_sd <- function(n) {
@@ -157,7 +163,7 @@ pretty_kable(results, "Standard Deviations or Skewness")
 
 ```
 
-### b.)
+### b.) Kurtosis
 __(4 points)__ 
 
 Follow the steps outlined in __(1)(a)__ above for kurtosis. Kurtosis for a standard normal distribution is 3.0 using the "moments" package *kurtosis()* function. 
@@ -209,7 +215,7 @@ pretty_kable(results, "Standard Deviations of Kurtosis")
 
 ```
 
-### c.)
+### c.) Observations
 __(2 points)__
 
 _Evaluate the results you have obtained._
@@ -217,7 +223,10 @@ _Evaluate the results you have obtained._
 What do you observe regarding the convergence of the sampling distributions in terms of their shapes as a function of sample size, and accuracy in comparison to the 
 "true"" skewness value of 0.0 and kurtosis value of 3.0.
 
-***Answer: (Enter your answer here.)***
+__Answer:__
+
+As the sample size increases, we see the Centeral Limit Therom take hold and the skewness / kurtosis of the distributions converge closer to the 
+values of the normal distribution, 0 and 3 respectively.
 
 -----
 
@@ -227,20 +236,61 @@ This problem requires quartile calculations using random samples of different si
 are (-0.6745, 0.0 and +0.6745), obtainable by *qnorm(c(0.25, 0.5, 0.75), mean = 0, sd = 1, lower.tail = TRUE)*.  This is illustrated below.
 
 ```{r standardNormalQuartiles}
+
 qnorm(c(0.25, 0.5, 0.75), mean = 0, sd = 1, lower.tail = TRUE)
 
 ```
 
 ### a.)
 __(4 points)__
-Use *set.seed(127)* and *rnorm(n, mean = 0, sd = 1)* with *n* = 25, *n* = 50, *n* = 100 and draw three random samples. Reset *set.seed(127)* prior to drawing each of the three samples. For each sample, calculate the first, second and third quartile using *quantile()* specifying "type = 2" (Business Statistics) and "type = 7" (R default). Generate the quartiles use each method. Display the results in a table for comparison purposes. Take note of the results for the first and third quartile in particular.   
+
++ Use *set.seed(127)* and *rnorm(n, mean = 0, sd = 1)* with *n* = 25, *n* = 50, *n* = 100 and draw three random samples. 
++ Reset *set.seed(127)* prior to drawing each of the three samples.
++ For each sample, calculate the first, second and third quartile using *quantile()* specifying "type = 2" (Business Statistics) and "type = 7" (R default). 
++ Generate the quartiles use each method. 
+
+Display the results in a table for comparison purposes. 
+
+_Take note of the results for the first and third quartile in particular._
 
 ```{r ecp1}
 # Add your set.seed(), rnorm() and quantile() code to this code 'chunk'.
 # Use set.seed(127) prior to drawing a random sample each time.
 
-set.seed(127)
+as.numeric.factor <- function(x) { as.numeric(levels(x))[x] }
 
+get_sample <- function(n) {
+	set.seed(127)
+	rnorm(n, 0, 1)
+}
+
+S_25 <- get_sample(25)
+S_50 <- get_sample(50)
+S_100 <- get_sample(100)
+
+convert_to_numeric <- function(tbl) {
+	tbl[, 3] <- as.numeric.factor(tbl[, 3])
+	tbl[, 4] <- as.numeric.factor(tbl[, 4])
+	tbl[, 5] <- as.numeric.factor(tbl[, 5])
+	tbl[, 6] <- as.numeric.factor(tbl[, 6])
+	tbl[, 7] <- as.numeric.factor(tbl[, 7])
+
+    tbl
+}
+
+get_quantiles <- function(x) {
+	m1 <- as.data.frame(t(c(size = length(x), type = "BS", quantile(x, type = 2))))
+	m1 <- convert_to_numeric(m1)
+
+    m2 <- as.data.frame(t(c(size = length(x), type = "R", quantile(x, type = 7))))
+	m2 <- convert_to_numeric(m2)
+
+    as.data.table( rbind(m1, m2) )
+}
+
+q2.a <- rbind(get_quantiles(S_25), get_quantiles(S_50), get_quantiles(S_100))
+
+pretty_kable(q2.a, "Sample Quantiles", 5)
 
 ```
 
@@ -291,7 +341,7 @@ Comment. What do these displays indicate about convergence of quartile estimates
 
 -----
 
-### 3.)
+## 3.)
 
 Bootstrapping will be used to estimate confidence intervals for the variance of a non-normal distribution. Earthquake magnitude data will be used. 
 Results will be compared to confidence intervals constructed using the traditional chi-square method that assumes normality. The earthquake magnitude data are 
