@@ -230,7 +230,7 @@ values of the normal distribution, 0 and 3 respectively.
 
 -----
 
-## 2.)
+## 2.) Quartiles 
 
 This problem requires quartile calculations using random samples of different sizes from the standard normal distribution. The quartiles for the standard normal distribution 
 are (-0.6745, 0.0 and +0.6745), obtainable by *qnorm(c(0.25, 0.5, 0.75), mean = 0, sd = 1, lower.tail = TRUE)*.  This is illustrated below.
