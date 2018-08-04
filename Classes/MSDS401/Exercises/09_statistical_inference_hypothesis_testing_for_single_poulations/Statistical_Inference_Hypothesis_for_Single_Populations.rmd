@@ -54,8 +54,8 @@ pretty_vector <- function(vec, label = "") {
 	pander::pander(vec)
 }
 
-base.dir <- "E:/GitHub/R-Playground"
-#base.dir <- "C:/Projects/R/Playground"
+#base.dir <- "E:/GitHub/R-Playground"
+base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/09_statistical_inference_hypothesis_testing_for_single_poulations/data/")
 
@@ -174,17 +174,10 @@ t #[1] -30
 ## [1] -30
 p.value <- 2 * pt(-abs(t), df = n - 1) # we use -abs(t) because pt()
 
-# returns the probability that
-# the actual value is less than the
-# supplied t
 p.value # [1] 1.70085e-51
 
-## [1] 1.70085e-51
-# And, for test.mean2 (40)
-
 t <- (samp.mean - test.mean2) / (samp.sd / sqrt(n)) # test statistic
-t #[1] 50
-## [1] 50
+t 
 
 p.value <- 2 * pt(-abs(t), df = n - 1)
 p.value # [1] 4.595366e-72

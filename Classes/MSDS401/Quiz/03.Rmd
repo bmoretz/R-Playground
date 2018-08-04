@@ -63,7 +63,8 @@ __Answer__
 
 > True.
 <br/><br/>
-B varies inversely with the sample size. As the sample gets smaller, the chance of type II error increases.
+β varies inversley with sample size and α varies directly with sample size (as sample size increases, 
+β decreases, α increases, power increases).
 
 _Business Statistics, p.275._
 
@@ -71,11 +72,14 @@ _Business Statistics, p.275._
 
 + Assume the population has a normal distribution and the number of observations in a random sample is greater than fifty.
 
-If a z test is used to test a null hypothesis about the population mean versus the alternative that the true mean is greater than that specified by the null hypothesis, what is the critical value for a one-tailed test?  
+If a z test is used to test a null hypothesis about the population mean versus the alternative that the true mean is greater than 
+that specified by the null hypothesis, what is the critical value for a one-tailed test?  
 
 _Assume the type one-error rate is 0.05._
 
 ```{r echo = T}
+
+pretty_vector( qnorm(.95), 3 )
 
 ```
 
@@ -107,6 +111,12 @@ Use the given data to find the sample size required to estimate the population p
 Margin of error: 0.012; confidence level: 98%; p and q unknown
 
 ```{r echo = T}
+
+z <- qnorm( 1 - ( 1 - 0.98) / 2)
+moe <- 0.012
+n = .25 * ( z / moe ) ** 2
+
+pretty_vector(n)
 
 ```
 
@@ -218,9 +228,23 @@ __None of the above.__
 
 + Assume normality and use the information given to find the p-value.
 
-Based on the p-value estimated, determine if the null hypothesis should be rejected at a 0.1 significance level.  Select the correct answer if the test statistic in a two-tailed test is z= -1.63.  Follow the procedure shown in Business Statistics.
+Based on the p-value estimated, determine if the null hypothesis should be rejected at a 0.1 significance level.  Select the correct answer if the 
+test statistic in a two-tailed test is z= -1.63.  
+
+Follow the procedure shown in Business Statistics.
+
+__Business Statistics p.279__
+
+When conducting two-tailed tests, recall that we  split alpha to determine the critical value of the test statistic. For a
+two-tailed test, the p-value can be compared to α / 2 to reach a statistical conclusion.
+
+If the p-value is that than α/2, the decision is to reject the null hypothesis.
 
 ```{r echo = T}
 
+p <- pnorm(-1.63)
+sig <- .1 / 2 # must divide by 2 in order to perform the two-tailed test.
+pretty_vector( p )
+pretty_vector(ifelse(p < ( 0.1 / 2 ), "Reject the Null", "Fail to Reject the Null"))
 
 ```
