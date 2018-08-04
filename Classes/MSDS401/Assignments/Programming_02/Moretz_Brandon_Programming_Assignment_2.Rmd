@@ -88,24 +88,79 @@ sample160 <-generate(160)
 ### a.)
 __(4 points)__
 
-In the following code 'chunk,' you will need to add code passing each 1000 x *n* matrix to an instance of *apply()*. Your matrices will be passed to *apply()* as X. 
-You must specify the appropriate MARGIN and FUN to have skewness calculated for each row. The documentation page for *apply()* describes both arguments and their possible values. 
++ In the following code 'chunk,' you will need to add code passing each 1000 x *n* matrix to an instance of *apply()*. 
++ Your matrices will be passed to *apply()* as X. 
++ You must specify the appropriate MARGIN and FUN to have skewness calculated for each row. 
++ The documentation page for *apply()* describes both arguments and their possible values.
+
 You will present the skewness results for n = 10, 40 and 160 as histograms, determine the 2.5% (0.025) and 97.5% (0.975) quantiles using *quantile()*, and display these quantiles on the histograms.   
 
-Then, use the function *sd()* to calculate the sample standard deviation for each of the three vectors of skewnesses. Additionally, the theoretical formula for the standard deviation of skewness 
-based on a random sample from a normal distribution is ```sqrt(6 * (n - 2) / ((n + 1 ) * (n + 3)))```. Use this formula and compare to the sample standard deviation values. Show both sets of 
-results side by side in a summary table.
++ Then, use the function *sd()* to calculate the sample standard deviation for each of the three vectors of skewnesses.
++ Additionally, the theoretical formula for the standard deviation of skewness based on a random sample from a normal distribution is ```sqrt(6 * (n - 2) / ((n + 1 ) * (n + 3)))```. 
++ Use this formula and compare to the sample standard deviation values. Show both sets of results side by side in a summary table.
 
 Load the "moments" package which supplies *skewness()* and *kurtosis()* functions.
 
 ```{r ecp_skewness}
 
+getSkewness <- function(x) { 
+    result <- apply(x, MARGIN = 1, FUN = skewness)
+
+	stopifnot(skewness(x[1,]) == result[1])
+
+    data.table( Value = result )
+}
+
+getValueHist <- function(data, desc, cap ) {
+
+	lower_q <- quantile(data$Value, 0.025)
+	upper_q <- quantile(data$Value, 0.975)
+
+	ggplot(data, aes(Value, fill = ..count..)) +
+		geom_histogram(bins = 15) +
+		geom_vline(xintercept = lower_q, linetype = 11, color = "firebrick3") +
+		geom_vline(xintercept = upper_q, linetype = 11, color = "firebrick3") +
+		geom_rug(aes(x = Value), color = "firebrick", inherit.aes = FALSE) +
+	    labs(title = paste("Histogram of", desc), caption = cap) +
+        theme(axis.text.x = element_text(size = 8))
+}
+
+theoretical_sd <- function(n) {
+	sqrt(6 * (n - 2) / ((n + 1) * (n + 3)))
+}
+
+q1a_cap <- "MSDS 401: R Programming 2, Q1.a"
+
+# Skew10
+skew10 <- getSkewness(sample10)
+skew10.sd <- sd(skew10$Value)
+skew10.tsd <- theoretical_sd(10)
+getValueHist(skew10, "Skew10", q1a_cap)
+
+# Skew40
+skew40 <- getSkewness(sample40)
+skew40.sd <- sd(skew40$Value)
+skew40.tsd <- theoretical_sd(40)
+getValueHist(skew40, "Skew40", q1a_cap)
+
+# Skew 160
+skew160 <- getSkewness(sample160)
+skew160.sd <- sd(skew160$Value)
+skew160.tsd <- theoretical_sd(160)
+getValueHist(skew160, "Skew160", q1a_cap)
+
+results <- data.table(Size = c(10, 40, 160),
+	   StdDev = c(skew10.sd, skew40.sd, skew160.tsd),
+       Theoretical = c(skew10.tsd, skew40.tsd, skew160.tsd))
+
+pretty_kable(results, "Standard Deviations or Skewness")
 
 ```
 
 ### b.)
 __(4 points)__ 
-Follow the steps outlined in (1)(a) above for kurtosis.  Kurtosis for a standard normal distribution is 3.0 using the "moments" package *kurtosis()* function. 
+
+Follow the steps outlined in __(1)(a)__ above for kurtosis. Kurtosis for a standard normal distribution is 3.0 using the "moments" package *kurtosis()* function. 
 
 The theoretical formula for the standard deviation of kurtosis based on a random sample from a normal distribution is ```sqrt(24 * n * (n - 2) * (n - 3) / ((n + 1) * (n + 1) * (n + 3) * (n + 5)))```. 
 Using *sd()*, compute the sample standard deviations for the three random samples, and compare to the results you compute using the theoretical formula for the three sample sizes.  
@@ -113,6 +168,44 @@ Show both sets of result side by side in a summary table.
 
 
 ```{r ecp_kurtosis}
+
+getKurtosis <- function(x) {
+	result <- apply(x, MARGIN = 1, FUN = kurtosis)
+
+	stopifnot(kurtosis(x[1,]) == result[1])
+
+	data.table(Value = result)
+}
+
+theoretical_kt <- function(n) {
+	sqrt(24 * n * (n - 2) * (n - 3) / ((n + 1) * (n + 1) * (n + 3) * (n + 5)))
+}
+
+q1b_cap <- "MSDS 401: R Programming 2, Q1.b"
+
+# Kurt10
+kurt10 <- getKurtosis(sample10)
+kurt10.sd <- sd(kurt10$Value)
+kurt10.tsd <- theoretical_kt(10)
+getValueHist(kurt10, "Kurt10", q1b_cap)
+
+# Kurt40
+kurt40 <- getKurtosis(sample40)
+kurt40.sd <- sd(kurt40$Value)
+kurt40.tsd <- theoretical_kt(40)
+getValueHist(kurt40, "Kurt40", q1b_cap)
+
+# SKurt160
+kurt160 <- getKurtosis(sample160)
+kurt160.sd <- sd(skew160$Value)
+kurt160.tsd <- theoretical_kt(160)
+getValueHist(kurt160, "Kurt160", q1b_cap)
+
+results <- data.table(Size = c(10, 40, 160),
+	   StdDev = c(kurt10.sd, kurt40.sd, kurt160.tsd),
+	   Theoretical = c(kurt10.tsd, kurt40.tsd, kurt160.tsd))
+
+pretty_kable(results, "Standard Deviations of Kurtosis")
 
 ```
 
