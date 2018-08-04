@@ -151,7 +151,7 @@ sodium.var[ Type == "beef" & (6000 < Lower) || (6000 > Upper)]
 
 ```
 
-## 4.)
+## 4.) Mean Hypothesis Test
 
 Assume a random sample of size 100 is drawn from a normal distribution for which the mean and
 variance are unknown. Assume the sample mean is 50 and the standard deviation of the sample is 2.
@@ -184,7 +184,7 @@ p.value # [1] 4.595366e-72
 
 ```
 
-## 5.)
+## 5.) Coin Flips
 
 A coin is flipped 100 times. If it is unbiased the probability of a heads should equal the probability of a
 tails. At the 95% confidence level, test the null hypothesis the coin is unbiased versus the alternative
@@ -193,9 +193,30 @@ one-sided hypothesis tests.
 
 ```{r question5}
 
+# Looks like another binomial problem. Refer to R documentation for prop.test().
+# prop.test(x, n, p = NULL,
+# alternative = c("two.sided", "less", "greater"),
+# conf.level = 0.95, correct = TRUE)
+# x: a vector of counts of successes, a one-dimensional table with two entries, or a two-dimensional
+# table (or matrix) with 2 columns, giving the counts of successes and failures, respectively.
+# n: a vector of counts of trials; ignored if x is a matrix or a table.
+# p: a vector of probabilities of success. The length of p must be the same as the number of groups
+# specified by x, and its elements must be greater than 0 and less than 1.
+# alternative: character string specifying the alternative hypothesis,
+# must be one of "two.sided" (default), "greater" or "less". You can specify just the initial letter.
+# conf.level: confidence level of the returned confidence interval.
+# Must be a single number between 0 and 1.
+# Only used when testing the null that a single proportion equals a given value, or that two proportions
+# are equal; ignored otherwise.
+# correct: a logical indicating whether Yates' continuity correction should be applied where possible.
+
+prop.test(x = 43, n = 100, alternative = "less")
+
+prop.test(x = 63, n = 100, alternative = "greater")
+
 ```
 
-## 6.)
+## 6.) Salaries
 
 salaries.csv contains data derived from a November 8, 1993 article in Forbes titled “America’s Best
 Small Companies”. The file gives the CEO age and salary for 60 small business firms. Use these data to
@@ -204,5 +225,17 @@ test the hypothesis at 95% confidence that at least 50% of the CEOs earn less th
 Use one-sided hypothesis tests.
 
 ```{r question6}
+
+salaries <- loadDataFile("salaries.csv")
+
+age <- salaries$Age >= 45
+count <- sum(age)
+total <- length(age)
+prop.test(x = count, n = total, alternative = "greater")
+
+salary <- salaries$Sal < 500
+count <- sum(salary)
+total <- length(salary)
+prop.test(x = count, n = total, alternative = "greater")
 
 ```
