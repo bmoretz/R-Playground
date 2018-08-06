@@ -241,7 +241,7 @@ qnorm(c(0.25, 0.5, 0.75), mean = 0, sd = 1, lower.tail = TRUE)
 
 ```
 
-### a.)
+### a.) Variations
 __(4 points)__
 
 + Use *set.seed(127)* and *rnorm(n, mean = 0, sd = 1)* with *n* = 25, *n* = 50, *n* = 100 and draw three random samples. 
@@ -259,8 +259,10 @@ _Take note of the results for the first and third quartile in particular._
 
 as.numeric.factor <- function(x) { as.numeric(levels(x))[x] }
 
-get_sample <- function(n) {
-	set.seed(127)
+get_sample <- function(n, reseed = T) {
+
+	if (reseed == T) set.seed(127)
+
 	rnorm(n, 0, 1)
 }
 
@@ -312,7 +314,7 @@ for (k in seq(from = 25, to = 5000, by = 25)){
 size <- seq(from = 25, to = 5000, by = 25)
 
 c1 <- qnorm(0.975,0,1,lower.tail = T)
-c2 <- qnorm(0.025,0,1,lower.tail = T)
+c2 <- qnorm(0.025, 0, 1, lower.tail = T)
 
 plot(size, quant, main = "Median Estimates versus Sample Size", xlab = "Sample Size", ylab = "Median", ylim = c(-0.2,0.2))
 abline(h = 0.0)
@@ -323,12 +325,56 @@ lines(size, c2*sqrt(0.5*0.5/(size*dnorm(0,0,1)**2)), col = "red")
 
 ### b.)
 __(3 points)__
+
+
+```{r scatter_plot}
+# utility function for scatter in a and b.
+getValueScatter <- function(data, desc, cap, ylimit, true_value) {
+	ggplot(data, aes(x = Size, y = Value)) +
+		geom_point(aes(color = size)) +
+		scale_color_gradient(low = "firebrick", high = "steelblue") +
+		coord_cartesian(ylim = ylimit) +
+		geom_hline(yintercept = true_value, linetype = 11, color = "darkgreen", lwd = .8) +
+		labs(title = desc, caption = cap) +
+	    theme(legend.text = element_blank())
+}
+
+```
+
 Using code based on the example above, generate scatterplots showing the sample quartile values for the first and third quartiles calculated using type = 7 for the sample sizes in *seq(from = 25, to = 5000, by = 25)*. Do not add the curved boundary lines. For these plots use *ylim = c(-0.4, -0.9)* for the first quartile, and *ylim = c(0.4, 0.9)* for the third quartile. Give consideration to color, titles and legends.
 
 ```{r plot}
 # Add your set.seed(), rnorm() and quantile() code to this code 'chunk'.
 # Only use set.seed(127) once at the beginning of your code 'chunk'.
 
+set.seed(127)
+
+size <- seq(from = 25, to = 5000, by = 25)
+
+getQuartileValues <- function(prob) { 
+    quant <- numeric(0)
+    for (k in seq(from = 25, to = 5000, by = 25)) {
+	    x <- rnorm(k, mean = 0, sd = 1)
+	    quant <- rbind(quant, quantile(x, probs = prob, type = 7))
+	}
+	quant[, 1]
+}
+
+# 1st Quartile
+
+getValueScatter(data.table(Size = size, Value = getQuartileValues(.25)),
+    "1st Quantile Estimate versus Sample Size", 
+	"MSDS 401: R Programming 2, Q2.a",
+	c(-0.4, -0.9),
+    qnorm(.25))
+
+# 3rd Quartile
+
+getValueScatter(data.table(Size = size, Value = getQuartileValues(.75)),
+	"3rd Quantile Estimate versus Sample Size",
+	"MSDS 401: R Programming 2, Q2.b",
+	c(0.4, 0.9),
+    qnorm(.75))
 
 ```
 
@@ -337,7 +383,10 @@ __(3 points)__
 
 Comment. What do these displays indicate about convergence of quartile estimates to the true values?  Make at least two observations.
 
-***Answer: (Enter your answer here.)    ***
+__Answer:__
+
+The plots show a clear convergence to the true value with increasing sample sizes. Although, even at 5000 sample size, which is relativly large, we see that there is
+still a conciderable amount of error compared to the true values denoted by the dark green line.
 
 -----
 
