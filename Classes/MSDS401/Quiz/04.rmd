@@ -36,12 +36,15 @@ Test the null hypothesis that the population proportions are equal versus the al
 n1 <- 100
 x1 <- 39
 n2 <- 100
-x2 <- 45
+x2 <- 49
 
 pHat1 <- x1 / n1
 pHat2 <- x2 / n2
 pHat <- (x1 + x2) / (n1 + n2)
 round(pHat, 4)
+
+zScore <- (pHat2 - pHat1) / (sqrt((pHat * (1 - pHat)) * ((1 / n1) + (1 / n2))))
+round(zScore, 3)
 
 ```
 
