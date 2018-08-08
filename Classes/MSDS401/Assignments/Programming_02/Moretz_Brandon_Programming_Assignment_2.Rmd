@@ -92,9 +92,9 @@ sample160 <-generate(160)
 getValueHist <- function(data, desc, cap) {
 
 	lower_q <- quantile(data$Value, 0.025)
-	upper_q <- quantile(data$Value, 0.975)
+    upper_q <- quantile(data$Value, 0.975)
 
-	ggplot(data, aes(Value, fill = ..count..)) +
+    ggplot(data, aes(Value, fill = ..count..)) +
 		geom_histogram(bins = 15) +
 		geom_vline(xintercept = lower_q, linetype = 11, color = "firebrick3") +
 		geom_vline(xintercept = upper_q, linetype = 11, color = "firebrick3") +
@@ -427,6 +427,15 @@ _This assumes normality._
 
 ```{r chiSquareVariance}
 
+n <- length(mag)
+conf.level = 0.95
+
+df <- n - 1
+chilower <- qchisq((1 - conf.level) / 2, df, lower.tail = TRUE)
+chiupper <- qchisq((1 - conf.level) / 2, df, lower.tail = FALSE)
+v <- var(mag)
+conf.int <- c(df * v / chiupper, df * v / chilower)
+pretty_vector(round(conf.int, 2))
 
 ```
 
@@ -446,21 +455,24 @@ percentile bootstrap confidence interval.
 Present a table displaying the chi-square confidence interval and the bootstrap confidence interval.
 
 ```{r bootstrapVariance}
+
 set.seed(123)
 
-?replicate
-
 n <- 50
-raw.bootstrap <- as.data.table(replicate(10000, sample(mag, n, replace = T), simplify = "array"))
-cols <- colnames(raw.bootstrap)
-data.bootstrap <- raw.bootstrap[, lapply(.SD, function(x) {
-    quantile( x, c(.025,.975) ) } ), .SDcols = cols]
 
+raw.bootstrap <- as.data.table(replicate(10000, sample(mag, n, replace = T), simplify = "array"))
+
+bootstrap.quantiles <- raw.bootstrap[, lapply(.SD, FUN = function(x) { quantile(x, c(.025, 0.975)) })]
+bootstrap.variance <- data.table(Value = var(raw.bootstrap))
+
+head(bootstrap.variance)
+
+bootstrap.quantiles.melted <- melt
 q3a_cap <- "MSDS 401: R Programming 2, Q3.b"
 
 # Bootstrap Hist
 
-getValueHist(quartile.bootstrap, "Bootstrap Q", q3a_cap)
+getValueHist(bootstrap.variance, "Bootstrap Q", q3a_cap)
 
 ```
 
