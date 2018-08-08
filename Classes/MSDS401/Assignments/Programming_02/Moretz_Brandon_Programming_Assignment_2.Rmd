@@ -330,6 +330,7 @@ __(3 points)__
 ```{r scatter_plot}
 # utility function for scatter in a and b.
 getValueScatter <- function(data, desc, cap, ylimit, true_value) {
+
 	ggplot(data, aes(x = Size, y = Value)) +
 		geom_point(aes(color = size)) +
 		scale_color_gradient(low = "firebrick", high = "steelblue") +
@@ -386,7 +387,7 @@ Comment. What do these displays indicate about convergence of quartile estimates
 __Answer:__
 
 The plots show a clear convergence to the true value with increasing sample sizes. Although, even at 5000 sample size, which is relativly large, we see that there is
-still a conciderable amount of error compared to the true values denoted by the dark green line.
+still a conciderable amount of error compared to the true values denoted by the dark green line. All 3 plots exhibit a conic 
 
 -----
 
@@ -429,14 +430,15 @@ _This assumes normality._
 
 ```
 
-There is an extensive literature on bootstrapping. The methods shown here give an indication of the possibilities for estimating confidence intervals for a wide range of parameters. Some literature citations will be mentioned. 
+There is an extensive literature on bootstrapping. The methods shown here give an indication of the possibilities for estimating confidence intervals for a wide range of parameters. 
+Some literature citations will be mentioned. 
 
 ### b.)
 __(5 points)__
 
 Use the Percentile Bootstrap Method for estimating a 95% confidence interval for the variance. This requires drawing 10000 random samples of size *n* = 50 with replacement from the earthquake 
 data "mag". The sample variance will be computed for each, and the 2.5% (0.025) and 97.5% (0.975) quantiles computed for these data using *quantile()*. Please keep *set.seed(123)*. 
-The *replicate()* function can be used to easily "replicate" the sampling and sample variance steps, with *n* = 10000. Quantiles are then determined from the distribution of results. 
+The *replicate()* function can be used to easily "replicate" the sampling and sample variance steps, with *n* = 10000. Quantiles are then determined from the distribution of results.
 
 Present a histogram of the 10,000 sample variances along with the confidence interval. Show the quantiles on a histogram of the 10,000 sample variances. The quantiles provide a 95% 
 percentile bootstrap confidence interval. 
@@ -446,6 +448,19 @@ Present a table displaying the chi-square confidence interval and the bootstrap 
 ```{r bootstrapVariance}
 set.seed(123)
 
+?replicate
+
+n <- 50
+raw.bootstrap <- as.data.table(replicate(10000, sample(mag, n, replace = T), simplify = "array"))
+cols <- colnames(raw.bootstrap)
+data.bootstrap <- raw.bootstrap[, lapply(.SD, function(x) {
+    quantile( x, c(.025,.975) ) } ), .SDcols = cols]
+
+q3a_cap <- "MSDS 401: R Programming 2, Q3.b"
+
+# Bootstrap Hist
+
+getValueHist(quartile.bootstrap, "Bootstrap Q", q3a_cap)
 
 ```
 
