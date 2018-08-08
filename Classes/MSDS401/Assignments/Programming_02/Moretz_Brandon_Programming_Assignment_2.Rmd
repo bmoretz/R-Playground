@@ -391,7 +391,7 @@ still a conciderable amount of error compared to the true values denoted by the 
 
 -----
 
-## 3.)
+## 3.) Confidence Intervals
 
 Bootstrapping will be used to estimate confidence intervals for the variance of a non-normal distribution. Earthquake magnitude data will be used. 
 Results will be compared to confidence intervals constructed using the traditional chi-square method that assumes normality. The earthquake magnitude data are 
@@ -417,7 +417,7 @@ qqline(mag)
 
 ```
 
-### a.) 
+### a.) Chi-Squared
 __(2 points)__
 
 Compute the confidence interval for the population variance using the traditional chi-square method which assumes normality.The sample variance point estimate may be 
@@ -442,7 +442,7 @@ pretty_vector(round(conf.int, 2))
 There is an extensive literature on bootstrapping. The methods shown here give an indication of the possibilities for estimating confidence intervals for a wide range of parameters. 
 Some literature citations will be mentioned. 
 
-### b.)
+### b.) Bootstrap
 __(5 points)__
 
 Use the Percentile Bootstrap Method for estimating a 95% confidence interval for the variance. This requires drawing 10000 random samples of size *n* = 50 with replacement from the earthquake 
@@ -473,12 +473,15 @@ pretty_kable( rbind(c(Method = "Chi-Squared",round(conf.int, 3)),c( Method = "Bo
 
 ```
 
-### c.)
+### c.) Analysis
 __(2 points)__
 
 Compare and comment upon the traditional (i.e. chi-square) and bootstrap confidence interval results. Which would you use? Why?
 
-***Answer: (Enter your answer here.)***
+__Answer:__
+
+In this case, I would use the bootstrap method simply because the mag distribution isn't normal, and Chi-Sqared assumes normality. It doesn't appear likely that
+the true distribution of mag is normal, and I believe the bootstrap method to be more applicable in this scenario.
 
 This next part requires using the "boot" package discussed in Kabacoff Section 12.6, pages 292-298. The "boot" package requires a function be written to return the sample variance 
 values for each individual resample drawn. Use the following function in *boot()* for the argument "statistic." This function is defined for you below.
