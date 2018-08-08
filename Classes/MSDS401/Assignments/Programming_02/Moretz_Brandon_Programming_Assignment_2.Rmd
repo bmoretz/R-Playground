@@ -461,18 +461,15 @@ set.seed(123)
 n <- 50
 
 raw.bootstrap <- as.data.table(replicate(10000, sample(mag, n, replace = T), simplify = "array"))
+bootstrap.variance <- raw.bootstrap[, .(Value = sapply(.SD, var))]
+bootstrap.quantiles <- round(quantile(bootstrap.variance$Value, c(0.025, 0.975)), 3)
 
-bootstrap.quantiles <- raw.bootstrap[, lapply(.SD, FUN = function(x) { quantile(x, c(.025, 0.975)) })]
-bootstrap.variance <- data.table(Value = var(raw.bootstrap))
-
-head(bootstrap.variance)
-
-bootstrap.quantiles.melted <- melt
 q3a_cap <- "MSDS 401: R Programming 2, Q3.b"
 
 # Bootstrap Hist
+getValueHist(bootstrap.variance, paste("Bootstrap Variance"), q3a_cap)
 
-getValueHist(bootstrap.variance, "Bootstrap Q", q3a_cap)
+pretty_kable( rbind(c(Method = "Chi-Squared",round(conf.int, 3)),c( Method = "Bootstrap", bootstrap.quantiles)), "Confidence Interval Comparison" )
 
 ```
 
