@@ -495,7 +495,7 @@ f <- function(data, i){
 
 ```
 
-### d.)
+### d.) boot pkg
 __(6 points)__
 
 The user-defined function is passed to *boot()* with "mag" along with the number of samples to be drawn with replacement; here, 10000. The resulting object will be a list. 
@@ -510,6 +510,8 @@ set.seed(123)
 # Here, you will need to add code defining an object created by boot() with data = mag, statistic = f,
 # and R = 10000. For calculating the quantiles, you will need to refer to the vector of results via "$t".
 
+results <- boot(mag, statistic = f, R = 10000)
+
 ```
 
 The "boot" package has a variety of options for determining confidence intervals. See *boot.ci()*, shown below, with the percentile option. The different computational options may produce 
@@ -521,12 +523,13 @@ intervals and stores them at "$percent" of the output. Present the output of the
 ```{r bootci}
 # Add your code here.
 
+pretty_vector( boot.ci(results, conf = 0.95, type = "perc")$percent )
 
 ```
 
 -----
 
-## 4.) 
+## 4.) Boot Package
 
 Fisher proposed a method for calculating a confidence interval for the Pearson Correlation Coefficient. This method involves transformation of r, the sample Pearson Correlation Coefficient. 
 A z-score is calculated and confidence interval is constructed. This confidence interval is then transformed back to the original scale of measurement. This method is explained in the links:
@@ -564,7 +567,28 @@ the Pearson Correlation Coefficient. Calculations can be simplified using *tanh(
 
 ```{r correlation}
 
-  
+len_a <- length(test$testA)
+len_b <- length(test$testB)
+
+stopifnot(len_a == len_b)
+
+N <- len_a
+
+correlation <- cor(test$testA, test$testB)
+
+sigmaz <- 1 / sqrt(N - 3)
+normz <- qnorm(1 - (1 - .95) / 2)
+
+fisherz <- 0.5 * ( log(1 + correlation) - log(1 - correlation))
+lower_ci <- fisherz - (normz * sigmaz)
+upper_ci <- fisherz + (normz * sigmaz)
+
+ci_lower <- ( exp(2 * lower_ci)-1) / (exp(2 * lower_ci) + 1)
+ci_upper <- (exp(2 * upper_ci) - 1) / (exp(2 * upper_ci) + 1)
+
+pretty_vector(c(Lower = ci_lower, Cor = correlation, Upper = ci_upper), label = "95% confidence interval")
+
+cor.test(test$testA, test$testB, method = "p")
 
 ```
 
