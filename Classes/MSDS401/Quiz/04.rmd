@@ -17,17 +17,18 @@ True or False
 
 The phrase "linear regression" pertains to regression models with normal equations that can be expressed in matrix form using linear algebra to determine coefficient estimates.
 
-```{r echo = T}
+Answer:
 
-```
+__True__
 
 ## 2.)
 
 Choose the one alternative that best completes the statement or answers the question.
 
-Assume two independent random samples are available which provide sample proportions. 
-+ For the first sample assume n1= 100 and x1= 39. 
-+ For the second sample, assume n2= 100 and x2= 49. 
+Assume two independent random samples are available which provide sample proportions.
+
++ For the first sample assume __n1 = 100__ and __x1 = 39__. 
++ For the second sample, assume __n2 = 100__ and __x2 = 49__. 
 
 Test the null hypothesis that the population proportions are equal versus the alternative hypothesis that the proportions are not equal at the 90% confidence level.   Frame the test statistic by subtracting the proportion for population 1 from that for population 2.  Pick an appropriate z value, p-value and conclusion.  Round your answer to the nearest thousandth.
 
@@ -41,26 +42,50 @@ x2 <- 49
 pHat1 <- x1 / n1
 pHat2 <- x2 / n2
 pHat <- (x1 + x2) / (n1 + n2)
-round(pHat, 4)
+pretty_vector(round(pHat, 4))
 
 zScore <- (pHat2 - pHat1) / (sqrt((pHat * (1 - pHat)) * ((1 / n1) + (1 / n2))))
-round(zScore, 3)
+
+pretty_vector(round(zScore, 3))
 
 ```
 
 ## 3.)
 
-Construct the indicated confidence interval for the difference between the two population means. Assume that the two samples are independent simple random samples selected from normally distributed populations.  Assume that the population standard deviations are equal.
+Construct the indicated confidence interval for the difference between the two population means. 
+
+Assume that the two samples are independent simple random samples selected from normally distributed populations. 
+Assume that the population standard deviations are equal.
 
 Two types of flares are tested and their burning times are recorded. The summary statistics are given below.
 
-Brand X  n = 35  mean = 19.4 minutes  standard deviation =1.4 minutes
-Brand Y  n = 40  mean = 15.1 minutes  standard deviation = 1.3 minutes
++ Brand X  __n = 35__, __mean = 19.4__ minutes, __standard deviation = 1.4__ minutes
++ Brand Y  __n = 40__,  __mean = 15.1__ minutes  __standard deviation = 1.3__ minutes
 
 Construct a 95% confidence interval for the differences between the mean burning time of the brand X flare and the mean burning time of the brand Y flare.
 
 ```{r echo = T}
 
+x.n <- 35
+x.mu <- 19.4
+x.sd <- 1.4
+
+y.n <- 40
+y.mu <- 15.1
+y.sd <- 1.3
+
+# Determine standard error
+SE <- sqrt((x.sd ** 2 / x.n) + (y.sd ** 2 / y.n))
+
+# Determine degrees of freedom
+df <- (x.n - 1) + (y.n - 1)
+
+# Determine t level for 95% CI @ DF
+t <- qt((1 - 0.05 / 2), df)
+
+ci.lower <- (x.mu - y.mu) - (t * SE)
+ci.upper <- (x.mu - y.mu) + (t * SE)
+pretty_vector(c(ci.lower, ci.upper), 1)
 
 ```
 
@@ -69,10 +94,23 @@ Construct a 95% confidence interval for the differences between the mean burning
 
 Construct a 95% confidence interval for the mean difference µd using a sample of paired data for which summary statistics are given. 
 Assume the parent populations are normally distributed.  
-Assume the sample mean difference d = 3.0, the sample standard deviation sd = 2.911, and n = 8.
+
+Assume the sample mean difference __d = 3.0__, the sample standard deviation __sd = 2.911__, and __n = 8__.
 
 ```{r echo = T}
 
+d <- 3
+sd <- 2.911
+n <- 8
+
+SE <- (sd / sqrt(n))
+df <- (n - 1)
+t <- qt(1 - 0.05 / 2, df)
+
+ci.lower <- (d) - (t * SE)
+ci.upper <- (d) + (t * SE)
+
+pretty_vector(c(ci.lower, ci.upper), 3)
 
 ```
 
@@ -129,13 +167,28 @@ Total	31
 
 ## 9.)
 
-Use the given data to find the equation of the regression line.  Round the final values to three significant digits, if necessary.  Let x be the independent variable and y the dependent variable.  (Note that if x = 2, then y = 7 and so forth.  yhat is the predicted value of the fitted equation.)
+Use the given data to find the equation of the regression line.  
+
+Round the final values to three significant digits, if necessary.  
+
+Let x be the independent variable and y the dependent variable.  (Note that if x = 2, then y = 7 and so forth.  yhat is the predicted value of the fitted equation.)
 
 x   2    4    5    6  8
 
 y   7  11  13   20  24
 
 ```{r}
+
+data <- data.table(x = c(2, 4, 5, 6, 8), y = c(7, 11, 13, 20, 24))
+
+model <- lm(x ~ y, data)
+
+lm.intercept = coef(model)[[ 1 ]]
+lm.slope <- coef(model)[[ 2 ]]
+
+ggplot(data, aes(x, y)) +
+    geom_point() +
+	geom_abline(intercept = lm.intercept, slope = lm.slope, lwd = 2)
 
 
 ```

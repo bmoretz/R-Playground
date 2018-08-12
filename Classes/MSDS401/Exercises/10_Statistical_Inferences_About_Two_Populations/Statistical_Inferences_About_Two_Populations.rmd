@@ -30,6 +30,11 @@ library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
 library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
 library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(GGally, quietly = TRUE, warn.conflicts = FALSE)
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(RColorBrewer, quietly = TRUE, warn.conflicts = FALSE)
+library(moments, quietly = TRUE, warn.conflicts = FALSE)
 
 theme_set(theme_light())
 
@@ -39,5 +44,101 @@ theme_update(plot.title = element_text(hjust = 0.5),
 			 axis.text.y = element_text(size = 10),
 			 axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
 			 legend.position = "top", legend.title = element_blank())
+
+pretty_kable <- function(data, title, dig = 2) {
+	kable(data, caption = title, digits = dig, big.mark = "'") %>%
+		kable_styling(bootstrap_options = c("striped", "hover"))
+}
+
+pretty_vector <- function(vec, label = "") {
+	pander::pander(vec)
+}
+
+#base.dir <- "E:/GitHub/R-Playground"
+base.dir <- "C:/Projects/R/Playground"
+
+data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/09_statistical_inference_hypothesis_testing_for_single_poulations/data/")
+
+# simple replacement for read.csv that returns a data.table.
+loadDataFile <- function(file_name) {
+	data.raw <- fread(paste0(data.path, file_name),
+		header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
+
+	data <- setNames(data.raw, tools::toTitleCase(tolower(names(data.raw))))
+
+	return(data)
+}
+
+```
+
+# Questions
+
+## 1.) Drug Effectiveness
+
+> A double-blind clinical trial of a new drug for back pain was designed using control and treatment
+groups. Volunteers were fully informed and assigned at random to each group. Neither the volunteers
+nor the doctor knew when the new drug or a placebo was being administered. When 100 volunteers
+in each group had been treated and evaluated, the results revealed an 85% success rate for the new
+drug and a 65% success rate for the control group. At the 95% confidence level, is there a statistically
+significant difference between the two reported rates? Use a one-sided test. Also, report a confidence
+interval for the difference.
+
+```{r question1}
+
+x <- matrix(c(85, 65, 15, 35), nrow = 2, ncol = 2, byrow = FALSE,
+    dimnames = list(c("new_drug", "control"), c("success", "fail")))
+
+pretty_kable(x, "Trial Results")
+
+test.results <- prop.test(x, alternative = "greater", conf.level = 0.95, correct = FALSE)
+
+test.results
+
+ifelse(test.results$p.value < 0.05, "Reject Null", "Cannot Reject Null")
+
+```
+
+## 2.)
+
+> Two baseball players had their career records compared. In 267 times at bat, one player hit 85 home
+runs. In 248 times at bat, the other player hit 89 home runs. Assume the number of home runs follows
+a binomial distribution, is there a statistically significant difference with 95% confidence between the
+home run averages for these two baseball players?
+
+```{r question2}
+
+```
+
+## 3.)
+
+> Using the home_prices.csv data (described in Lesson 1), compare mean selling prices between homes
+located in the northeast sector of the city versus the remaining homes. Also, compare the mean selling
+prices between homes with a corner lot and those located elsewhere. Use two-sample t-tests for the
+hypothesis tests at the 95% confidence level. Report confidence intervals for each.
+
+```{r question3}
+
+```
+
+## 4.)
+
+> The nsalary.csv data are derived from data collected by the Department of Social Services of the State
+of New Mexico. The data have been adapted for this problem. Using these data compare mean salary
+levels between RURAL and non-RURAL locations. Use a two-sample t-test at the 95% confidence level.
+Report your results.
+
+```{r question4}
+
+```
+
+## 5.)
+
+> tires.csv contains data published by R.D. Stichler, G.G. Richey, and J. Mandel, “Measurement of
+Treadware of Commercial Tires, Rubber Age, 73:2 (May 1953). Treadwear measures of tires each tire
+was subject to measurement by two methods, the first based on weight loss and the second based on
+groove wear. Use a paired t-test at the 95% confidence level to test for a difference between the two
+methods. Report your results using a confidence interval.
+
+```{r question5}
 
 ```
