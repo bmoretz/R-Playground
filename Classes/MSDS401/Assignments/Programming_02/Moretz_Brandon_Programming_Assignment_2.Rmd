@@ -559,7 +559,7 @@ plot(test$testA,test$testB)
 
 ```
 
-### a.)
+### a.) Fisher's Z
 __(3 points)__
 
 Determine a 95% confidence interval for the Pearson Correlation Coefficient of the data in "test" using Fisher's method. Present the code and the confidence interval for rho, 
@@ -583,7 +583,7 @@ fisherz <- 0.5 * ( log(1 + correlation) - log(1 - correlation))
 lower_ci <- fisherz - (normz * sigmaz)
 upper_ci <- fisherz + (normz * sigmaz)
 
-ci_lower <- ( exp(2 * lower_ci)-1) / (exp(2 * lower_ci) + 1)
+ci_lower <- (exp(2 * lower_ci) - 1) / (exp(2 * lower_ci) + 1)
 ci_upper <- (exp(2 * upper_ci) - 1) / (exp(2 * upper_ci) + 1)
 
 pretty_vector(c(Lower = ci_lower, Cor = correlation, Upper = ci_upper), label = "95% confidence interval")
@@ -592,14 +592,17 @@ cor.test(test$testA, test$testB, method = "p")
 
 ```
 
-### b.) 
+### b.) Correlation Bootstrap
 __(5 points)__
 
-Bootstrapping can be used to arrive at an estimated confidence interval. The process involves resampling with replacement of rows from "test." The first step is to randomly sample with 
-replacement the 49 rows of "test".  Each sample will consist of 49 rows for which a sample correlation coefficient is calculated. For this purpose, the function *sample.int()* may be used to 
-determine a sample of row numbers to be used. The function *cor()* should be used to determine the sample correlation coefficient. This step is repeated 10,000 times resulting in 10,000 
-sample correlation coefficients. The 10,000 calculated sample correlation coefficients are written to a vector. *quantile()* is passed this vector to calculate the 2.5% (0.025) and 97.5% (0.975) 
-quantiles which determines the 95% Percentile Bootstrap confidence interval.
+Bootstrapping can be used to arrive at an estimated confidence interval. The process involves resampling with replacement of rows from "test."
+
++ The first step is to randomly sample with replacement the 49 rows of "test".
++ Each sample will consist of 49 rows for which a sample correlation coefficient is calculated. For this purpose, the function *sample.int()* may be used to determine a sample of row numbers to be used. 
++ The function *cor()* should be used to determine the sample correlation coefficient. 
++ This step is repeated 10,000 times resulting in 10,000 sample correlation coefficients. 
++ The 10,000 calculated sample correlation coefficients are written to a vector. 
++ *quantile()* is passed this vector to calculate the 2.5% (0.025) and 97.5% (0.975) quantiles which determines the 95% Percentile Bootstrap confidence interval.
 
 Refer to the course site library reserves and read the listing for Section 9.5 of "Mathematical Statistics with Resampling and R," by Chihara and Hesterberg.
 
@@ -609,10 +612,21 @@ two-sided 95% confidence interval.
 ```{r bootstrapCorrelation}
 set.seed(123)
 
+sample_cor <- function() { 
+    test.sample <- test[ sample.int(49, size = 49, replace = T), ]
+    test.sample.cor <- cor(test.sample$testA, test.sample$testB)
+}
+
+test.cor.bootstrap <- as.data.table(replicate(10000, sample_cor(), simplify = "array"))[, .(Value = V1)]
+
+getValueHist(test.cor.bootstrap, "Test Correlation", "MSDS 401 Q4.b") +
+    theme(legend.text = element_blank())
+
+pretty_vector(c(quantile(test.cor.bootstrap$Value, 0.025), quantile(test.cor.bootstrap$Value, 0.975)))
 
 ```
 
-### c.) 
+### c.) Regression
 __(5 points)__
 
 Bootstrapping can also be used to arrive at confidence intervals for regression coefficients. This process is similar to the process in __4(b)__. Using the current data frame, rows of "test" are 
@@ -633,14 +647,48 @@ _Place the intercepts on the x-axis and the slopes on the y-axis._
 ```{r bootstrapLinearRegression}
 set.seed(123)
 
+sample_lm <- function() {
+    test.sample <- test[sample.int(49, size = 49, replace = T),]
+	model.coef <- lm(test.sample$testA ~ test.sample$testB)$coefficients
+	data.table( Intercept = model.coef[[1]], Slope = model.coef[[2]])
+}
+
+test.lm.bootstrap <- data.table()
+
+for (i in 1:10000) {
+	test.lm.bootstrap <- rbind(test.lm.bootstrap, sample_lm())
+}
+
+simple.lm <- lm(test$testA ~ test$testB)
+
+lm.intercept <- coef(simple.lm)[1]
+
+getValueHist(test.lm.bootstrap[, .(Value = Intercept)], paste("Intercept (Non-bootstrapped Value:", round(lm.intercept,3), ")"), "MSDS 401 Q4.c") +
+	geom_vline(xintercept = lm.intercept, lwd = 1.2, color = "darkgreen", linetype = 12) +
+    theme(legend.text = element_blank())
+
+lm.slope <- coef(simple.lm)[2]
+
+getValueHist(test.lm.bootstrap[, .(Value = Slope)], paste("Slope, (Non-bootstrapped Value:", round(lm.slope, 3), ")"), "MSDS 401 Q4.c") +
+	geom_vline(xintercept = lm.slope, lwd = 1.2, color = "darkgreen", linetype = 12) +
+	theme(legend.text = element_blank())
+
+ggplot(test.lm.bootstrap, aes(x = Intercept, y = Slope)) +
+	geom_jitter(aes(color = Intercept)) +
+	geom_smooth(method = "lm", color = "firebrick") +
+	labs(title = "Scatter of Bootstrapped Intercept vs Slope", caption = "MSDS 401 Q4.c") +
+	theme(legend.text = element_blank())
 
 ```
 
-### d.)
+### d.) Analysis
 __(2 points)__
 
 What does the plot of the estimated bootstrap slopes versus the estimated bootstrap intercepts plot indicate about these estimates?  
 
-***Answer: (Enter your answer here.)    ***
+__Answer:__
+
+The scatter plot shows a strong negative linear correlation between the estimated slope and estimated intercept. The histograms also have a relatively
+identical approximately normal distributions, so the shape of this plot isn't unexpected. 
 
 ##### The "boot" package provides a considerable capability for bootstrapping. Other discussions are given at:  http://www.ats.ucla.edu/stat/r/faq/boot.htm and http://www.statmethods.net/advstats/bootstrapping.html.
