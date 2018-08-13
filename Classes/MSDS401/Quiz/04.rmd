@@ -3,12 +3,40 @@ title: 'Problem Set #4'
 author: "Moretz_Brandon"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
+  pdf_document:
+    toc: yes
   html_document:
-    toc: true
-    toc_float: true
-    theme: spacelab
     df_print: paged
+    theme: spacelab
+    toc: yes
+    toc_float: yes
 ---
+
+```{r additional-libraries, echo=FALSE}
+
+library(data.table, quietly = TRUE, warn.conflicts = FALSE)
+
+assignInNamespace("cedta.pkgEvalsUserCode", c(data.table:::cedta.pkgEvalsUserCode, "rtvs"), "data.table")
+
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(plot.title = element_text(hjust = 0.5),
+			 axis.text.x = element_text(size = 10),
+			 axis.text.y = element_text(size = 10),
+			 axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+			 legend.position = "top", legend.title = element_blank())
+
+pretty_vector <- function(vec, label = "") {
+  pander::pander(vec)
+}
+
+```
 
 
 ## 1.)
@@ -36,12 +64,17 @@ Test the null hypothesis that the population proportions are equal versus the al
 
 n1 <- 100
 x1 <- 39
+
 n2 <- 100
 x2 <- 49
 
 pHat1 <- x1 / n1
 pHat2 <- x2 / n2
+
 pHat <- (x1 + x2) / (n1 + n2)
+
+z <- (pHat1 - pHat2) / sqrt(pHat1 * (1 - pHat1) / n1) + ((pHat2) * (1 - pHat2) / n2)
+
 pretty_vector(round(pHat, 4))
 
 zScore <- (pHat2 - pHat1) / (sqrt((pHat * (1 - pHat)) * ((1 / n1) + (1 / n2))))
@@ -132,7 +165,9 @@ What is the critical value for the F- test at 95% confidence?
 
 ```{r echo = T}
 
+qf(.95, df1 = 5, df2 = 2)
 
+pf(.95)
 ```
 
 ## 7.)

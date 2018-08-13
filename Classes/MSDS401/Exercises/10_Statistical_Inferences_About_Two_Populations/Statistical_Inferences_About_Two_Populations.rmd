@@ -54,10 +54,10 @@ pretty_vector <- function(vec, label = "") {
 	pander::pander(vec)
 }
 
-#base.dir <- "E:/GitHub/R-Playground"
-base.dir <- "C:/Projects/R/Playground"
+base.dir <- "E:/GitHub/R-Playground"
+#base.dir <- "C:/Projects/R/Playground"
 
-data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/09_statistical_inference_hypothesis_testing_for_single_poulations/data/")
+data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/10_Statistical_Inferences_About_Two_Populations/data/")
 
 # simple replacement for read.csv that returns a data.table.
 loadDataFile <- function(file_name) {
@@ -118,6 +118,9 @@ hypothesis tests at the 95% confidence level. Report confidence intervals for ea
 
 ```{r question3}
 
+home.prices <- loadDataFile("home_prices.csv")
+
+
 ```
 
 ## 4.)
@@ -128,6 +131,8 @@ levels between RURAL and non-RURAL locations. Use a two-sample t-test at the 95%
 Report your results.
 
 ```{r question4}
+
+nsalary <- loadDataFile("nsalary.csv")
 
 ```
 

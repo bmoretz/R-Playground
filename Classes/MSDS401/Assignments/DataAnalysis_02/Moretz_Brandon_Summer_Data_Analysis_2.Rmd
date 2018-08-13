@@ -64,8 +64,8 @@ pretty_vector <- function(vec, label = "") {
 	pander::pander(vec)
 }
 
-#base.dir <- "E:/GitHub/R-Playground"
-base.dir <- "C:/Projects/R/Playground"
+base.dir <- "E:/GitHub/R-Playground"
+#base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/DataAnalysis_02/data/")
 
@@ -91,26 +91,83 @@ str(mydata)
 
 -----
 
-## 1.)
+## 1.) Ratio
 
-### a.)
+### a.) Kurtosis
+
 __(1 point)__
 
-Form a histogram and QQ plot using RATIO. Calculate skewness and kurtosis using 'rockchalk.' Be aware that with 'rockchalk', the kurtosis value has 3.0 subtracted from it which differs from the 'moments' package. 
++ Form a histogram and QQ plot using __RATIO__. 
++ Calculate skewness and kurtosis using '__rockchalk__.' 
+
+Be aware that with 'rockchalk', the kurtosis value has 3.0 subtracted from it which differs from the 'moments' package.
 
 ```{r Part_1a}
 
+stopifnot(!is.na(mydata$Ratio))
+
+ggplot(mydata, aes(Ratio, fill = ..count..)) +
+   geom_histogram(breaks = pretty(mydata$Ratio)) +
+   labs(title = "Histogram of Ratio", caption = "MSDS 401: Data Analysis #2, Q1.a") +
+   theme(legend.text = element_blank())
+
+ggplot(mydata, aes(sample = Ratio)) +
+   stat_qq(color = "steelblue3") +
+   stat_qq_line(lwd = 1, linetype = 12) +
+   labs(title = "QQ of Ratio", caption = "MSDS 401: Data Analysis #2, Q1.a")
 
 ```
 
-(1)(b) (2 points) Tranform RATIO using *log10()* to create L_RATIO (Kabacoff Section 8.5.2, p. 199-200). Form a histogram and QQ plot using L_RATIO. Calculate the skewness and kurtosis. Create a boxplot of L_RATIO differentiated by CLASS.
+
+```{r Part_1a_kurtosis}
+pretty_vector(c(Kurtosis = rockchalk::kurtosis(mydata$Ratio)))
+```
+
+### b.) Log Scale
+
+__(2 points)__
+
++ Tranform RATIO using *log10()* to create L_RATIO (Kabacoff Section 8.5.2, p. 199-200). 
++ Form a histogram and QQ plot using __L_RATIO__. 
++ Calculate the skewness and kurtosis. 
++ Create a boxplot of __L_RATIO__ differentiated by __CLASS__.
 
 ```{r Part_1b}
 
+mydata$L_Ratio <- log10(mydata$Ratio)
+
+stopifnot(!is.na(mydata$L_Ratio))
+
+ggplot(mydata, aes(L_Ratio, fill = ..count..)) +
+   geom_histogram(breaks = pretty(mydata$L_Ratio)) +
+   labs(title = "Histogram of L_Ratio", caption = "MSDS 401: Data Analysis #2, Q1.b") +
+   theme(legend.text = element_blank())
+
+ggplot(mydata, aes(sample = L_Ratio)) +
+   stat_qq(color = "steelblue3") +
+   stat_qq_line(lwd = 1, linetype = 12) +
+   labs(title = "QQ of L_Ratio", caption = "MSDS 401: Data Analysis #2, Q1.b")
 
 ```
 
-(1)(c) (1 point) Test the homogeneity of variance across classes using *bartlett.test()* (Kabacoff Section 9.2.2, p. 222). 
+```{r Part_1b_skewkurt}
+
+pretty_vector(c( Kurtosis = rockchalk::kurtosis(mydata$L_Ratio), Skewness = rockchalk::skewness(mydata$L_Ratio) ))
+
+```
+
+
+```{r Part_1b_lratiobyclass}
+
+ggplot(mydata, aes(x = Class, y = L_Ratio, group = Class)) +
+   geom_boxplot(aes(fill = "steelblue3"))
+
+```
+
+### c.) 
+__(1 point)__
+
+Test the homogeneity of variance across classes using *bartlett.test()* (Kabacoff Section 9.2.2, p. 222). 
 
 ```{r Part_1c}
 
@@ -224,37 +281,37 @@ The next steps in the assignment will require consideration of the proportions o
 
 ```{r Part_6a}
 
-idxi <- mydata$TYPE == "I"
-idxa <- mydata$TYPE == "ADULT"
+#idxi <- mydata$TYPE == "I"
+#idxa <- mydata$TYPE == "ADULT"
 
-max.v <- max(mydata$VOLUME)
-min.v <- min(mydata$VOLUME)
-delta <- (max.v - min.v)/10000
-prop.infants <- numeric(10000)
-prop.adults <- numeric(10000)
-volume.value <- numeric(10000)
+#max.v <- max(mydata$VOLUME)
+#min.v <- min(mydata$VOLUME)
+#delta <- (max.v - min.v)/10000
+#prop.infants <- numeric(10000)
+#prop.adults <- numeric(10000)
+#volume.value <- numeric(10000)
 
-total.infants <- sum(idxi)  
-total.adults <- sum(idxa)
+#total.infants <- sum(idxi)  
+#total.adults <- sum(idxa)
 
-for (k in 1:10000) { 
-	value <- min.v + k*delta
-	volume.value[k] <- value
-	prop.infants[k] <- sum(mydata$VOLUME[idxi] <= value)/total.infants
-	prop.adults[k] <-  sum(mydata$VOLUME[idxa] <= value)/total.adults
-}
+#for (k in 1:10000) { 
+#	value <- min.v + k*delta
+#	volume.value[k] <- value
+#	prop.infants[k] <- sum(mydata$VOLUME[idxi] <= value)/total.infants
+#	prop.adults[k] <-  sum(mydata$VOLUME[idxa] <= value)/total.adults
+#}
 
 # prop.infants shows the impact of increasing the volume cutoff for
 # harvesting. The following code shows how to "split" the population at
 # a 50% harvest of infants.
 
-n.infants <- sum(prop.infants <= 0.5)
-split.infants <- min.v + (n.infants + 0.5)*delta  # This estimates the desired volume.
-split.infants
+#n.infants <- sum(prop.infants <= 0.5)
+#split.infants <- min.v + (n.infants + 0.5)*delta  # This estimates the desired volume.
+#split.infants
 
-n.adults <- sum(prop.adults <= 0.5)
-split.adults <- min.v + (n.adults + 0.5)*delta
-split.adults
+#n.adults <- sum(prop.adults <= 0.5)
+#split.adults <- min.v + (n.adults + 0.5)*delta
+#split.adults
 
 ```
 
@@ -286,11 +343,11 @@ This part will address the determination of a volume.value corresponding to the 
 
 ```{r Part_7b}
 
-y.loess.a <- loess(1 - prop.adults ~ volume.value, span = 0.25,
-	family = c("symmetric"))
-y.loess.i <- loess(1 - prop.infants ~ volume.value, span = 0.25,
-	family = c("symmetric"))
-smooth.difference <- predict(y.loess.a) - predict(y.loess.i)
+#y.loess.a <- loess(1 - prop.adults ~ volume.value, span = 0.25,
+#	family = c("symmetric"))
+# y.loess.i <- loess(1 - prop.infants ~ volume.value, span = 0.25,
+#	family = c("symmetric"))
+#smooth.difference <- predict(y.loess.a) - predict(y.loess.i)
 
 ```
 
@@ -306,7 +363,8 @@ smooth.difference <- predict(y.loess.a) - predict(y.loess.i)
 Code for calculating the adult harvest proportion is provided.
 
 ```{r Part_7d}
-(1 - prop.adults)[which.max(smooth.difference)]  # [1] 0.7416332
+
+# (1 - prop.adults)[which.max(smooth.difference)]  # [1] 0.7416332
 
 ```
 
@@ -321,15 +379,17 @@ There are alternative ways to determine cutoffs. Two such cutoffs are described 
 Compute this cutoff, and the proportions of infants and adults with VOLUME exceeding this cutoff. Code for determining this cutoff is provided. Show these proportions.
 
 ```{r Part_8a}
-volume.value[volume.value > max(mydata[mydata$CLASS == "A1" &
-  mydata$TYPE == "I", "VOLUME"])][1] # [1] 206.786
+
+#volume.value[volume.value > max(mydata[mydata$CLASS == "A1" &
+#  mydata$TYPE == "I", "VOLUME"])][1] # [1] 206.786
 
 ```
 
 (8)(b) (2 points) Another cutoff is one for which the proportion of adults not harvested equals the proportion of infants harvested. This cutoff would equate these rates; effectively, our two errors:  'missed' adults and wrongly-harvested infants. This leaves for discussion which is the greater loss:  a larger proportion of adults not harvested or infants harvested?  This cutoff is 237.7383. Calculate the separate harvest proportions for infants and adults using this cutoff. Show these proportions.  Code for determining this cutoff is provided.  
 
 ```{r Part_8b}
-volume.value[which.min(abs(prop.adults - (1-prop.infants)))] # [1] 237.6391
+
+# volume.value[which.min(abs(prop.adults - (1-prop.infants)))] # [1] 237.6391
 
 ```
 
