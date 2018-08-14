@@ -185,7 +185,7 @@ pretty_vector(c(P_Value = ifelse(bartless.l_ratio$p.value < 0.05, "Reject Null",
 bartlett.ratio <- bartlett.test( Ratio ~ Class, data = mydata)
 
 qqPlot(lm(Ratio ~ Class, data = mydata),
-	simulate = T, main = "QQ-Plot L_Ratio", labels = F)
+	simulate = T, main = "QQ-Plot Ratio", labels = F)
 
 bartless.ratio
 
