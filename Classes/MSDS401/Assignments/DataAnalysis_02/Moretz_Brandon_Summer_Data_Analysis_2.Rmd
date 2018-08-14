@@ -64,8 +64,8 @@ pretty_vector <- function(vec, label = "") {
 	pander::pander(vec)
 }
 
-base.dir <- "E:/GitHub/R-Playground"
-#base.dir <- "C:/Projects/R/Playground"
+#base.dir <- "E:/GitHub/R-Playground"
+base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/DataAnalysis_02/data/")
 
@@ -160,30 +160,68 @@ pretty_vector(c( Kurtosis = rockchalk::kurtosis(mydata$L_Ratio), Skewness = rock
 ```{r Part_1b_lratiobyclass}
 
 ggplot(mydata, aes(x = Class, y = L_Ratio, group = Class)) +
-   geom_boxplot(aes(fill = "steelblue3"))
+   geom_boxplot(outlier.colour = "red", fill = "steelblue3", outlier.shape = 1)
 
 ```
 
-### c.) 
+### c.) Bartlett's Test
 __(1 point)__
 
-Test the homogeneity of variance across classes using *bartlett.test()* (Kabacoff Section 9.2.2, p. 222). 
++ Test the homogeneity of variance across classes using *bartlett.test()* 
+
+_(Kabacoff Section 9.2.2, p. 222)._
 
 ```{r Part_1c}
 
+bartless.l_ratio <- bartlett.test( L_Ratio ~ Class, data = mydata)
 
+qqPlot(lm(L_Ratio ~ Class, data = mydata),
+	simulate = T, main = "QQ-Plot L_Ratio", labels = F)
+
+bartless.l_ratio
+
+pretty_vector(c(P_Value = ifelse(bartless.l_ratio$p.value < 0.05, "Reject Null", "Cannot Reject Null")))
+
+bartlett.ratio <- bartlett.test( Ratio ~ Class, data = mydata)
+
+qqPlot(lm(Ratio ~ Class, data = mydata),
+	simulate = T, main = "QQ-Plot L_Ratio", labels = F)
+
+bartless.ratio
+
+pretty_vector(c(P_Value = ifelse(bartlett.ratio$p.value < 0.05, "Reject Null", "Cannot Reject Null")))
 ```
 
 **Question (2 points):  Based on steps 1.a, 1.b and 1.c, which variable RATIO or L_RATIO exhibits better conformance to a normal distribution with homogeneous variances across age classes?  Why?** 
 
-***Answer: (Enter your answer here.)***
+__Answer:__
+
+__L_Ratio__ exhibits better conformance to normality across classes due to the QQ-Plots falling closer in-line with the expected quantiles, lower Kurtosis, as well as having a less skewed 
+distribution as observed by both the skewness measure and the histograms of the respective variables. Finally, at 0.05 significance level, we cannot reject the null hypothesis that
+L_Ratio comes from a normal distribution according to Bartless's Test for Equality of Variances, which we must do for Ratio as if falls well short of significance.
 
 -----
 
-(2)(a) (2 points) Perform an analysis of variance with *aov()* on L_RATIO using CLASS and SEX as the independent variables (Kabacoff chapter 9, p. 212-229). Assume equal variances. Perform two analyses. First, fit a model with the interaction term CLASS:SEX. Then, fit a model without CLASS:SEX. Use *summary()* to obtain the analysis of variance tables (Kabacoff chapter 9, p. 227).
+### 2.) Analysis of Variance
+
+### a.) 
+
+__(2 points)__
+
++ Perform an analysis of variance with *aov()* on L_RATIO using CLASS and SEX as the independent variables _(Kabacoff chapter 9, p. 212-229)_. 
++ Assume equal variances. 
++ Perform two analyses. 
++ First, fit a model _with_ the interaction term __CLASS:SEX__. 
++ Then, fit a model _without_ __CLASS:SEX__. 
++ Use *summary()* to obtain the analysis of variance tables (Kabacoff chapter 9, p. 227).
 
 ```{r Part_2a}
 
+anova_1 <- aov(L_Ratio ~ Class * Sex, data = mydata)
+summary(anova_1)
+
+anova_2 <- aov(L_Ratio ~ Class + Sex, data = mydata)
+summary(anova_2)
 
 ```
 
@@ -191,7 +229,11 @@ Test the homogeneity of variance across classes using *bartlett.test()* (Kabacof
 
 ***Answer: (Enter your answer here.)***
 
-(2)(b) (2 points) For the model without CLASS:SEX (i.e. an interaction term), obtain multiple comparisons with the *TukeyHSD()* function. Interpret the results at the 95% confidence level (*TukeyHSD()* will adjust for unequal sample sizes). 
+### b.) 
+__(2 points)__
+
++ For the model without CLASS:SEX (i.e. an interaction term), obtain multiple comparisons with the *TukeyHSD()* function. 
++ Interpret the results at the 95% confidence level (*TukeyHSD()* will adjust for unequal sample sizes). 
 
 ```{r Part_2b}
 
