@@ -163,11 +163,48 @@ Use the given data to answer the question.
 
 What is the critical value for the F- test at 95% confidence?
 
+<table style="width: 382px; height: 106px;" border="1">
+<tbody>
+<tr>
+<td>&nbsp;</td>
+<td>DF</td>
+<td>SS</td>
+<td>MS</td>
+<td>F</td>
+<td>p</td>
+</tr>
+<tr>
+<td>Factor</td>
+<td>3</td>
+<td>13.500</td>
+<td>4.500</td>
+<td>5.17</td>
+<td>0.011</td>
+</tr>
+<tr>
+<td>Error</td>
+<td>16</td>
+<td>13.925</td>
+<td>0.870</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Total</td>
+<td>19</td>
+<td>27.425</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table> 
+
+
 ```{r echo = T}
 
-qf(.95, df1 = 5, df2 = 2)
+pretty_vector(round(qf(.95, 3, 16, lower.tail = T), 3), "Critical Value")
 
-pf(.95)
 ```
 
 ## 7.)
@@ -190,13 +227,85 @@ Provide an appropriate response.
 
 Fill in the missing entries in the following partially completed one-way ANOVA table.
 
-Source	df	SS	MS-SS/df	F-statistic
-Treatment	 	22.2	 	 
-Error	26	 	4	 
-Total	31	 	 	 
+<table style="width: 472px; height: 106px;" border="1">
+<tbody>
+<tr>
+<td>Source</td>
+<td>df</td>
+<td>SS</td>
+<td>MS-SS/df</td>
+<td>F-statistic</td>
+</tr>
+<tr>
+<td>Treatment</td>
+<td>&nbsp;</td>
+<td>22.2</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Error</td>
+<td>26</td>
+<td>&nbsp;</td>
+<td>4</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Total</td>
+<td>31</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+
+Answer:
+
+<table style="width: 472px; height: 106px;" border="1">
+<tbody>
+<tr>
+<td>Source</td>
+<td>df</td>
+<td>SS</td>
+<td>MS-SS/df</td>
+<td>F-statistic</td>
+</tr>
+<tr>
+<td>Treatment</td>
+<td>5</td>
+<td>22.2</td>
+<td>4.44</td>
+<td>1.11</td>
+</tr>
+<tr>
+<td>Error</td>
+<td>26</td>
+<td>104</td>
+<td>4</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Total</td>
+<td>31</td>
+<td>126.2</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
 
 ```{r}
 
+31 - 26 # treatment df
+
+22.2 / 5 # treatment MS-SS/df 
+
+26 * 4 # ss error
+
+104 + 22.2 # ss total
+
+4.44 / 4 # f-statistic
 
 ```
 
