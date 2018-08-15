@@ -239,7 +239,11 @@ __(2 points)__
 
 ```{r Part_2b}
 
-TukeyHSD(anova_2)
+tukey.results <- TukeyHSD(anova_2)
+
+pretty_kable(tukey.results$Class, "Tukey Class", dig = 3)
+
+pretty_kable(tukey.results$Sex, "Tukey Sex", dig = 3)
 
 ```
 
