@@ -202,9 +202,9 @@ L_Ratio comes from a normal distribution according to Bartless's Test for Equali
 
 -----
 
-### 2.) Analysis of Variance
+## 2.) Analysis of Variance
 
-### a.) 
+### a.) ANOVA
 
 __(2 points)__
 
@@ -231,7 +231,7 @@ __Answer:__
 
 It means the join effect of Class and Sex is not statistically higher than the sum of both effect individually.
 
-### b.) 
+### b.) Tukey
 __(2 points)__
 
 + For the model without CLASS:SEX (i.e. an interaction term), obtain multiple comparisons with the *TukeyHSD()* function. 
@@ -239,6 +239,7 @@ __(2 points)__
 
 ```{r Part_2b}
 
+TukeyHSD(anova_2)
 
 ```
 
@@ -248,7 +249,12 @@ __(2 points)__
 
 -----
 
-(3)(a) (2 points) Use *combineLevels()* from the 'rockchalk' package to combine "M" and "F" into a new level, "ADULT". This will necessitate defining a new variable, TYPE, in mydata which will have two levels:  "I" and "ADULT". Present side-by-side histograms of VOLUME. One should display infant volumes and, the other, adult volumes. 
+## 3.)
+
+### a.) 
+__(2 points)__
+
+Use *combineLevels()* from the 'rockchalk' package to combine "M" and "F" into a new level, "ADULT". This will necessitate defining a new variable, TYPE, in mydata which will have two levels:  "I" and "ADULT". Present side-by-side histograms of VOLUME. One should display infant volumes and, the other, adult volumes. 
 
 ```{r Part_3a}
 
@@ -259,7 +265,13 @@ __(2 points)__
 
 ***Answer: (Enter your answer here.)***
 
-(3)(b) (3 points) Create a scatterplot of SHUCK versus VOLUME and a scatterplot of their base ten logarithms, labeling the variables as L_SHUCK and L_VOLUME. Please be aware the variables, L_SHUCK and L_VOLUME, present the data as orders of magnitude (i.e. VOLUME = 100 = 10^2 becomes L_VOLUME = 2). Use color to differentiate CLASS in the plots. Repeat using color to differentiate by TYPE. 
+### b.) 
+__(3 points)__
+
++ Create a scatterplot of SHUCK versus VOLUME and a scatterplot of their base ten logarithms, labeling the variables as L_SHUCK and L_VOLUME. 
++ Please be aware the variables, L_SHUCK and L_VOLUME, present the data as orders of magnitude (i.e. VOLUME = 100 = 10^2 becomes L_VOLUME = 2). 
++ Use color to differentiate CLASS in the plots. 
++ Repeat using color to differentiate by TYPE. 
 
 ```{r Part_3b}
 
@@ -272,7 +284,12 @@ __(2 points)__
 
 -----
 
-(4)(a) (3 points) Since abalone growth slows after class A3, infants in classes A4 and A5 are considered mature and candidates for harvest. Reclassify the infants in classes A4 and A5 as ADULTS. This reclassification can be achieved using *combineLevels()*, but only on the abalones in classes A4 and A5.  You will use this recoded TYPE variable, in which the infants in A4 and A5 are reclassified as ADULTS, for the remainder of this data analysis assignment.
+## 4.)
+
+### a.) 
+__(3 points)__
+
+Since abalone growth slows after class A3, infants in classes A4 and A5 are considered mature and candidates for harvest. Reclassify the infants in classes A4 and A5 as ADULTS. This reclassification can be achieved using *combineLevels()*, but only on the abalones in classes A4 and A5.  You will use this recoded TYPE variable, in which the infants in A4 and A5 are reclassified as ADULTS, for the remainder of this data analysis assignment.
 
 Regress L_SHUCK as the dependent variable on L_VOLUME, CLASS and TYPE (Kabacoff Section 8.2.4, p. 178-186, the Data Analysis Video #2 and Black Section 14.2). Use the multiple regression model: L_SHUCK ~ L_VOLUME + CLASS + TYPE. Apply *summary()* to the model object to produce results.
 
@@ -295,14 +312,27 @@ The next two analysis steps involve an analysis of the residuals resulting from 
 
 -----
 
-(5)(a) (3 points) If "model" is the regression object, use model$residuals and construct a histogram and QQ plot. Compute the skewness and kurtosis. Be aware that with 'rockchalk,' the kurtosis value has 3.0 subtracted from it which differs from the 'moments' package. 
+## 5.)
+
+### a.)
+__(3 points)__
+
++ If "model" is the regression object, use model$residuals and construct a histogram and QQ plot. 
++ Compute the skewness and kurtosis. 
++ Be aware that with 'rockchalk,' the kurtosis value has 3.0 subtracted from it which differs from the 'moments' package. 
 
 ```{r Part_5a}
 
 
 ```
 
-(5)(b) (3 points) Plot the residuals versus L_VOLUME, coloring the data points by CLASS and, a second time, coloring the data points by TYPE. Keep in mind the y-axis and x-axis may be disproportionate which will amplify the variability in the residuals. Present boxplots of the residuals differentiated by CLASS and TYPE (These four plots can be conveniently presented on one page using *par(mfrow..)* or *grid.arrange()*. Test the homogeneity of variance of the residuals across classes using *bartlett.test()* (Kabacoff Section 9.3.2, p. 222).  
+### b.)
+__(3 points)__
+
++ Plot the residuals versus L_VOLUME, coloring the data points by CLASS and, a second time, coloring the data points by TYPE. 
++ Keep in mind the y-axis and x-axis may be disproportionate which will amplify the variability in the residuals. 
++ Present boxplots of the residuals differentiated by CLASS and TYPE (These four plots can be conveniently presented on one page using *par(mfrow..)* or *grid.arrange()*. 
++ Test the homogeneity of variance of the residuals across classes using *bartlett.test()* (Kabacoff Section 9.3.2, p. 222).  
 
 ```{r Part_5b}
 
@@ -321,45 +351,55 @@ The next steps in the assignment will require consideration of the proportions o
 
 -----
 
-(6)(a) (2 points) A series of volumes covering the range from minimum to maximum abalone volume will be used in a "for loop" to determine how the harvest proportions change as the "cutoff" changes. Code for doing this is provided.
+## 6.)
+
+### a.)
+__(2 points)__
+
+A series of volumes covering the range from minimum to maximum abalone volume will be used in a "for loop" to determine how the harvest proportions change as the "cutoff" changes. Code for doing this is provided.
 
 ```{r Part_6a}
 
-#idxi <- mydata$TYPE == "I"
-#idxa <- mydata$TYPE == "ADULT"
+mydata$Type <- ifelse(mydata$Sex == "I", "I", "ADULT") # THIS IS WRONG
 
-#max.v <- max(mydata$VOLUME)
-#min.v <- min(mydata$VOLUME)
-#delta <- (max.v - min.v)/10000
-#prop.infants <- numeric(10000)
-#prop.adults <- numeric(10000)
-#volume.value <- numeric(10000)
+idxi <- mydata$Type == "I"
+idxa <- mydata$Type == "ADULT"
 
-#total.infants <- sum(idxi)  
-#total.adults <- sum(idxa)
+max.v <- max(mydata$Volume)
+min.v <- min(mydata$Volume)
+delta <- (max.v - min.v)/10000
+prop.infants <- numeric(10000)
+prop.adults <- numeric(10000)
+volume.value <- numeric(10000)
 
-#for (k in 1:10000) { 
-#	value <- min.v + k*delta
-#	volume.value[k] <- value
-#	prop.infants[k] <- sum(mydata$VOLUME[idxi] <= value)/total.infants
-#	prop.adults[k] <-  sum(mydata$VOLUME[idxa] <= value)/total.adults
-#}
+total.infants <- sum(idxi)  
+total.adults <- sum(idxa)
+
+for (k in 1:10000) { 
+	value <- min.v + k*delta
+	volume.value[k] <- value
+	prop.infants[k] <- sum(mydata$Volume[idxi] <= value) / total.infants
+	prop.adults[k] <- sum(mydata$Volume[idxa] <= value) / total.adults
+}
 
 # prop.infants shows the impact of increasing the volume cutoff for
 # harvesting. The following code shows how to "split" the population at
 # a 50% harvest of infants.
 
-#n.infants <- sum(prop.infants <= 0.5)
-#split.infants <- min.v + (n.infants + 0.5)*delta  # This estimates the desired volume.
-#split.infants
+n.infants <- sum(prop.infants <= 0.5)
+split.infants <- min.v + (n.infants + 0.5)*delta  # This estimates the desired volume.
+split.infants
 
-#n.adults <- sum(prop.adults <= 0.5)
-#split.adults <- min.v + (n.adults + 0.5)*delta
-#split.adults
+n.adults <- sum(prop.adults <= 0.5)
+split.adults <- min.v + (n.adults + 0.5)*delta
+split.adults
 
 ```
 
-(6)(b) (2 points) Present a plot showing the infant proportions and the adult proportions versus volume.value. Compute the 50% "split" volume.value for each and show on the plot.   
+### b.)
+__(2 points)__
+
+Present a plot showing the infant proportions and the adult proportions versus volume.value. Compute the 50% "split" volume.value for each and show on the plot.   
 
 ```{r Part_6b}
 
@@ -376,39 +416,61 @@ This part will address the determination of a volume.value corresponding to the 
 
 -----
 
-(7)(a) (1 point) Evaluate a plot of the difference ((1 - prop.adults) - (1 - prop.infants)) versus volume.value. Compare to the 50% "split" points determined in (6)(a). There is considerable variability present in the peak area of this plot. The observed "peak" difference may not be the best representation of the data. One solution is to smooth the data to determine a more representative estimate of the maximum difference.
+## 7.)
+
+### a.)
+__(1 point)__
+
++ Evaluate a plot of the difference ((1 - prop.adults) - (1 - prop.infants)) versus volume.value. 
++ Compare to the 50% "split" points determined in __(6)(a)__. 
++ There is considerable variability present in the peak area of this plot. 
++ The observed "peak" difference may not be the best representation of the data. 
++ One solution is to smooth the data to determine a more representative estimate of the maximum difference.
 
 ```{r Part_7a}
 
 
 ```
 
-(7)(b) (1 point) Since curve smoothing is not studied in this course, code is supplied below. Execute the following code to create a smoothed curve to append to the plot in (a). The procedure is to individually smooth (1-prop.adults) and (1-prop.infants) before determining an estimate of the maximum difference. 
+### b.)
+__(1 point)__
+
++ Since curve smoothing is not studied in this course, code is supplied below. 
++ Execute the following code to create a smoothed curve to append to the plot in __(a)__. 
++ The procedure is to individually smooth (1-prop.adults) and (1-prop.infants) before determining an estimate of the maximum difference. 
 
 ```{r Part_7b}
 
-#y.loess.a <- loess(1 - prop.adults ~ volume.value, span = 0.25,
-#	family = c("symmetric"))
-# y.loess.i <- loess(1 - prop.infants ~ volume.value, span = 0.25,
-#	family = c("symmetric"))
-#smooth.difference <- predict(y.loess.a) - predict(y.loess.i)
+y.loess.a <- loess(1 - prop.adults ~ volume.value, span = 0.25,
+	family = c("symmetric"))
+ y.loess.i <- loess(1 - prop.infants ~ volume.value, span = 0.25,
+	family = c("symmetric"))
+smooth.difference <- predict(y.loess.a) - predict(y.loess.i)
 
 ```
 
-(7)(c) (3 points) Present a plot of the difference ((1 - prop.adults) - (1 - prop.infants)) versus volume.value with the variable smooth.difference superimposed. Determine the volume.value corresponding to the maximum smoothed difference (Hint:  use *which.max()*). Show the estimated peak location corresponding to the cutoff determined.
+### c.) 
+__(3 points)__
+
++ Present a plot of the difference ((1 - prop.adults) - (1 - prop.infants)) versus volume.value with the variable smooth.difference superimposed. 
++ Determine the volume.value corresponding to the maximum smoothed difference (Hint:  use *which.max()*). 
++ Show the estimated peak location corresponding to the cutoff determined.
 
 ```{r Part_7c}
 
 
 ```
 
-(7)(d) (1 point) What separate harvest proportions for infants and adults would result if this cutoff is used? Show the separate harvest proportions (NOTE:  the adult harvest proportion is the "true positive rate" and the infant harvest proportion is the "false positive rate").
+### d.)
+__(1 point)__
+
+What separate harvest proportions for infants and adults would result if this cutoff is used? Show the separate harvest proportions (NOTE: the adult harvest proportion is the "true positive rate" and the infant harvest proportion is the "false positive rate").
 
 Code for calculating the adult harvest proportion is provided.
 
 ```{r Part_7d}
 
-# (1 - prop.adults)[which.max(smooth.difference)]  # [1] 0.7416332
+(1 - prop.adults)[which.max(smooth.difference)]  # [1] 0.7416332
 
 ```
 
@@ -418,35 +480,54 @@ There are alternative ways to determine cutoffs. Two such cutoffs are described 
 
 -----
 
-(8)(a) (2 points) Harvesting of infants in CLASS "A1" must be minimized. The smallest volume.value cutoff that produces a zero harvest of infants from CLASS "A1" may be used as a baseline for comparison with larger cutoffs. Any smaller cutoff would result in harvesting infants from CLASS "A1."  
+## 8.)
+
+### a.)
+__(2 points)__
+
+Harvesting of infants in CLASS "A1" must be minimized. The smallest volume.value cutoff that produces a zero harvest of infants from CLASS "A1" may be used as a baseline for comparison with larger cutoffs. Any smaller cutoff would result in harvesting infants from CLASS "A1."  
 
 Compute this cutoff, and the proportions of infants and adults with VOLUME exceeding this cutoff. Code for determining this cutoff is provided. Show these proportions.
 
 ```{r Part_8a}
 
-#volume.value[volume.value > max(mydata[mydata$CLASS == "A1" &
-#  mydata$TYPE == "I", "VOLUME"])][1] # [1] 206.786
+volume.value[volume.value > max(mydata[mydata$Class == "A1" &
+  mydata$Type == "I", "Volume"])][1] # [1] 206.786
 
 ```
 
-(8)(b) (2 points) Another cutoff is one for which the proportion of adults not harvested equals the proportion of infants harvested. This cutoff would equate these rates; effectively, our two errors:  'missed' adults and wrongly-harvested infants. This leaves for discussion which is the greater loss:  a larger proportion of adults not harvested or infants harvested?  This cutoff is 237.7383. Calculate the separate harvest proportions for infants and adults using this cutoff. Show these proportions.  Code for determining this cutoff is provided.  
+### b.)
+__(2 points)__
+
+Another cutoff is one for which the proportion of adults not harvested equals the proportion of infants harvested. This cutoff would equate these rates; effectively, our two errors:  'missed' adults and wrongly-harvested infants. This leaves for discussion which is the greater loss:  a larger proportion of adults not harvested or infants harvested?  This cutoff is 237.7383. Calculate the separate harvest proportions for infants and adults using this cutoff. Show these proportions.  Code for determining this cutoff is provided.  
 
 ```{r Part_8b}
 
-# volume.value[which.min(abs(prop.adults - (1-prop.infants)))] # [1] 237.6391
+volume.value[which.min(abs(prop.adults - (1-prop.infants)))] # [1] 237.6391
 
 ```
 
 -----
 
-(9)(a) (6 points) Construct an ROC curve by plotting (1 - prop.adults) versus (1 - prop.infants). Each point which appears corresponds to a particular volume.value. Show the location of the cutoffs determined in (7) and (8) on this plot and label each. 
+## 9.)
+
+### a.) 
+__(6 points)__
+
++ Construct an ROC curve by plotting (1 - prop.adults) versus (1 - prop.infants). 
++ Each point which appears corresponds to a particular volume.value. 
++ Show the location of the cutoffs determined in (7) and (8) on this plot and label each. 
 
 ```{r Part_9}
 
 
 ```
 
-(9)(b) (1 point) Numerically integrate the area under the ROC curve and report your result. This is most easily done with the *auc()* function from the "flux" package.   Areas-under-curve, or AUCs, greater than 0.8 are taken to indicate good discrimination potential. 
+### b.) 
+__(1 point)__
+
++ Numerically integrate the area under the ROC curve and report your result. This is most easily done with the *auc()* function from the "flux" package. 
++ Areas-under-curve, or AUCs, greater than 0.8 are taken to indicate good discrimination potential. 
 
 ```{r Part_9b}
 
@@ -455,7 +536,12 @@ Compute this cutoff, and the proportions of infants and adults with VOLUME excee
 
 -----
 
-(10)(a) (3 points) Prepare a table showing each cutoff along with the following:
+## 10.)
+
+### a.)
+__(3 points)__
+
+Prepare a table showing each cutoff along with the following:
  	1) true positive rate (1-prop.adults,
  	2) false positive rate (1-prop.infants),
  	3) harvest proportion of the total population
