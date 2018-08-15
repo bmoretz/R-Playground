@@ -73,13 +73,19 @@ pHat2 <- x2 / n2
 
 pHat <- (x1 + x2) / (n1 + n2)
 
-z <- (pHat1 - pHat2) / sqrt(pHat1 * (1 - pHat1) / n1) + ((pHat2) * (1 - pHat2) / n2)
+z <- (pHat1 - pHat2) / ( sqrt( pHat * ( 1 - pHat ) ) * sqrt(1/n1 + 1/n2))
 
-pretty_vector(round(pHat, 4))
+pretty_vector(round(z, 3))
 
-zScore <- (pHat2 - pHat1) / (sqrt((pHat * (1 - pHat)) * ((1 / n1) + (1 / n2))))
+p <- pnorm(z)
 
-pretty_vector(round(zScore, 3))
+pretty_vector(round(p, 4))
+
+alpha <- 1 - .9
+
+crit.value <- qnorm(alpha, lower.tail = F)
+
+ifelse(z > crit.value, "Reject Null", "Fail To Reject" )
 
 ```
 
@@ -152,10 +158,7 @@ pretty_vector(c(ci.lower, ci.upper), 3)
 One-way Analysis of Variance uses a F test to compare the variance between the treatment level means to the error variance (the pooled variance within levels).  For this test, 
 one assumption is that the observations are random samples drawn from normally distributed populations with unequal variances. 
 
-```{r echo = T}
-
-
-```
+__False__
 
 ## 6.)
 
@@ -217,6 +220,18 @@ Sample 1: multiple waiting lines: n1 = 13, s1 = 2.0 minutes
 Sample 2: single waiting line: n2 = 16, s2 = 1.1 minutes
 
 ```{r echo = T}
+
+#The statistic F=s1^2/s2^2 has an F distribution with (n1-1) and (n2-1) deg. freedom. 
+
+s1 <- 2.1
+s2 <- 1.1
+f.calc <- (2.1 ^ 2) / (1.1 ^ 2)
+
+f.table <- qf((1 - 0.01), 12, 15)
+
+p <- f.table - f.calc
+
+0.01 <= p && p <= 0.025
 
 ```
 
@@ -325,11 +340,25 @@ y   7  11  13   20  24
 
 data <- data.table(x = c(2, 4, 5, 6, 8), y = c(7, 11, 13, 20, 24))
 
-lm(x ~ y, data)
+n <- 5
 
-ggplot(data, aes(x, y)) +
-    geom_point() +
-	geom_smooth(method = "lm")
+xhat <- sum(1 / n * data$x)
+yhat <- sum(1 / n * data$y)
+
+sx <- round(sqrt(sum(1 / (n - 1) * (data$x - xhat) ** 2)), 3)
+sy = round(sqrt(sum(1 / (n - 1) * (data$y - yhat) ** 2)), 3)
+
+sxy <- sum(data$x * data$y)
+
+sxyn <- (sum(data$x) * sum(data$y)) / n
+
+sshat <- sum( ( data$x - xhat) ** 2 ) * sum( ( data$y - yhat) ** 2)
+
+b1 <- round( ( sxy - sxyn ) / sqrt( sshat ), 4 )
+
+y_hat <- round(b1 * ( sy / sx ), 4 )
+
+y_hat
 
 ```
 
@@ -339,7 +368,6 @@ If a linear correlation coefficient (Pearson correlation) is -0.8443 for data su
 and the r-squared value is 0.8443.
 
 
-```{r}
+__False__
 
-
-```
+The slope will also be negative since the correlation is negative, but the R2 does not equal 0.8443
