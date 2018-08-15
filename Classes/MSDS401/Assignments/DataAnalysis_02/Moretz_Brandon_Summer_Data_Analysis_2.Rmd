@@ -227,7 +227,9 @@ summary(anova_2)
 
 **Question (2 points):  Compare the two analyses.  What does the non-significant interaction term suggest about the relationship between L_RATIO and the factors CLASS and SEX?**
 
-***Answer: (Enter your answer here.)***
+__Answer:__
+
+It means the join effect of Class and Sex is not statistically higher than the sum of both effect individually.
 
 ### b.) 
 __(2 points)__
