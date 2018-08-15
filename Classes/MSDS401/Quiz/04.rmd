@@ -325,15 +325,11 @@ y   7  11  13   20  24
 
 data <- data.table(x = c(2, 4, 5, 6, 8), y = c(7, 11, 13, 20, 24))
 
-model <- lm(x ~ y, data)
-
-lm.intercept = coef(model)[[ 1 ]]
-lm.slope <- coef(model)[[ 2 ]]
+lm(x ~ y, data)
 
 ggplot(data, aes(x, y)) +
     geom_point() +
-	geom_abline(intercept = lm.intercept, slope = lm.slope, lwd = 2)
-
+	geom_smooth(method = "lm")
 
 ```
 

@@ -85,23 +85,6 @@ winsorize <- function(vals, pct) {
   c(rep(bottom, g), trimmed, rep(top, g))
 }
 
-# Computational Formula
-group_statistics <- function(data) {
-  colnames(data) <- c("Low", "High", "F")
-
-  data[, M := (Low + High) / 2][, FM := M * F]
-  data[, FMS := F * M ** 2]
-
-  n <- sum(data$F)
-  sFMS <- sum(data$FMS)
-  sFS <- sum(data$FM) ** 2 / n
-
-  var <- (sFMS - sFS) / n
-  sd <- sqrt(var)
-
-  data.table(Variance = round(var, 2), StdDev = round(sd, 2))
-}
-
 ```
 
 ## 1.)
@@ -178,10 +161,20 @@ getSummary(monthly_precipitation)[2]
 
 ## 6.)
 
-```{r echo = T}
+Multiple Choice 
 
+Which of the following is not a reason for eliminating an identified outlier from a data set prior to further statistical analysis?
 
-```
+<br />
+__Faulty Distribution Assumption__
+<br />
+Human error 
+<br />
+Intentional falsification 
+<br />
+Sampling the wrong population 
+<br />
+Standardization failure 
 
 ## 7.)
 
@@ -242,8 +235,6 @@ smfs <- sum(student.data$Mf) ** 2 / n
 var <- (smsf - smfs) / (n - 1)
 
 round(sqrt(var), 1)
-
-group_statistics(student.data)
 
 ```
 
