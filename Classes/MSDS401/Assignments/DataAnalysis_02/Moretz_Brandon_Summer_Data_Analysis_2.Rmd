@@ -64,8 +64,8 @@ pretty_vector <- function(vec, label = "") {
 	pander::pander(vec)
 }
 
-#base.dir <- "E:/GitHub/R-Playground"
-base.dir <- "C:/Projects/R/Playground"
+base.dir <- "E:/GitHub/R-Playground"
+#base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/DataAnalysis_02/data/")
 
@@ -315,16 +315,40 @@ pretty_vector(c("Adult" = quantile(infants$Volume, c(.50, .90))))
 
 ```
 
-### b.) 
+### b.) Shuck ~ Volume
 __(3 points)__
 
-+ Create a scatterplot of SHUCK versus VOLUME and a scatterplot of their base ten logarithms, labeling the variables as L_SHUCK and L_VOLUME. 
-+ Please be aware the variables, L_SHUCK and L_VOLUME, present the data as orders of magnitude (i.e. VOLUME = 100 = 10^2 becomes L_VOLUME = 2). 
-+ Use color to differentiate CLASS in the plots. 
-+ Repeat using color to differentiate by TYPE. 
++ Create a scatterplot of __SHUCK__ versus __VOLUME__ and a scatterplot of their base ten logarithms, labeling the variables as __L_SHUCK__ and __L_VOLUME__. 
++ Please be aware the variables, __L_SHUCK__ and __L_VOLUME__, present the data as orders of magnitude (i.e. VOLUME = 100 = 10^2 becomes L_VOLUME = 2). 
++ Use color to differentiate __CLASS__ in the plots. 
++ Repeat using color to differentiate by __TYPE__. 
 
 ```{r Part_3b}
 
+mydata$L_Shuck <- log10(mydata$Shuck)
+mydata$L_Volume <- log10(mydata$Volume)
+
+q3b_1 <- ggplot(mydata, aes(x = Volume, y = Shuck, color = Class)) +
+   geom_point() +
+   labs(title = "Shuck ~ Volume, Standard")
+
+q3b_2 <- ggplot(mydata, aes(x = L_Volume, y = L_Shuck, color = Class)) +
+   geom_point() +
+   scale_x_continuous(limits = c(0.5, 3)) +
+   labs(title = "Shuck ~ Volume, Logarithmic")
+
+grid.arrange(q3b_1, q3b_2, nrow = 1)
+
+q3b_3 <- ggplot(mydata, aes(x = Volume, y = Shuck, color = Type)) +
+   geom_point() +
+   labs(title = "Shuck ~ Volume, Standard")
+
+q3b_4 <- ggplot(mydata, aes(x = L_Volume, y = L_Shuck, color = Type)) +
+   geom_point() +
+   scale_x_continuous(limits = c(0.5, 3)) +
+   labs(title = "Shuck ~ Volume, Logarithmic")
+
+grid.arrange(q3b_3, q3b_4, nrow = 1)
 
 ```
 
@@ -334,14 +358,18 @@ __(3 points)__
 
 -----
 
-## 4.)
+## 4.) Age Class
 
 ### a.) 
 __(3 points)__
 
-Since abalone growth slows after class A3, infants in classes A4 and A5 are considered mature and candidates for harvest. Reclassify the infants in classes A4 and A5 as ADULTS. This reclassification can be achieved using *combineLevels()*, but only on the abalones in classes A4 and A5.  You will use this recoded TYPE variable, in which the infants in A4 and A5 are reclassified as ADULTS, for the remainder of this data analysis assignment.
++ Since abalone growth slows after class A3, infants in classes A4 and A5 are considered mature and candidates for harvest. 
++ Reclassify the infants in classes A4 and A5 as ADULTS.
++ This reclassification can be achieved using *combineLevels()*, but only on the abalones in classes A4 and A5. 
++ You will use this recoded TYPE variable, in which the infants in A4 and A5 are reclassified as ADULTS, for the remainder of this data analysis assignment.
 
-Regress L_SHUCK as the dependent variable on L_VOLUME, CLASS and TYPE (Kabacoff Section 8.2.4, p. 178-186, the Data Analysis Video #2 and Black Section 14.2). Use the multiple regression model: L_SHUCK ~ L_VOLUME + CLASS + TYPE. Apply *summary()* to the model object to produce results.
++ Regress L_SHUCK as the dependent variable on L_VOLUME, CLASS and TYPE (Kabacoff Section 8.2.4, p. 178-186, the Data Analysis Video #2 and Black Section 14.2). 
++ Use the multiple regression model: *L_SHUCK ~ L_VOLUME + CLASS + TYPE*. Apply *summary()* to the model object to produce results.
 
 ```{r Part_4a}
 
@@ -516,7 +544,7 @@ Code for calculating the adult harvest proportion is provided.
 
 ```{r Part_7d}
 
-(1 - prop.adults)[which.max(smooth.difference)]  # [1] 0.7416332
+# (1 - prop.adults)[which.max(smooth.difference)]  # [1] 0.7416332
 
 ```
 
