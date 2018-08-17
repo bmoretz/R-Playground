@@ -68,20 +68,15 @@ x1 <- 39
 n2 <- 100
 x2 <- 49
 
-pHat1 <- x1 / n1
-pHat2 <- x2 / n2
-
-pHat <- (x1 + x2) / (n1 + n2)
-
-z <- (pHat1 - pHat2) / ( sqrt( pHat * ( 1 - pHat ) ) * sqrt(1/n1 + 1/n2))
-
-pretty_vector(round(z, 3))
-
-p <- pnorm(z)
+p <- (x1 + x2) / (n1 + n2)
+std <- sqrt(p * (1 - p) * (1 / 100 + 1 / 100))
+z <- (0.49 - 0.39) / std
+z
+1 - pnorm(z, 0, 1, lower.tail = T)
 
 pretty_vector(round(p, 4))
 
-alpha <- 1 - .9
+alpha <- ( 1 - .9 ) / 2
 
 crit.value <- qnorm(alpha, lower.tail = F)
 

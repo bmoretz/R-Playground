@@ -85,6 +85,9 @@ loadDataFile <- function(file_name) {
 
 mydata <- loadDataFile("mydata.csv")
 
+# Fix Sex Factor
+mydata$Sex <- factor(x = mydata$Sex, levels = c("I", "F", "M"), labels = c("Infant", "Female", "Male"))
+
 str(mydata)
 
 ```
@@ -152,7 +155,7 @@ ggplot(mydata, aes(sample = L_Ratio)) +
 
 ```{r Part_1b_skewkurt}
 
-pretty_vector(c( Kurtosis = rockchalk::kurtosis(mydata$L_Ratio), Skewness = rockchalk::skewness(mydata$L_Ratio) ))
+pretty_vector(c(Kurtosis = rockchalk::kurtosis(mydata$L_Ratio), Skewness = rockchalk::skewness(mydata$L_Ratio)))
 
 ```
 
@@ -173,7 +176,7 @@ _(Kabacoff Section 9.2.2, p. 222)._
 
 ```{r Part_1c}
 
-bartless.l_ratio <- bartlett.test( L_Ratio ~ Class, data = mydata)
+bartless.l_ratio <- bartlett.test(L_Ratio ~ Class, data = mydata)
 
 qqPlot(lm(L_Ratio ~ Class, data = mydata),
 	simulate = T, main = "QQ-Plot L_Ratio", labels = F)
@@ -187,9 +190,10 @@ bartlett.ratio <- bartlett.test( Ratio ~ Class, data = mydata)
 qqPlot(lm(Ratio ~ Class, data = mydata),
 	simulate = T, main = "QQ-Plot Ratio", labels = F)
 
-bartless.ratio
+bartlett.ratio
 
 pretty_vector(c(P_Value = ifelse(bartlett.ratio$p.value < 0.05, "Reject Null", "Cannot Reject Null")))
+
 ```
 
 **Question (2 points):  Based on steps 1.a, 1.b and 1.c, which variable RATIO or L_RATIO exhibits better conformance to a normal distribution with homogeneous variances across age classes?  Why?** 
@@ -234,7 +238,7 @@ It means the join effect of Class and Sex is not statistically higher than the s
 ### b.) Tukey
 __(2 points)__
 
-+ For the model without CLASS:SEX (i.e. an interaction term), obtain multiple comparisons with the *TukeyHSD()* function. 
++ For the model without __CLASS:SEX__ (i.e. an interaction term), obtain multiple comparisons with the *TukeyHSD()* function. 
 + Interpret the results at the 95% confidence level (*TukeyHSD()* will adjust for unequal sample sizes). 
 
 ```{r Part_2b}
@@ -249,25 +253,67 @@ pretty_kable(tukey.results$Sex, "Tukey Sex", dig = 3)
 
 **Question (2 points):  first, interpret the trend in coefficients across age classes. What is this indicating about L_RATIO?  Second, do these results suggest male and female abalones can be combined into a single category labeled as 'adults?' If not, why not?**
 
-***Answer: (Enter your answer here.)***
+__Answer:__
+
+The trends in age class is interesting in that A4 and A5 are significantly different from each other in every regard. By this I mean that, A4 and A5 to A1/A2 and A3 all show 
+significant differences ( p < 0.001 ), as well as A4 and A5 to each other ( p < 0.001 ) as well. This suggests that once abalones age to class A4 and beyond they're no longer 
+similar to any other age class.
+
+Secondly, Male and Female abalones have a .941 similarity in means, suggesting they're well beyond statistically significant, almost to the point of being identical. It would
+be logical to just combine them and split the abalones into Infants and Adults for ratio analysis.
 
 -----
 
-## 3.)
+## 3.) Infant / Adult
 
-### a.) 
+### a.) Type
+
 __(2 points)__
 
-Use *combineLevels()* from the 'rockchalk' package to combine "M" and "F" into a new level, "ADULT". This will necessitate defining a new variable, TYPE, in mydata which will have two levels:  "I" and "ADULT". Present side-by-side histograms of VOLUME. One should display infant volumes and, the other, adult volumes. 
++ Use *combineLevels()* from the 'rockchalk' package to combine "M" and "F" into a new level, "ADULT". This will necessitate defining a new variable, TYPE, in mydata which will have two levels:  "I" and "ADULT". 
++ Present side-by-side histograms of VOLUME. 
++ One should display infant volumes and, the other, adult volumes. 
 
 ```{r Part_3a}
 
+mydata$Type <- combineLevels(mydata$Sex, c("Male", "Female"), "Adult")
+
+stopifnot(sum(mydata$Type == "Adult") == 707)
+stopifnot(sum(mydata$Type == "Infant") == 329)
+
+infants <- mydata[mydata$Type == "Infant"]
+
+stopifnot(nrow(infants) == 329)
+
+ggplot(infants, aes(Volume, fill = ..count..)) +
+	geom_histogram(breaks = pretty(infants$Volume)) +
+	labs(title = "Histogram of Infant Volume", caption = "MSDS 401: Data Analysis #3, Q3.a")
+
+adults <- mydata[mydata$Type == "Adult"]
+
+stopifnot(nrow(adults) == 707)
+
+ggplot(adults, aes(Volume, fill = ..count..)) +
+	geom_histogram(breaks = pretty(infants$Volume)) +
+	labs(title = "Histogram of Adult Volume", caption = "MSDS 401: Data Analysis #3, Q3.a")
 
 ```
 
 **Question (2 points): Compare the histograms.  How do the distributions differ? Are there going to be any difficulties separating infants from adults based on VOLUME?**
 
-***Answer: (Enter your answer here.)***
+__Answer:__
+
+The two distributions have distinct shapes, however, there is a significant amout of overlap in the 0 - 500 range. An abalone having volume > 500 we could assume with relative
+saftey would be adult, however, there are a significant amount of both infant and adult abalone in the lower range. Around 90% of infant abalone have a Volume measure
+that's less than the lower 50% of adult abalones, giving us reason to be concerned about overlap here.
+
+
+```{r question_3a_support}
+
+pretty_vector(c("Adult" = quantile(adults$Volume, c(.50, .75))))
+pretty_vector(c("Adult" = quantile(infants$Volume, c(.50, .90))))
+
+```
 
 ### b.) 
 __(3 points)__
@@ -364,10 +410,8 @@ A series of volumes covering the range from minimum to maximum abalone volume wi
 
 ```{r Part_6a}
 
-mydata$Type <- ifelse(mydata$Sex == "I", "I", "ADULT") # THIS IS WRONG
-
-idxi <- mydata$Type == "I"
-idxa <- mydata$Type == "ADULT"
+idxi <- mydata$Type == "Infant"
+idxa <- mydata$Type == "Adult"
 
 max.v <- max(mydata$Volume)
 min.v <- min(mydata$Volume)
@@ -376,7 +420,7 @@ prop.infants <- numeric(10000)
 prop.adults <- numeric(10000)
 volume.value <- numeric(10000)
 
-total.infants <- sum(idxi)  
+total.infants <- sum(idxi)
 total.adults <- sum(idxa)
 
 for (k in 1:10000) { 
@@ -445,11 +489,9 @@ __(1 point)__
 
 ```{r Part_7b}
 
-y.loess.a <- loess(1 - prop.adults ~ volume.value, span = 0.25,
-	family = c("symmetric"))
- y.loess.i <- loess(1 - prop.infants ~ volume.value, span = 0.25,
-	family = c("symmetric"))
-smooth.difference <- predict(y.loess.a) - predict(y.loess.i)
+# y.loess.a <- loess(1 - prop.adults ~ volume.value, span = 0.25, family = c("symmetric"))
+# y.loess.i <- loess(1 - prop.infants ~ volume.value, span = 0.25, family = c("symmetric"))
+# smooth.difference <- predict(y.loess.a) - predict(y.loess.i)
 
 ```
 
@@ -495,8 +537,8 @@ Compute this cutoff, and the proportions of infants and adults with VOLUME excee
 
 ```{r Part_8a}
 
-volume.value[volume.value > max(mydata[mydata$Class == "A1" &
-  mydata$Type == "I", "Volume"])][1] # [1] 206.786
+#volume.value[volume.value > max(mydata[mydata$Class == "A1" &
+#  mydata$Type == "Infant", "Volume"])][1] # [1] 206.786
 
 ```
 
@@ -507,7 +549,7 @@ Another cutoff is one for which the proportion of adults not harvested equals th
 
 ```{r Part_8b}
 
-volume.value[which.min(abs(prop.adults - (1-prop.infants)))] # [1] 237.6391
+# volume.value[which.min(abs(prop.adults - (1-prop.infants)))] # [1] 237.6391
 
 ```
 
