@@ -159,7 +159,7 @@ results <- data.table(Size = c(10, 40, 160),
 	   StdDev = c(skew10.sd, skew40.sd, skew160.tsd),
        Theoretical = c(skew10.tsd, skew40.tsd, skew160.tsd))
 
-pretty_kable(results, "Standard Deviations or Skewness")
+pretty_kable(results, "Standard Deviations of Skewness")
 
 ```
 

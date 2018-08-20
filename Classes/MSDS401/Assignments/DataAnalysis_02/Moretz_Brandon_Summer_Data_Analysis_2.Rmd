@@ -20,8 +20,6 @@ knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 
 __75 points total__
 
-_Raw Data_
-
 ```{r analysis_setup1, message = FALSE, warning = FALSE}
 
 library(data.table, quietly = TRUE, warn.conflicts = FALSE)
@@ -64,8 +62,8 @@ pretty_vector <- function(vec, label = "") {
 	pander::pander(vec)
 }
 
-base.dir <- "E:/GitHub/R-Playground"
-#base.dir <- "C:/Projects/R/Playground"
+#base.dir <- "E:/GitHub/R-Playground"
+base.dir <- "C:/Projects/R/Playground"
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/DataAnalysis_02/data/")
 
@@ -88,7 +86,11 @@ mydata <- loadDataFile("mydata.csv")
 # Fix Sex Factor
 mydata$Sex <- factor(x = mydata$Sex, levels = c("I", "F", "M"), labels = c("Infant", "Female", "Male"))
 
-str(mydata)
+pretty_str <- data.table(Variable = names(mydata),
+	Classes = sapply(mydata, typeof),
+	Glimpse = sapply(mydata, function(x) paste0(head(x), collapse = ", ")))
+
+pretty_kable(pretty_str, "Abalones Raw Data")
 
 ```
 
@@ -217,15 +219,27 @@ __(2 points)__
 + Perform two analyses. 
 + First, fit a model _with_ the interaction term __CLASS:SEX__. 
 + Then, fit a model _without_ __CLASS:SEX__. 
-+ Use *summary()* to obtain the analysis of variance tables (Kabacoff chapter 9, p. 227).
++ Use *summary()* to obtain the analysis of variance tables (_Kabacoff chapter 9, p. 227_).
 
 ```{r Part_2a}
 
-anova_1 <- aov(L_Ratio ~ Class * Sex, data = mydata)
-summary(anova_1)
+get_anova <- function(model, data) {
+	lm.fit <- lm(model, data)
+	anova <- aov(lm.fit)
+	anova.sum <- summary(anova)
 
-anova_2 <- aov(L_Ratio ~ Class + Sex, data = mydata)
-summary(anova_2)
+	as.data.table(cbind(Variable = c(attr(lm.fit$terms, "term.labels"), "Residuals"), rbindlist(anova.sum)))
+}
+
+# w/ Interaction Term
+model_1 <- { L_Ratio ~ Class * Sex }
+anova_1 <- get_anova(model_1, mydata)
+pretty_kable(anova_1, pretty_vector(model_1), dig = 4)
+
+# No Interaction Term
+model_2 <- { L_Ratio ~ Class + Sex }
+anova_2 <- get_anova(model_2, mydata)
+pretty_kable(anova_2, pretty_vector(model_2), dig = 4)
 
 ```
 
@@ -243,7 +257,7 @@ __(2 points)__
 
 ```{r Part_2b}
 
-tukey.results <- TukeyHSD(anova_2)
+tukey.results <- TukeyHSD(aov(model_2, data = mydata))
 
 pretty_kable(tukey.results$Class, "Tukey Class", dig = 3)
 
@@ -276,7 +290,8 @@ __(2 points)__
 
 ```{r Part_3a}
 
-mydata$Type <- combineLevels(mydata$Sex, c("Male", "Female"), "Adult")
+# capture the output from combineLevels into a throw-away variable.
+discard <- capture.output( mydata$Type <- combineLevels(mydata$Sex, c("Male", "Female"), "Adult") )
 
 stopifnot(sum(mydata$Type == "Adult") == 707)
 stopifnot(sum(mydata$Type == "Infant") == 329)
@@ -363,19 +378,44 @@ grid.arrange(q3b_3, q3b_4, nrow = 1)
 ### a.) 
 __(3 points)__
 
-+ Since abalone growth slows after class A3, infants in classes A4 and A5 are considered mature and candidates for harvest. 
-+ Reclassify the infants in classes A4 and A5 as ADULTS.
-+ This reclassification can be achieved using *combineLevels()*, but only on the abalones in classes A4 and A5. 
-+ You will use this recoded TYPE variable, in which the infants in A4 and A5 are reclassified as ADULTS, for the remainder of this data analysis assignment.
++ Since abalone growth slows after class __A3__, infants in classes __A4 and A5__ are considered mature and candidates for harvest. 
++ Reclassify the infants in classes __A4 and A5__ as _ADULTS_.
++ This reclassification can be achieved using *combineLevels()*, but only on the abalones in classes __A4 and A5__. 
++ You will use this recoded TYPE variable, in which the infants in __A4__ and __A5__ are reclassified as _ADULTS_, for the remainder of this data analysis assignment.
 
-+ Regress L_SHUCK as the dependent variable on L_VOLUME, CLASS and TYPE (Kabacoff Section 8.2.4, p. 178-186, the Data Analysis Video #2 and Black Section 14.2). 
-+ Use the multiple regression model: *L_SHUCK ~ L_VOLUME + CLASS + TYPE*. Apply *summary()* to the model object to produce results.
++ Regress __L_SHUCK__ as the dependent variable on __L_VOLUME__, __CLASS__ and __TYPE__ (Kabacoff Section 8.2.4, p. 178-186, the Data Analysis Video #2 and Black Section 14.2). 
++ Use the multiple regression model: __L_SHUCK ~ L_VOLUME + CLASS + TYPE__. 
++ Apply *summary()* to the model object to produce results.
+
+<br />
 
 ```{r Part_4a}
 
+mydata[Type == "Infant" & Class %in% c("A4", "A5"), Type := "Adult"]
+
+lm.model <- { L_Shuck ~ L_Volume + Class + Type }
+
+pretty_vector(c(Model = lm.model))
+
+model <- lm(formula = lm.model, data = mydata)
+
+lm.sum <- summary(model)
+
+pretty_vector(round(summary(lm.sum$residuals), 6), "Residuals")
+
+pretty_kable(data.table(Variable = rownames(lm.sum$coefficients), lm.sum$coefficients), "Coefficients", dig = 5)
+
+pretty_vector(c(Residual_Std_Error = lm.sum$sigma, dof = lm.sum$df[2], Multiple_RSq = lm.sum$r.squared, Adjusted_Rsq = lm.sum$adj.r.squared))
+
+f <- lm.sum$fstatistic
+
+p_value <- pf(f[1], f[2], f[3], lower.tail = F)
+attributes(p_value) <- NULL
+
+pretty_vector(c(F_Stat = f, "p-value" = p_value))
 
 ```
-
+    
 **Question (2 points):  Interpret the trend in CLASS levelcoefficient estimates? (Hint:  this question is not asking if the estimates are statistically significant. It is asking for an interpretation of the pattern in these coefficients, and how this pattern relates to the earlier displays).**
 
 ***Answer: (Enter your answer here.)***
@@ -386,13 +426,16 @@ __(3 points)__
 
 -----
 
-The next two analysis steps involve an analysis of the residuals resulting from the regression model in (4)(a) (Kabacoff Section 8.2.4, p. 178-186, the Data Analysis Video #2).
+The next two analysis steps involve an analysis of the residuals resulting from the regression model in __(4)(a)__.
+
+_(Kabacoff Section 8.2.4, p. 178-186, the Data Analysis Video #2)_.
 
 -----
 
 ## 5.)
 
 ### a.)
+
 __(3 points)__
 
 + If "model" is the regression object, use model$residuals and construct a histogram and QQ plot. 
@@ -401,6 +444,18 @@ __(3 points)__
 
 ```{r Part_5a}
 
+lm.res <- data.table(Value = lm.sum$residuals)
+
+q4_1 <- ggplot(lm.res, aes(Value, fill = ..count..)) +
+	geom_histogram(breaks = pretty(lm.res$Value)) +
+	labs(title = "Histogram of Residuals", y = "Frequency", x = "Residuals")
+
+q4_2 <- ggplot(lm.res, aes(sample = Value)) +
+	stat_qq(color = "steelblue") +
+	stat_qq_line() +
+	labs(title = "QQ Plot of Residuals", y = "Sample Quantiles", x = "Theoretical Quantiles")
+
+grid.arrange(q4_1, q4_2, ncol = 2)
 
 ```
 
