@@ -55,19 +55,25 @@ pretty_vector <- function(vec, label = "") {
 	pander::pander(vec)
 }
 
-#base.dir <- "E:/GitHub/R-Playground"
-base.dir <- "C:/Projects/R/Playground"
+lp.w <- "E:/GitHub/R-Playground"
+lp.h <- "C:/Projects/R/Playground"
 
-data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/11_analysis_of_variance/data/")
+if (file.exists(lp.w)) {
+  base.dir <- lp.w
+} else if (file.exists(lp.h)) {
+  base.dir <- lp.h
+}
+
+data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/_Data Files/")
 
 # simple replacement for read.csv that returns a data.table.
 loadDataFile <- function(file_name) {
-	data.raw <- fread(paste0(data.path, file_name),
-		header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
+  data.raw <- fread(paste0(data.path, file_name),
+  header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
 
-	data <- setNames(data.raw, tools::toTitleCase(tolower(names(data.raw))))
+  data <- setNames(data.raw, tools::toTitleCase(tolower(names(data.raw))))
 
-	return(data)
+  return(data)
 }
 
 ```

@@ -35,38 +35,45 @@ library(GGally, quietly = TRUE, warn.conflicts = FALSE)
 library(knitr, quietly = TRUE, warn.conflicts = FALSE)
 library(RColorBrewer, quietly = TRUE, warn.conflicts = FALSE)
 library(moments, quietly = TRUE, warn.conflicts = FALSE)
+library(gplots, quietly = TRUE, warn.conflicts = FALSE)
 
 theme_set(theme_light())
 
 # Theme Overrides
 theme_update(plot.title = element_text(hjust = 0.5),
-			 axis.text.x = element_text(size = 10),
-			 axis.text.y = element_text(size = 10),
-			 axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
-			 legend.position = "top", legend.title = element_blank())
+       axis.text.x = element_text(size = 10),
+       axis.text.y = element_text(size = 10),
+       axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+       legend.position = "top", legend.title = element_blank())
 
 pretty_kable <- function(data, title, dig = 2) {
-	kable(data, caption = title, digits = dig, big.mark = "'") %>%
-		kable_styling(bootstrap_options = c("striped", "hover"))
+  kable(data, caption = title, digits = dig, big.mark = "'") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"))
 }
 
 pretty_vector <- function(vec, label = "") {
-	pander::pander(vec)
+  pander::pander(vec)
 }
 
-#base.dir <- "E:/GitHub/R-Playground"
-base.dir <- "C:/Projects/R/Playground"
+lp.w <- "E:/GitHub/R-Playground"
+lp.h <- "C:/Projects/R/Playground"
 
-data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/09_statistical_inference_hypothesis_testing_for_single_poulations/data/")
+if (file.exists(lp.w)) {
+  base.dir <- lp.w
+} else if (file.exists(lp.h)) {
+  base.dir <- lp.h
+}
+
+data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/_Data Files/")
 
 # simple replacement for read.csv that returns a data.table.
 loadDataFile <- function(file_name) {
-	data.raw <- fread(paste0(data.path, file_name),
-	    header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
+  data.raw <- fread(paste0(data.path, file_name),
+  header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
 
-	data <- setNames(data.raw, tools::toTitleCase(tolower(names(data.raw))))
+  data <- setNames(data.raw, tools::toTitleCase(tolower(names(data.raw))))
 
-	return(data)
+  return(data)
 }
 
 ```

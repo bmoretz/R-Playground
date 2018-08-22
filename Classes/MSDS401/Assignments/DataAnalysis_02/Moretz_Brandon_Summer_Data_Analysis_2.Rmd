@@ -62,8 +62,16 @@ pretty_vector <- function(vec, label = "") {
 	pander::pander(vec)
 }
 
-#base.dir <- "E:/GitHub/R-Playground"
-base.dir <- "C:/Projects/R/Playground"
+base.dir <- ""
+
+lp.w <- "E:/GitHub/R-Playground"
+lp.h <- "C:/Projects/R/Playground"
+
+if (file.exists(lp.w)) {
+    base.dir <- lp.w
+} else if (file.exists(lp.h)) {
+    base.dir <- lp.h
+}
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/DataAnalysis_02/data/")
 
@@ -125,7 +133,9 @@ ggplot(mydata, aes(sample = Ratio)) +
 
 
 ```{r Part_1a_kurtosis}
+
 pretty_vector(c(Kurtosis = rockchalk::kurtosis(mydata$Ratio)))
+
 ```
 
 ### b.) Log Scale
@@ -269,9 +279,19 @@ pretty_kable(tukey.results$Sex, "Tukey Sex", dig = 3)
 
 __Answer:__
 
-The trends in age class is interesting in that A4 and A5 are significantly different from each other in every regard. By this I mean that, A4 and A5 to A1/A2 and A3 all show 
+The trends in age class is interesting in that A3, A4 and A5 are significantly different from each other in every regard. By this I mean that, A3, A4 and A5 to A1 and A2 all show 
 significant differences ( p < 0.001 ), as well as A4 and A5 to each other ( p < 0.001 ) as well. This suggests that once abalones age to class A4 and beyond they're no longer 
-similar to any other age class.
+similar to any other age class. Also, A3 
+
+
+```{r question_2a_support}
+
+turkey.class <- as.data.table(cbind(row.names(tukey.results$Class), tukey.results$Class))
+colnames(turkey.class) <- c("Class", "diff", "lwr", "upr", "p_adj")
+
+pretty_kable(turkey.class[ p_adj < 0.05], "Tukey Class", dig = 3)
+
+```
 
 Secondly, Male and Female abalones have a .941 similarity in means, suggesting they're well beyond statistically significant, almost to the point of being identical. It would
 be logical to just combine them and split the abalones into Infants and Adults for ratio analysis.
@@ -456,6 +476,8 @@ q4_2 <- ggplot(lm.res, aes(sample = Value)) +
 	labs(title = "QQ Plot of Residuals", y = "Sample Quantiles", x = "Theoretical Quantiles")
 
 grid.arrange(q4_1, q4_2, ncol = 2)
+
+pretty_vector(c(Kurtosis = rockchalk::kurtosis(lm.res), Skewness = rockchalk::skewness(lm.res)))
 
 ```
 

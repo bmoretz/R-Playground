@@ -47,8 +47,18 @@ theme_update(plot.title = element_text(hjust = 0.5),
              axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
              legend.position = "top", legend.title = element_blank())
 
-#base.dir <- "E:/GitHub/R-Playground"
-base.dir <- "C:/Projects/R/Playground"
+base.dir <- ""
+
+lp.w <- "E:/GitHub/R-Playground"
+lp.h <- "C:/Projects/R/Playground"
+
+if (file.exists(lp.w)) {
+  base.dir <- lp.w
+} else if (file.exists(lp.h)) {
+  base.dir <- lp.h
+}
+
+data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/DataAnalysis_02/data/")
 
 data.path <- paste0(base.dir, "/Classes/MSDS401/Assignments/DataAnalysis_01/data/")
 
