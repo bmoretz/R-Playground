@@ -43,6 +43,7 @@ library(moments, quietly = TRUE, warn.conflicts = FALSE)
 library(flux, quietly = TRUE, warn.conflicts = FALSE)
 library(rockchalk, quietly = TRUE, warn.conflicts = FALSE)
 library(car, quietly = TRUE, warn.conflicts = FALSE)
+library(gplots, quietly = TRUE, warn.conflicts = FALSE)
 
 theme_set(theme_light())
 
@@ -279,22 +280,33 @@ pretty_kable(tukey.results$Sex, "Tukey Sex", dig = 3)
 
 __Answer:__
 
-The trends in age class is interesting in that A3, A4 and A5 are significantly different from each other in every regard. By this I mean that, A3, A4 and A5 to A1 and A2 all show 
-significant differences ( p < 0.001 ), as well as A4 and A5 to each other ( p < 0.001 ) as well. This suggests that once abalones age to class A4 and beyond they're no longer 
-similar to any other age class. Also, A3 
-
-
-```{r question_2a_support}
-
-turkey.class <- as.data.table(cbind(row.names(tukey.results$Class), tukey.results$Class))
-colnames(turkey.class) <- c("Class", "diff", "lwr", "upr", "p_adj")
-
-pretty_kable(turkey.class[ p_adj < 0.05], "Tukey Class", dig = 3)
-
-```
+The trends in age class is interesting in that A3, A4 and A5 are not significantly different from each other. By this I mean that A3, A4 and A5 all show no significant differences ( p < 0.05 ) 
+to any other class or each other ( p < 0.05 ). This suggests that we could choose to combine A1 and A2 into a single class if we wanted to for further analysis.
 
 Secondly, Male and Female abalones have a .941 similarity in means, suggesting they're well beyond statistically significant, almost to the point of being identical. It would
 be logical to just combine them and split the abalones into Infants and Adults for ratio analysis.
+
+```{r question_2a_support}
+
+tukey.class <- as.data.table(tukey.results$Class)
+tukey.class <- tukey.class[, lapply(.SD, as.numeric), .SDcols = colnames(tukey.class)[1:4]]
+tukey.class <- cbind(row.names(tukey.results$Class), tukey.class)
+
+colnames(tukey.class) <- c("Class", "diff", "lwr", "upr", "p_adj")
+
+ggplot(tukey.class, aes(x = Class, y = p_adj)) +
+	geom_point(color = "steelblue", size = 4) +
+	geom_hline(yintercept = 0.05, lwd = 1, color = "firebrick3") +
+	labs(title = "p values for Tukey Test", subtitle = "95% Confidence Level", caption = "L_Ratio ~ Class", x = " Class ",  y = " p value ")
+
+with(mydata, plotmeans(L_Ratio ~ Class))
+
+opar <- par(las = 2)
+par(mar=c(5,8,4,2))
+plot(tukey.results)
+par(opar)
+
+```
 
 -----
 
@@ -452,9 +464,9 @@ _(Kabacoff Section 8.2.4, p. 178-186, the Data Analysis Video #2)_.
 
 -----
 
-## 5.)
+## 5.) Residual Analysis
 
-### a.)
+### a.) Normality
 
 __(3 points)__
 
@@ -491,10 +503,42 @@ __(3 points)__
 
 ```{r Part_5b}
 
+data.residuals <- cbind(mydata, lm.res)
+
+q5b_1 <- ggplot(data.residuals, aes(x = L_Volume, y = Value, color = Class)) +
+	geom_point() +
+	scale_x_continuous(limits = c(0, 4)) +
+	scale_y_continuous(limits = c(-0.4, 0.4)) +
+    labs(title = "L_Volume ~ Residuals", y = "Residuals")
+
+q5b_2 <- ggplot(data.residuals, aes(x = L_Volume, y = Value, color = Type)) +
+	geom_point() +
+	scale_x_continuous(limits = c(0, 4)) +
+	scale_y_continuous(limits = c(-0.4, 0.4)) +
+	labs(y = "Residuals")
+
+grid.arrange(q5b_1, q5b_2, ncol = 2)
+
+q5b_3 <- ggplot(data.residuals, aes(x = Class, y = Value)) +
+	geom_boxplot(fill = "steelblue", outlier.color = "firebrick3", outlier.shape = 16) +
+    labs(y = "Residuals")
+
+q5b_4 <- ggplot(data.residuals, aes(x = Type, y = Value)) +
+	geom_boxplot(fill = "steelblue", outlier.color = "firebrick3", outlier.shape = 16) +
+	labs(y = "Residuals")
+
+grid.arrange(q5b_3, q5b_4, ncol = 2)
+
+bartlett.test(Residuals ~ Class, data = data.residuals[,.(Class, Residuals = Value)])
 
 ```
 
-**Question (3 points):  What is revealed by the displays and calculations in (5)(a) and (5)(b)? Does the model 'fit'?  Does this analysis indicate that L_VOLUME, and ultimately VOLUME, might be useful for harvesting decisions? Discuss.**  
+__Question (3 points):__  
+
++ What is revealed by the displays and calculations in __(5)(a)__ and __(5)(b)__? 
++ Does the model 'fit'?  
++ Does this analysis indicate that L_VOLUME, and ultimately VOLUME, might be useful for harvesting decisions? 
++ __Discuss.__
 
 ***Answer: (Enter your answer here.)***
 
@@ -506,7 +550,7 @@ The next steps in the assignment will require consideration of the proportions o
 
 -----
 
-## 6.)
+## 6.) Optimal Harvesting
 
 ### a.)
 __(2 points)__
