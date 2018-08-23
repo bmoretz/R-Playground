@@ -555,7 +555,7 @@ The next steps in the assignment will require consideration of the proportions o
 
 ## 6.) Optimal Harvesting
 
-### a.)
+### a.) Split Values
 
 __(2 points)__
 
@@ -599,7 +599,7 @@ pretty_vector( c( "Adult Split" = split.adults ) )
 
 ```
 
-### b.)
+### b.) Split Visual
 
 __(2 points)__
 
@@ -626,7 +626,7 @@ ggplot(harvest.prop) +
    geom_vline(xintercept = split.adults, lwd = .9, color = "darkgreen",, linetype = 11) +
    geom_text(x = split.infants + offset.x, y = split.infants.y - offset.y, label = round(split.infants, 2)) +
    geom_text(x = split.adults + offset.x, y = split.adults.y - offset.y, label = round(split.adults, 2)) +
-   labs(title = "Propotion of Adults and Infants Protected")
+   labs(title = "Propotion of Adults and Infants Protected", y = "Proportion")
 
 ```
 
@@ -636,16 +636,19 @@ From the information displayed, it would suggest to me that infants will be harv
 
 -----
 
-This part will address the determination of a volume.value corresponding to the observed maximum difference in harvest percentages of adults and infants. To calculate this result, the vectors of proportions from item (6) must be used. These proportions must be converted from "not harvested" to "harvested" proportions by using (1 - prop.infants) for infants, and (1 - prop.adults) for adults. The reason the proportion for infants drops sooner than adults is that infants are maturing and becoming adults with larger volumes.
+This part will address the determination of a volume.value corresponding to the observed maximum difference in harvest percentages of adults and infants. 
+To calculate this result, the vectors of proportions from item __(6)__ must be used. 
+These proportions must be converted from "not harvested" to "harvested" proportions by using *(1 - prop.infants)* for infants, and *(1 - prop.adults)* for adults. 
+The reason the proportion for infants drops sooner than adults is that infants are maturing and becoming adults with larger volumes.
 
 -----
 
-## 7.)
+## 7.) Harvest Proportions
 
-### a.)
+### a.) Difference
 __(1 point)__
 
-+ Evaluate a plot of the difference ((1 - prop.adults) - (1 - prop.infants)) versus volume.value. 
++ Evaluate a plot of the difference *((1 - prop.adults) - (1 - prop.infants))* versus volume.value. 
 + Compare to the 50% "split" points determined in __(6)(a)__. 
 + There is considerable variability present in the peak area of this plot. 
 + The observed "peak" difference may not be the best representation of the data. 
@@ -653,10 +656,15 @@ __(1 point)__
 
 ```{r Part_7a}
 
+prop.diff <- data.table( Volume = volume.value, Diff = ((1 - prop.adults) - (1 - prop.infants)))
+
+ggplot(prop.diff) +
+	geom_point(aes(x = Volume, y = Diff), color = "firebrick", lwd = .85) +
+	labs(title = "Difference in Harvest Proportions", y = "Difference in Proportions Harvested")
 
 ```
 
-### b.)
+### b.) Smoothed
 __(1 point)__
 
 + Since curve smoothing is not studied in this course, code is supplied below. 
@@ -665,34 +673,53 @@ __(1 point)__
 
 ```{r Part_7b}
 
-# y.loess.a <- loess(1 - prop.adults ~ volume.value, span = 0.25, family = c("symmetric"))
-# y.loess.i <- loess(1 - prop.infants ~ volume.value, span = 0.25, family = c("symmetric"))
-# smooth.difference <- predict(y.loess.a) - predict(y.loess.i)
+y.loess.a <- loess(1 - prop.adults ~ volume.value, span = 0.25, family = c("symmetric"))
+y.loess.i <- loess(1 - prop.infants ~ volume.value, span = 0.25, family = c("symmetric"))
+smooth.difference <- predict(y.loess.a) - predict(y.loess.i)
+
+offset.y <- .15
+
+prop.diff$Smooth <- smooth.difference
+
+smooth.max <- prop.diff[ Smooth == max(smooth.difference)]$Volume
+
+ggplot(prop.diff) +
+	geom_jitter(aes(x = Volume, y = Smooth), color = "steelblue3", lwd = .9) +
+	geom_vline(xintercept = smooth.max, lwd = 1, linetype = 11, color = "steelblue") +
+	geom_text(x = smooth.max + offset.x, y = split.adults.y - offset.y, angle = 90, label = paste("Volume = ", round(smooth.max, 3))) +
+	labs(title = "Difference in Harvest Proportions", y = "Difference in Proportions Harvested")
 
 ```
 
-### c.) 
+### c.) Combined
 __(3 points)__
 
-+ Present a plot of the difference ((1 - prop.adults) - (1 - prop.infants)) versus volume.value with the variable smooth.difference superimposed. 
-+ Determine the volume.value corresponding to the maximum smoothed difference (Hint:  use *which.max()*). 
++ Present a plot of the difference *((1 - prop.adults) - (1 - prop.infants))* versus volume.value with the variable smooth.difference superimposed. 
++ Determine the volume.value corresponding to the maximum smoothed difference (Hint: use *which.max()*). 
 + Show the estimated peak location corresponding to the cutoff determined.
 
 ```{r Part_7c}
 
+ggplot(prop.diff) +
+	geom_jitter(aes(x = Volume, y = Smooth), color = "steelblue3", lwd = .9) +
+	geom_point(aes(x = Volume, y = Diff), color = "firebrick", lwd = .85) +
+	geom_vline(xintercept = smooth.max, lwd = 1, linetype = 11, color = "steelblue") +
+	geom_text(x = smooth.max + offset.x, y = split.adults.y - offset.y, angle = 90, label = paste("Volume = ", round(smooth.max, 3))) +
+	labs(title = "Difference in Harvest Proportions", y = "Difference in Proportions Harvested")
 
 ```
 
 ### d.)
 __(1 point)__
 
-What separate harvest proportions for infants and adults would result if this cutoff is used? Show the separate harvest proportions (NOTE: the adult harvest proportion is the "true positive rate" and the infant harvest proportion is the "false positive rate").
++ What separate harvest proportions for infants and adults would result if this cutoff is used? 
++ Show the separate harvest proportions (NOTE: the adult harvest proportion is the __"true positive rate"__ and the infant harvest proportion is the __"false positive rate"__).
 
 Code for calculating the adult harvest proportion is provided.
 
 ```{r Part_7d}
 
-# (1 - prop.adults)[which.max(smooth.difference)]  # [1] 0.7416332
+(1 - prop.adults)[which.max(smooth.difference)]  # [1] 0.7416332
 
 ```
 
@@ -702,7 +729,7 @@ There are alternative ways to determine cutoffs. Two such cutoffs are described 
 
 -----
 
-## 8.)
+## 8.) Alternative Cutoffs
 
 ### a.)
 __(2 points)__
@@ -713,19 +740,26 @@ Compute this cutoff, and the proportions of infants and adults with VOLUME excee
 
 ```{r Part_8a}
 
-#volume.value[volume.value > max(mydata[mydata$Class == "A1" &
-#  mydata$Type == "Infant", "Volume"])][1] # [1] 206.786
+volume.value[volume.value > max(mydata[mydata$Class == "A1" &
+    mydata$Type == "Infant", "Volume"])][1] # [1] 206.786
 
 ```
 
 ### b.)
 __(2 points)__
 
-Another cutoff is one for which the proportion of adults not harvested equals the proportion of infants harvested. This cutoff would equate these rates; effectively, our two errors:  'missed' adults and wrongly-harvested infants. This leaves for discussion which is the greater loss:  a larger proportion of adults not harvested or infants harvested?  This cutoff is 237.7383. Calculate the separate harvest proportions for infants and adults using this cutoff. Show these proportions.  Code for determining this cutoff is provided.  
+Another cutoff is one for which the proportion of adults not harvested equals the proportion of infants harvested. 
+
++ This cutoff would equate these rates; effectively, our two errors:  'missed' adults and wrongly-harvested infants. 
++ This leaves for discussion which is the greater loss: a larger proportion of adults not harvested or infants harvested?  
++ This cutoff is 237.7383. 
++ Calculate the separate harvest proportions for infants and adults using this cutoff. Show these proportions.  
+
+_Code for determining this cutoff is provided._
 
 ```{r Part_8b}
 
-# volume.value[which.min(abs(prop.adults - (1-prop.infants)))] # [1] 237.6391
+volume.value[which.min(abs(prop.adults - (1-prop.infants)))] # [1] 237.6391
 
 ```
 
@@ -764,9 +798,9 @@ __(1 point)__
 __(3 points)__
 
 Prepare a table showing each cutoff along with the following:
- 	1) true positive rate (1-prop.adults,
- 	2) false positive rate (1-prop.infants),
- 	3) harvest proportion of the total population
++ 1.) true positive rate (1-prop.adults,
++ 2.) false positive rate (1-prop.infants),
++ 3.) harvest proportion of the total population
  	
 ```{r Part_10} 	
 
@@ -783,6 +817,7 @@ Prepare a table showing each cutoff along with the following:
 
 1. Would you make a specific recommendation or outline various choices and tradeoffs?
 2. What qualifications or limitations would you present regarding your analysis?
-3. If it is necessary to proceed based on the current analysis, what suggestions would you have for implementation of a cutoff?  4)  What suggestions would you have for planning future abalone studies of this type? 
+3. If it is necessary to proceed based on the current analysis, what suggestions would you have for implementation of a cutoff? 
+4. What suggestions would you have for planning future abalone studies of this type? 
 
 ***Answer: (Enter your answer here.)***
