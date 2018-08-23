@@ -12,7 +12,7 @@ output:
 
 ```{r setup, include = FALSE}
 # DO NOT ADD OR REVISE CODE HERE
-knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE, fig.width = 12)
 
 ```
 
@@ -509,7 +509,7 @@ q5b_1 <- ggplot(data.residuals, aes(x = L_Volume, y = Value, color = Class)) +
 	geom_point() +
 	scale_x_continuous(limits = c(0, 4)) +
 	scale_y_continuous(limits = c(-0.4, 0.4)) +
-    labs(title = "L_Volume ~ Residuals", y = "Residuals")
+    labs(y = "Residuals")
 
 q5b_2 <- ggplot(data.residuals, aes(x = L_Volume, y = Value, color = Type)) +
 	geom_point() +
@@ -546,13 +546,17 @@ __Question (3 points):__
 
 There is a tradeoff faced in managing abalone harvest. The infant population must be protected since it represents future harvests. On the other hand, the harvest should be designed to be efficient with a yield to justify the effort. This assignment will use VOLUME to form binary decision rules to guide harvesting. If VOLUME is below a "cutoff" (i.e. a specified volume), that individual will not be harvested. If above, it will be harvested. Different rules are possible.
 
-The next steps in the assignment will require consideration of the proportions of infants and adults harvested at different cutoffs. For this, similar "for-loops" will be used to compute the harvest proportions. These loops must use the same values for the constants min.v and delta and use the same statement "for(k in 1:10000)."  Otherwise, the resulting infant and adult proportions cannot be directly compared and plotted as requested. Note the example code supplied below.
+The next steps in the assignment will require consideration of the proportions of infants and adults harvested at different cutoffs. 
+
++ For this, similar "for-loops" will be used to compute the harvest proportions. These loops must use the same values for the constants min.v and delta and use the same statement "for(k in 1:10000)." 
++ Otherwise, the resulting infant and adult proportions cannot be directly compared and plotted as requested. Note the example code supplied below.
 
 -----
 
 ## 6.) Optimal Harvesting
 
 ### a.)
+
 __(2 points)__
 
 A series of volumes covering the range from minimum to maximum abalone volume will be used in a "for loop" to determine how the harvest proportions change as the "cutoff" changes. Code for doing this is provided.
@@ -585,27 +589,50 @@ for (k in 1:10000) {
 
 n.infants <- sum(prop.infants <= 0.5)
 split.infants <- min.v + (n.infants + 0.5)*delta  # This estimates the desired volume.
-split.infants
+
+pretty_vector( c( "Infant Split" = split.infants ) )
 
 n.adults <- sum(prop.adults <= 0.5)
 split.adults <- min.v + (n.adults + 0.5)*delta
-split.adults
+
+pretty_vector( c( "Adult Split" = split.adults ) )
 
 ```
 
 ### b.)
+
 __(2 points)__
 
 Present a plot showing the infant proportions and the adult proportions versus volume.value. Compute the 50% "split" volume.value for each and show on the plot.   
 
 ```{r Part_6b}
 
+harvest.prop <- data.table( Infant = prop.infants, Adult = prop.adults, Volume = volume.value)
+
+harvest.prop[, ':='(InfantDelta = abs(Volume - split.infants), AdultDelta = abs(Volume - split.adults))]
+
+split.infants.y <- harvest.prop[ InfantDelta == min(harvest.prop$InfantDelta)]$Infant
+split.adults.y <- first(harvest.prop[ AdultDelta == min(harvest.prop$AdultDelta) ]$Adult)
+
+offset.x <- 25
+offset.y <- .035
+
+ggplot(harvest.prop) +
+   geom_point(aes(x = Volume, y = Adult, color = "Adults")) +
+   geom_point(aes(x = Volume, y = Infant, color = "Infants")) +
+   geom_hline(yintercept = 0.5, color = "black", lwd = .9) +
+   scale_color_manual(values = c("steelblue3", "firebrick3")) +
+   geom_vline(xintercept = split.infants, lwd = .9, color = "darkgreen",, linetype = 11) +
+   geom_vline(xintercept = split.adults, lwd = .9, color = "darkgreen",, linetype = 11) +
+   geom_text(x = split.infants + offset.x, y = split.infants.y - offset.y, label = round(split.infants, 2)) +
+   geom_text(x = split.adults + offset.x, y = split.adults.y - offset.y, label = round(split.adults, 2)) +
+   labs(title = "Propotion of Adults and Infants Protected")
 
 ```
 
 **Question (2 points):  The two 50% "split" values serve a descriptive purpose illustrating the difference between the populations. What do these values suggest regarding possible cutoffs for harvesting?** 
 
-***Answer: (Enter your answer here.)***
+From the information displayed, it would suggest to me that infants will be harvested 
 
 -----
 
