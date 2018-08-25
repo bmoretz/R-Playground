@@ -294,11 +294,6 @@ tukey.class <- cbind(row.names(tukey.results$Class), tukey.class)
 
 colnames(tukey.class) <- c("Class", "diff", "lwr", "upr", "p_adj")
 
-ggplot(tukey.class, aes(x = Class, y = p_adj)) +
-	geom_point(color = "steelblue", size = 4) +
-	geom_hline(yintercept = 0.05, lwd = 1, color = "firebrick3") +
-	labs(title = "p values for Tukey Test", subtitle = "95% Confidence Level", caption = "L_Ratio ~ Class", x = " Class ",  y = " p value ")
-
 with(mydata, plotmeans(L_Ratio ~ Class))
 
 opar <- par(las = 2)
@@ -559,7 +554,9 @@ The next steps in the assignment will require consideration of the proportions o
 
 __(2 points)__
 
-A series of volumes covering the range from minimum to maximum abalone volume will be used in a "for loop" to determine how the harvest proportions change as the "cutoff" changes. Code for doing this is provided.
+A series of volumes covering the range from minimum to maximum abalone volume will be used in a "for loop" to determine how the harvest proportions change as the "cutoff" changes. 
+
+_Code for doing this is provided._
 
 ```{r Part_6a}
 
@@ -709,7 +706,7 @@ ggplot(prop.diff) +
 
 ```
 
-### d.)
+### d.) Cutoff
 __(1 point)__
 
 + What separate harvest proportions for infants and adults would result if this cutoff is used? 
@@ -719,7 +716,14 @@ Code for calculating the adult harvest proportion is provided.
 
 ```{r Part_7d}
 
-(1 - prop.adults)[which.max(smooth.difference)]  # [1] 0.7416332
+max.difference <- data.table(Volume = volume.value[which.max(smooth.difference)],
+		TPR = (1 - prop.adults)[which.max(smooth.difference)], # [1] 0.7416332
+		FPR = (1 - prop.infants)[which.max(smooth.difference)],
+		Yield = sum(mydata$Volume > max.difference.volume) / nrow(mydata))
+
+stopifnot(round(max.difference$TPR, 3) == .742)
+
+pretty_kable(max.difference, "Max Difference", dig = 3)
 
 ```
 
@@ -731,41 +735,64 @@ There are alternative ways to determine cutoffs. Two such cutoffs are described 
 
 ## 8.) Alternative Cutoffs
 
-### a.)
+### a.) Zero A1 Infants
 __(2 points)__
 
-Harvesting of infants in CLASS "A1" must be minimized. The smallest volume.value cutoff that produces a zero harvest of infants from CLASS "A1" may be used as a baseline for comparison with larger cutoffs. Any smaller cutoff would result in harvesting infants from CLASS "A1."  
+Harvesting of infants in CLASS "__A1__" must be minimized. The smallest volume.value cutoff that produces a zero harvest of infants from CLASS "__A1__" may be used as a baseline for 
+comparison with larger cutoffs. Any smaller cutoff would result in harvesting infants from CLASS "__A1__."  
 
-Compute this cutoff, and the proportions of infants and adults with VOLUME exceeding this cutoff. Code for determining this cutoff is provided. Show these proportions.
+Compute this cutoff, and the proportions of infants and adults with __VOLUME__ exceeding this cutoff. Code for determining this cutoff is provided. Show these proportions.
 
 ```{r Part_8a}
 
-volume.value[volume.value > max(mydata[mydata$Class == "A1" &
+zero.a1.volume <- volume.value[volume.value > max(mydata[mydata$Class == "A1" &
     mydata$Type == "Infant", "Volume"])][1] # [1] 206.786
+
+stopifnot(round(zero.a1.volume, 3) == 206.786)
+
+zero.a1.cutoff <- sum(volume.value <= zero.a1.volume)
+
+zero.a1.infants <- data.table(Volume = zero.a1.volume,
+		TPR = (1 - prop.adults)[zero.a1.cutoff],
+		FPR = (1 - prop.infants)[zero.a1.cutoff],
+		Yield = sum(mydata$Volume > zero.a1.volume) / nrow(mydata))
+
+pretty_kable(zero.a1.infants, "Zero A1 Infants", dig = 3)
 
 ```
 
-### b.)
+### b.) Inverse Cutoff
 __(2 points)__
 
 Another cutoff is one for which the proportion of adults not harvested equals the proportion of infants harvested. 
 
 + This cutoff would equate these rates; effectively, our two errors:  'missed' adults and wrongly-harvested infants. 
 + This leaves for discussion which is the greater loss: a larger proportion of adults not harvested or infants harvested?  
-+ This cutoff is 237.7383. 
++ This cutoff is 237.6391. 
 + Calculate the separate harvest proportions for infants and adults using this cutoff. Show these proportions.  
 
 _Code for determining this cutoff is provided._
 
 ```{r Part_8b}
 
-volume.value[which.min(abs(prop.adults - (1-prop.infants)))] # [1] 237.6391
+equal.error.volume <- volume.value[which.min(abs(prop.adults - (1 - prop.infants)))]
+
+stopifnot(round(equal.error.volume, 4) == 237.6391)
+
+equal.error.cutoff <- sum(volume.value <= equal.error.volume)
+
+equal.error <- data.table(Volume = equal.error.volume,
+		TPR = (1 - prop.adults)[equal.error.cutoff],
+		FPR = (1 - prop.infants)[equal.error.cutoff],
+		Yield = sum(mydata$Volume > equal.error.volume) / nrow(mydata))
+
+pretty_kable(equal.error, "Equal Error", dig = 3)
 
 ```
 
 -----
 
-## 9.)
+## 9.) ROC
 
 ### a.) 
 __(6 points)__
@@ -776,6 +803,18 @@ __(6 points)__
 
 ```{r Part_9}
 
+roc.data <- data.table(Infants = (1 - prop.infants), Adults = (1 - prop.adults), Volume = volume.value )
+
+ggplot() +
+	geom_point(data = roc.data, aes(x = Infants, y = Adults), color = "steelblue", lwd = .9) +
+	geom_abline(slope = 1, intercept = 0, color = "firebrick", lwd = .9, linetype = 11) +
+	geom_point(data = max.difference, aes(x = FPR, y = TPR, color = "Max Difference"), size = 4, shape = 21, stroke = 2) +
+	geom_point(data = zero.a1.infants, aes(x = FPR, y = TPR, color = "Zero A1 Infants"), size = 4, shape = 21, stroke = 2) +
+	geom_point(data = equal.error, aes(x = FPR, y = TPR, color = "Equal Error"), size = 4, shape = 21, stroke = 2) +
+	geom_text(aes(x = max.difference$FPR + .065, y = max.difference$TPR - .05), label = paste("max.difference\nvol =", round(max.difference$Volume, 1))) +
+	geom_text(aes(x = zero.a1.infants$FPR + .065, y = zero.a1.infants$TPR - .05), label = paste("zero A1 infants\nvol =", round(zero.a1.infants$Volume, 1))) +
+	geom_text(aes(x = equal.error$FPR - .1, y = equal.error$TPR + .0), label = paste("equal harvest\nvol =", round(equal.error$Volume, 1))) +
+	labs(title = "ROC curve of adult and infant harvest proportions", y = "Adult harvest proportion", x = "Infant harvest proportion" )
 
 ```
 
@@ -798,6 +837,7 @@ __(1 point)__
 __(3 points)__
 
 Prepare a table showing each cutoff along with the following:
+
 + 1.) true positive rate (1-prop.adults,
 + 2.) false positive rate (1-prop.infants),
 + 3.) harvest proportion of the total population
