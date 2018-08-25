@@ -44,6 +44,7 @@ library(flux, quietly = TRUE, warn.conflicts = FALSE)
 library(rockchalk, quietly = TRUE, warn.conflicts = FALSE)
 library(car, quietly = TRUE, warn.conflicts = FALSE)
 library(gplots, quietly = TRUE, warn.conflicts = FALSE)
+library(effects, quietly = TRUE, warn.conflicts = FALSE)
 
 theme_set(theme_light())
 
@@ -209,8 +210,11 @@ pretty_vector(c(P_Value = ifelse(bartlett.ratio$p.value < 0.05, "Reject Null", "
 
 ```
 
-**Question (2 points):  Based on steps 1.a, 1.b and 1.c, which variable RATIO or L_RATIO exhibits better conformance to a normal distribution with homogeneous variances across age classes?  Why?** 
+__Question (2 points):__ 
 
++Based on steps 1.a, 1.b and 1.c, which variable RATIO or L_RATIO exhibits better conformance to a normal distribution with homogeneous variances across age classes?  
++ Why?
+ 
 __Answer:__
 
 __L_Ratio__ exhibits better conformance to normality across classes due to the QQ-Plots falling closer in-line with the expected quantiles, lower Kurtosis, as well as having a less skewed 
@@ -254,7 +258,10 @@ pretty_kable(anova_2, pretty_vector(model_2), dig = 4)
 
 ```
 
-**Question (2 points):  Compare the two analyses.  What does the non-significant interaction term suggest about the relationship between L_RATIO and the factors CLASS and SEX?**
+__Question (2 points):__
+
++ Compare the two analyses.
++ What does the non-significant interaction term suggest about the relationship between __L_RATIO__ and the factors __CLASS__ and __SEX__?
 
 __Answer:__
 
@@ -276,7 +283,12 @@ pretty_kable(tukey.results$Sex, "Tukey Sex", dig = 3)
 
 ```
 
-**Question (2 points):  first, interpret the trend in coefficients across age classes. What is this indicating about L_RATIO?  Second, do these results suggest male and female abalones can be combined into a single category labeled as 'adults?' If not, why not?**
+__Question (2 points):__
+
++ First, interpret the trend in coefficients across age classes. 
++ What is this indicating about __L_RATIO__?
++ Second, do these results suggest male and female abalones can be combined into a single category labeled as 'adults?' 
++ If not, why not?
 
 __Answer:__
 
@@ -341,7 +353,11 @@ ggplot(adults, aes(Volume, fill = ..count..)) +
 
 ```
 
-**Question (2 points): Compare the histograms.  How do the distributions differ? Are there going to be any difficulties separating infants from adults based on VOLUME?**
+__Question (2 points):__
+
++ Compare the histograms.
++ How do the distributions differ? 
++ Are there going to be any difficulties separating infants from adults based on __VOLUME__?
 
 __Answer:__
 
@@ -394,15 +410,33 @@ grid.arrange(q3b_3, q3b_4, nrow = 1)
 
 ```
 
-**Question (3 points):  Compare the two scatterplots. What effect(s) does log-transformation appear to have on the variability present in the plot?  What are the implications for linear regression analysis? Where do the various CLASS levels appear in the plots? Where do the levels of TYPE appear in the plots?**
+__Question (3 points): __
 
-***Answer: (Enter your answer here.)***
+Compare the two scatterplots.
+
++ What effect(s) does log-transformation appear to have on the variability present in the plot?  
++ What are the implications for linear regression analysis? 
++ Where do the various CLASS levels appear in the plots? 
++ Where do the levels of TYPE appear in the plots?
+
+__Answer__:
+
+There is a reduction of variability of the logarithmic transformed Volume variable and gives clearer separation between the sex and age in the distribution. 
+The logarithmic version is considerably more suited for linear regression analysis. The sex variable is particularly well distributed with a visible cutoff 
+of the majority of infants lie below 2 on the logarithmic scale. Logarithmic version of Class also shows better conformity to a linear model, however, 
+the top 3 age classes, A3, A4 and A5 still exhibit a considerable amount of clustering at the right end of the scale.
+
+```{r question3b_support}
+
+pretty_vector(c(Ratio = var(mydata$Ratio), L_Ratio = var(mydata$L_Ratio)))
+
+```
 
 -----
 
 ## 4.) Age Class
 
-### a.) 
+### a.) Regression
 __(3 points)__
 
 + Since abalone growth slows after class __A3__, infants in classes __A4 and A5__ are considered mature and candidates for harvest. 
@@ -430,7 +464,9 @@ lm.sum <- summary(model)
 
 pretty_vector(round(summary(lm.sum$residuals), 6), "Residuals")
 
-pretty_kable(data.table(Variable = rownames(lm.sum$coefficients), lm.sum$coefficients), "Coefficients", dig = 5)
+lm.table <- data.table(Variable = rownames(lm.sum$coefficients), lm.sum$coefficients)
+
+pretty_kable(lm.table, "Coefficients", dig = 5)
 
 pretty_vector(c(Residual_Std_Error = lm.sum$sigma, dof = lm.sum$df[2], Multiple_RSq = lm.sum$r.squared, Adjusted_Rsq = lm.sum$adj.r.squared))
 
@@ -443,13 +479,35 @@ pretty_vector(c(F_Stat = f, "p-value" = p_value))
 
 ```
     
-**Question (2 points):  Interpret the trend in CLASS levelcoefficient estimates? (Hint:  this question is not asking if the estimates are statistically significant. It is asking for an interpretation of the pattern in these coefficients, and how this pattern relates to the earlier displays).**
+__Question (2 points):__
 
-***Answer: (Enter your answer here.)***
++ Interpret the trend in __CLASS__ levelcoefficient estimates? 
 
-**Question (2 points):  Is TYPE an important predictor in this regression? (Hint:  This question is not asking if TYPE is statistically significant, but rather how it compares to the other independent variables in terms of its contribution to predictions of L_SHUCK for harvesting decisions.)  Explain your conclusion.**
+_(Hint:  this question is not asking if the estimates are statistically significant. 
+It is asking for an interpretation of the pattern in these coefficients, and how this pattern relates to the earlier displays)._
 
-***Answer: (Enter your answer here.)***
+__Answer:__
+
+The age class level coefficients show a clear increasingly trend in the Class variable with respect to L_Shuck. Given the
+intercept is negative (meaning the expected value of Shuck would be negative given a value of 0 for our predictors), this means that we 
+would expect to add an increasingly large negative number as the classes go from A3 -> A5 (A2 is arguably not stastically significant, at a 10% level,
+while A3, A4 and A5 are), meaning that as that the class level variable increases, we would also expect L_Shuck to increase. 
+This is the pattern we also see in the displays.
+
+__Question (2 points):__ 
+
++ Is __TYPE__ an important predictor in this regression? 
+
+_(Hint:  This question is not asking if TYPE is statistically significant, but rather how it compares to the other independent 
+variables in terms of its contribution to predictions of L_SHUCK for harvesting decisions.)_
+
+Explain your conclusion.
+
+__Answer:__
+
+Type is also an important predictor in determining when to harvest abalone. The TypeAdult variable tells us that we can expect to add
+.02 to the Shuck variable when the Type is Adult, meaning that in general Adult abalone are larger in Shuck and Volume than
+Infant abalone, which is consistant with our display in __3b__.
 
 -----
 
@@ -488,12 +546,12 @@ pretty_vector(c(Kurtosis = rockchalk::kurtosis(lm.res), Skewness = rockchalk::sk
 
 ```
 
-### b.)
+### b.) Variance
 __(3 points)__
 
-+ Plot the residuals versus L_VOLUME, coloring the data points by CLASS and, a second time, coloring the data points by TYPE. 
++ Plot the residuals versus __L_VOLUME__, coloring the data points by __CLASS__ and, a second time, coloring the data points by __TYPE__. 
 + Keep in mind the y-axis and x-axis may be disproportionate which will amplify the variability in the residuals. 
-+ Present boxplots of the residuals differentiated by CLASS and TYPE (These four plots can be conveniently presented on one page using *par(mfrow..)* or *grid.arrange()*. 
++ Present boxplots of the residuals differentiated by __CLASS__ and __TYPE__ (These four plots can be conveniently presented on one page using *par(mfrow..)* or *grid.arrange()*. 
 + Test the homogeneity of variance of the residuals across classes using *bartlett.test()* (Kabacoff Section 9.3.2, p. 222).  
 
 ```{r Part_5b}
@@ -532,10 +590,16 @@ __Question (3 points):__
 
 + What is revealed by the displays and calculations in __(5)(a)__ and __(5)(b)__? 
 + Does the model 'fit'?  
-+ Does this analysis indicate that L_VOLUME, and ultimately VOLUME, might be useful for harvesting decisions? 
++ Does this analysis indicate that __L_VOLUME__, and ultimately __VOLUME__, might be useful for harvesting decisions? 
 + __Discuss.__
 
-***Answer: (Enter your answer here.)***
+__Answer:__
+
+The plots in __(5)(a)__ show a reasonably symmetric histogram and QQ plot, although there are a few outliers in the residuals, prominently distinguishable in
+the QQ-Plot. The histogram shows a great deal of clustering in the middle, however, also looking at the Kurtosis and Skewness of the residuals, we can see
+they are approximately zero indicating a relatively normal behavior indicating our model is relatively well fit for the data and that it may ultimately 
+provide useful in determining when to harvest abalone. The Bartlett test performed on Age Class indicates that the variance amoungst the Age Classes
+don't differ significantly __(p = .45)__, although the presence of a several outliers is an area of concern.
 
 -----
 
@@ -585,14 +649,12 @@ for (k in 1:10000) {
 # a 50% harvest of infants.
 
 n.infants <- sum(prop.infants <= 0.5)
-split.infants <- min.v + (n.infants + 0.5)*delta  # This estimates the desired volume.
-
-pretty_vector( c( "Infant Split" = split.infants ) )
+split.infants <- min.v + (n.infants + 0.5) * delta # This estimates the desired volume.
 
 n.adults <- sum(prop.adults <= 0.5)
 split.adults <- min.v + (n.adults + 0.5)*delta
 
-pretty_vector( c( "Adult Split" = split.adults ) )
+pretty_vector( c("Infant Split" = split.infants, "Adult Split" = split.adults ) )
 
 ```
 
@@ -627,9 +689,17 @@ ggplot(harvest.prop) +
 
 ```
 
-**Question (2 points):  The two 50% "split" values serve a descriptive purpose illustrating the difference between the populations. What do these values suggest regarding possible cutoffs for harvesting?** 
+__Question (2 points):__
 
-From the information displayed, it would suggest to me that infants will be harvested 
+The two 50% "split" values serve a descriptive purpose illustrating the difference between the populations. 
+
++ What do these values suggest regarding possible cutoffs for harvesting?
+
+__Answer:__
+
+From the information displayed, it would suggest to me that Infants will be harvested at a disproportional rate than Adult abalone based on the
+determined volume cutoff. The slope of the Infant line is much steeper and reaches the cutoff point relatively quickly, meaning  We have a high likelyhood 
+of harvesting a disproportant amount of infants leading to an overall less than optimal harvest yield.
 
 -----
 
@@ -803,9 +873,9 @@ pretty_kable(equal.error, "Equal Error", dig = 3)
 ### a.) Visual Area
 __(6 points)__
 
-+ Construct an ROC curve by plotting (1 - prop.adults) versus (1 - prop.infants). 
++ Construct an ROC curve by plotting *(1 - prop.adults)* versus *(1 - prop.infants)*. 
 + Each point which appears corresponds to a particular volume.value. 
-+ Show the location of the cutoffs determined in (7) and (8) on this plot and label each. 
++ Show the location of the cutoffs determined in __(7)__ and __(8)__ on this plot and label each. 
 
 ```{r Part_9}
 
@@ -819,7 +889,7 @@ ggplot() +
 	geom_point(data = equal.error, aes(x = FPR, y = TPR, color = "Equal Error"), size = 4, shape = 21, stroke = 2) +
 	geom_text(aes(x = max.difference$FPR + .065, y = max.difference$TPR - .05), label = paste("max.difference\nvol =", round(max.difference$Volume, 1))) +
 	geom_text(aes(x = zero.a1.infants$FPR + .065, y = zero.a1.infants$TPR - .05), label = paste("zero A1 infants\nvol =", round(zero.a1.infants$Volume, 1))) +
-	geom_text(aes(x = equal.error$FPR - .1, y = equal.error$TPR + .0), label = paste("equal harvest\nvol =", round(equal.error$Volume, 1))) +
+	geom_text(aes(x = equal.error$FPR - .03, y = equal.error$TPR + .09), label = paste("equal harvest\nvol =", round(equal.error$Volume, 1))) +
 	labs(title = "ROC curve of adult and infant harvest proportions", y = "Adult harvest proportion", x = "Infant harvest proportion" )
 
 ```
@@ -847,9 +917,9 @@ __(3 points)__
 
 Prepare a table showing each cutoff along with the following:
 
-+ 1.) true positive rate (1-prop.adults,
-+ 2.) false positive rate (1-prop.infants),
-+ 3.) harvest proportion of the total population
++ 1.) __true positive__ rate (1-prop.adults,
++ 2.) __false positive__ rate (1-prop.infants),
++ 3.) harvest proportion of the __total population__
  	
 ```{r Part_10} 	
 
@@ -859,17 +929,48 @@ pretty_kable(consolidated, "Consolidated Harvest Proportions", dig = 3)
 
 ```
  	
-**Question: (1 point) Based on the ROC curve, it is evident a wide range of possible "cutoffs" exist. Compare and discuss the three cutoffs determined in this assignment.**   
+__Question: (1 point)__
 
-***Answer: (Enter your answer here.)***
+Based on the ROC curve, it is evident a wide range of possible "cutoffs" exist. 
+Compare and discuss the three cutoffs determined in this assignment.  
+
+__Answer:__
+
+The three various cutoffs represent distinct characteristics of a given harvest of abalones. The max difference method which is essentially the “brute force” solution here, I believe represents arguably the worst-case scenario. The true-positive rate is the lowest of the three, as well as the lowest overall harvest yield ratio. Although, this method does have the lowest false-positive rate as well.
+
+The Zero A1 Infants harvest has the benefit of having the highest true-positive harvest rate and overall harvest yield. The drawback here is that this method also leads to the highest rate of false-positives, meaning more infants will ultimately get harvested which isn’t ideal for future harvest and sustainability.
+
+The equal error methodology is, as the name implies, right down the middle in terms of true-positive rate, false-positive rate, and overall harvest yield, essentially splitting max on the low end and Zero A1 on the high end (in terms of error).
+
 
 -----
 
-**Question (8 points):  Assume you are expected to make a presentation of your analysis to the investigators How would you do so?  Consider the following in your answer:**
+__Question (8 points):__ 
+
+Assume you are expected to make a presentation of your analysis to the investigators How would you do so?  
+Consider the following in your answer:
 
 1. Would you make a specific recommendation or outline various choices and tradeoffs?
 2. What qualifications or limitations would you present regarding your analysis?
 3. If it is necessary to proceed based on the current analysis, what suggestions would you have for implementation of a cutoff? 
 4. What suggestions would you have for planning future abalone studies of this type? 
 
-***Answer: (Enter your answer here.)***
+__Answer:__
+
+Given that there is no clear harvesting strategy that has 'best fit' for all use-cases involved (harvest yield, protection of infants, and minimization of 
+false-positivies, _coupled with the fact that I am not an SME on abalone harvesting_, I would not recommend any single strategy but rather simply
+present the findings above and present the various trade-offs each technique presents and let the experts decide.
+
+The qualifications here are that this is an observational study on which we had no control over the sample gathered, thefore causality cannot be firmly
+established if we cannot control the variables under study. This must be understood before applying techniques discovered through this analysis.
+
+Again, I am not an expert in the field of abalone harvesting, however if forced to pick a method from the data observed and the analysis performed, I would
+recommend the Zero A1 Infants, as has the highest proportion of harvest yield by volume and the highest true-positive rate, while still protecting the most
+most important segment of the population which are A1 Infant abalones. This will ensure that further harvest will be sustainable by leaving the infants to 
+mature into adults. The high false-positive rate is indeed an area of concern, however, I believe this proportion could be misleading given the general
+difficulty in determining abalone Sex, and that the infants that are harvested will be of justifiable size.
+
+I would recommend that the executors of supplemental research in this area be consulted in advance of sample collection so that they may properly plan 
+to have a control group in the study. I would also suggest that the researchers be advised by SMEs in this area in that planning phase on potential downfalls in
+sample collection and control group selection, so that we can minimize counfounding factors in our research and conduct it with greater confidence than a 
+simple observational study alone.
