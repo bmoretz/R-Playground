@@ -716,10 +716,12 @@ Code for calculating the adult harvest proportion is provided.
 
 ```{r Part_7d}
 
-max.difference <- data.table(Volume = volume.value[which.max(smooth.difference)],
-		TPR = (1 - prop.adults)[which.max(smooth.difference)], # [1] 0.7416332
-		FPR = (1 - prop.infants)[which.max(smooth.difference)],
-		Yield = sum(mydata$Volume > max.difference.volume) / nrow(mydata))
+max.difference <- data.table(
+    Type = "max.difference",
+    Volume = volume.value[which.max(smooth.difference)],
+	TPR = (1 - prop.adults)[which.max(smooth.difference)], # [1] 0.7416332
+	FPR = (1 - prop.infants)[which.max(smooth.difference)],
+	Yield = sum(mydata$Volume > max.difference.volume) / nrow(mydata))
 
 stopifnot(round(max.difference$TPR, 3) == .742)
 
@@ -752,10 +754,12 @@ stopifnot(round(zero.a1.volume, 3) == 206.786)
 
 zero.a1.cutoff <- sum(volume.value <= zero.a1.volume)
 
-zero.a1.infants <- data.table(Volume = zero.a1.volume,
-		TPR = (1 - prop.adults)[zero.a1.cutoff],
-		FPR = (1 - prop.infants)[zero.a1.cutoff],
-		Yield = sum(mydata$Volume > zero.a1.volume) / nrow(mydata))
+zero.a1.infants <- data.table(
+    Type = "zero.A1.infants",
+    Volume = zero.a1.volume,
+	TPR = (1 - prop.adults)[zero.a1.cutoff],
+	FPR = (1 - prop.infants)[zero.a1.cutoff],
+	Yield = sum(mydata$Volume > zero.a1.volume) / nrow(mydata))
 
 pretty_kable(zero.a1.infants, "Zero A1 Infants", dig = 3)
 
@@ -781,10 +785,12 @@ stopifnot(round(equal.error.volume, 4) == 237.6391)
 
 equal.error.cutoff <- sum(volume.value <= equal.error.volume)
 
-equal.error <- data.table(Volume = equal.error.volume,
-		TPR = (1 - prop.adults)[equal.error.cutoff],
-		FPR = (1 - prop.infants)[equal.error.cutoff],
-		Yield = sum(mydata$Volume > equal.error.volume) / nrow(mydata))
+equal.error <- data.table(
+    Type = "equal.error",
+    Volume = equal.error.volume,
+    TPR = (1 - prop.adults)[equal.error.cutoff],
+    FPR = (1 - prop.infants)[equal.error.cutoff],
+    Yield = sum(mydata$Volume > equal.error.volume) / nrow(mydata))
 
 pretty_kable(equal.error, "Equal Error", dig = 3)
 
@@ -794,7 +800,7 @@ pretty_kable(equal.error, "Equal Error", dig = 3)
 
 ## 9.) ROC
 
-### a.) 
+### a.) Visual Area
 __(6 points)__
 
 + Construct an ROC curve by plotting (1 - prop.adults) versus (1 - prop.infants). 
@@ -818,7 +824,7 @@ ggplot() +
 
 ```
 
-### b.) 
+### b.) Numerical Area
 __(1 point)__
 
 + Numerically integrate the area under the ROC curve and report your result. This is most easily done with the *auc()* function from the "flux" package. 
@@ -826,14 +832,17 @@ __(1 point)__
 
 ```{r Part_9b}
 
+curve.area <- flux::auc(roc.data$Infants, roc.data$Adults)
+
+pretty_vector(c("Area Under Curve" = curve.area))
 
 ```
 
 -----
 
-## 10.)
+## 10.) Results
 
-### a.)
+### a.) Consolidated
 __(3 points)__
 
 Prepare a table showing each cutoff along with the following:
@@ -844,6 +853,9 @@ Prepare a table showing each cutoff along with the following:
  	
 ```{r Part_10} 	
 
+consolidated <- rbind(max.difference, zero.a1.infants, equal.error)
+
+pretty_kable(consolidated, "Consolidated Harvest Proportions", dig = 3)
 
 ```
  	
