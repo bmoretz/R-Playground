@@ -34,6 +34,7 @@ library(GGally, quietly = TRUE, warn.conflicts = FALSE)
 library(knitr, quietly = TRUE, warn.conflicts = FALSE)
 library(RColorBrewer, quietly = TRUE, warn.conflicts = FALSE)
 library(moments, quietly = TRUE, warn.conflicts = FALSE)
+library(gplots, quietly = TRUE, warn.conflicts = FALSE)
 
 theme_set(theme_light())
 
@@ -53,15 +54,21 @@ pretty_vector <- function(vec, label = "") {
 	pander::pander(vec)
 }
 
-base.dir <- "E:/GitHub/R-Playground"
-#base.dir <- "C:/Projects/R/Playground"
+lp.w <- "E:/GitHub/R-Playground"
+lp.h <- "C:/Projects/R/Playground"
 
-data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/08_statistical_inference_estimation_for_single_populations/data/")
+if (file.exists(lp.w)) {
+	base.dir <- lp.w
+} else if (file.exists(lp.h)) {
+	base.dir <- lp.h
+}
+
+data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/_Data Files/")
 
 # simple replacement for read.csv that returns a data.table.
 loadDataFile <- function(file_name) {
 	data.raw <- fread(paste0(data.path, file_name),
-	header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
+  header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
 
 	data <- setNames(data.raw, tools::toTitleCase(tolower(names(data.raw))))
 

@@ -30,9 +30,14 @@ library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
 library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
 library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(GGally, quietly = TRUE, warn.conflicts = FALSE)
+library(knitr, quietly = TRUE, warn.conflicts = FALSE)
+library(RColorBrewer, quietly = TRUE, warn.conflicts = FALSE)
+library(moments, quietly = TRUE, warn.conflicts = FALSE)
+library(gplots, quietly = TRUE, warn.conflicts = FALSE)
 
-theme_set(theme_fivethirtyeight())
-
+theme_set(theme_light())
 
 # Theme Overrides
 theme_update(plot.title = element_text(hjust = 0.5),
@@ -41,20 +46,35 @@ theme_update(plot.title = element_text(hjust = 0.5),
 			 axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
 			 legend.position = "top", legend.title = element_blank())
 
-#base.dir <- "E:/GitHub/R-Playground/"
-base.dir <- "C:/Projects/R/Playground"
+pretty_kable <- function(data, title, dig = 2) {
+	kable(data, caption = title, digits = dig, big.mark = "'") %>%
+		kable_styling(bootstrap_options = c("striped", "hover"))
+}
 
-data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/06_continious_distributions/data/")
+pretty_vector <- function(vec, label = "") {
+	pander::pander(vec)
+}
 
+lp.w <- "E:/GitHub/R-Playground"
+lp.h <- "C:/Projects/R/Playground"
+
+if (file.exists(lp.w)) {
+	base.dir <- lp.w
+} else if (file.exists(lp.h)) {
+	base.dir <- lp.h
+}
+
+data.path <- paste0(base.dir, "/Classes/MSDS401/Exercises/_Data Files/")
+
+# simple replacement for read.csv that returns a data.table.
 loadDataFile <- function(file_name) {
 	data.raw <- fread(paste0(data.path, file_name),
-		header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
+  header = TRUE, stringsAsFactors = FALSE, na.strings = c("NA", ""))
 
 	data <- setNames(data.raw, tools::toTitleCase(tolower(names(data.raw))))
 
 	return(data)
 }
-
 ```
 
 ## 1.) Shoppers
