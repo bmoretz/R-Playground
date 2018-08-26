@@ -121,22 +121,19 @@ Be aware that with 'rockchalk', the kurtosis value has 3.0 subtracted from it wh
 
 stopifnot(!is.na(mydata$Ratio))
 
-ggplot(mydata, aes(Ratio, fill = ..count..)) +
+q1a_1 <- ggplot(mydata, aes(Ratio, fill = ..count..)) +
    geom_histogram(breaks = pretty(mydata$Ratio)) +
-   labs(title = "Histogram of Ratio", caption = "MSDS 401: Data Analysis #2, Q1.a") +
+   labs(title = "Histogram of Ratio", y = "Frequency", caption = "MSDS 401: Data Analysis #2, Q1.a") +
    theme(legend.text = element_blank())
 
-ggplot(mydata, aes(sample = Ratio)) +
+q1a_2 <- ggplot(mydata, aes(sample = Ratio)) +
    stat_qq(color = "steelblue3") +
    stat_qq_line(lwd = 1, linetype = 12) +
-   labs(title = "QQ of Ratio", caption = "MSDS 401: Data Analysis #2, Q1.a")
+   labs(title = "QQ of Ratio", y = "Sample Quantiles", caption = "MSDS 401: Data Analysis #2, Q1.a")
 
-```
+grid.arrange(q1a_1, q1a_2, ncol = 2)
 
-
-```{r Part_1a_kurtosis}
-
-pretty_vector(c(Kurtosis = rockchalk::kurtosis(mydata$Ratio)))
+pretty_vector(c(Kurtosis = rockchalk::kurtosis(mydata$Ratio), Skewness = rockchalk::skewness(mydata$Ratio)))
 
 ```
 
@@ -155,15 +152,17 @@ mydata$L_Ratio <- log10(mydata$Ratio)
 
 stopifnot(!is.na(mydata$L_Ratio))
 
-ggplot(mydata, aes(L_Ratio, fill = ..count..)) +
-   geom_histogram(breaks = pretty(mydata$L_Ratio)) +
-   labs(title = "Histogram of L_Ratio", caption = "MSDS 401: Data Analysis #2, Q1.b") +
-   theme(legend.text = element_blank())
+q1b_1 <- ggplot(mydata, aes(L_Ratio, fill = ..count..)) +
+    geom_histogram(breaks = pretty(mydata$L_Ratio)) +
+    labs(title = "Histogram of L_Ratio", y = "Frequency", caption = "MSDS 401: Data Analysis #2, Q1.b") +
+    theme(legend.text = element_blank())
 
-ggplot(mydata, aes(sample = L_Ratio)) +
-   stat_qq(color = "steelblue3") +
-   stat_qq_line(lwd = 1, linetype = 12) +
-   labs(title = "QQ of L_Ratio", caption = "MSDS 401: Data Analysis #2, Q1.b")
+q1b_2 <- ggplot(mydata, aes(sample = L_Ratio)) +
+    stat_qq(color = "steelblue3") +
+    stat_qq_line(lwd = 1, linetype = 12) +
+    labs(title = "QQ of L_Ratio", y = "Sample Quantiles", caption = "MSDS 401: Data Analysis #2, Q1.b")
+
+grid.arrange(q1b_1, q1b_2, ncol = 2)
 
 ```
 
@@ -292,8 +291,8 @@ __Question (2 points):__
 
 __Answer:__
 
-The trends in age class is interesting in that A3, A4 and A5 are not significantly different from each other. By this I mean that A3, A4 and A5 all show no significant differences ( p < 0.05 ) 
-to any other class or each other ( p < 0.05 ). This suggests that we could choose to combine A1 and A2 into a single class if we wanted to for further analysis.
+The trends in age class is interesting in that for the Age Classes A3, A4 and A5 the L_Ratio values are not significantly significant (at a 95% level) from each other meaning that there is no relationship to L_Ratio and Age Classes A3, A4 and A5.
+However, for the A1 and A2 classes there is a clear relationship between the Age Class and the value of L_Ratio.
 
 Secondly, Male and Female abalones have a .941 similarity in means, suggesting they're well beyond statistically significant, almost to the point of being identical. It would
 be logical to just combine them and split the abalones into Infants and Adults for ratio analysis.
@@ -323,7 +322,8 @@ par(opar)
 
 __(2 points)__
 
-+ Use *combineLevels()* from the 'rockchalk' package to combine "M" and "F" into a new level, "ADULT". This will necessitate defining a new variable, TYPE, in mydata which will have two levels:  "I" and "ADULT". 
++ Use *combineLevels()* from the 'rockchalk' package to combine "M" and "F" into a new level, "__ADULT__". This will necessitate defining a new variable, __TYPE__, 
+in mydata which will have two levels:  "__I__" and "__ADULT__". 
 + Present side-by-side histograms of VOLUME. 
 + One should display infant volumes and, the other, adult volumes. 
 
@@ -339,7 +339,7 @@ infants <- mydata[mydata$Type == "Infant"]
 
 stopifnot(nrow(infants) == 329)
 
-ggplot(infants, aes(Volume, fill = ..count..)) +
+q3a_1 <- ggplot(infants, aes(Volume, fill = ..count..)) +
 	geom_histogram(breaks = pretty(infants$Volume)) +
 	labs(title = "Histogram of Infant Volume", caption = "MSDS 401: Data Analysis #3, Q3.a")
 
@@ -347,9 +347,11 @@ adults <- mydata[mydata$Type == "Adult"]
 
 stopifnot(nrow(adults) == 707)
 
-ggplot(adults, aes(Volume, fill = ..count..)) +
+q3a_2 <- ggplot(adults, aes(Volume, fill = ..count..)) +
 	geom_histogram(breaks = pretty(infants$Volume)) +
 	labs(title = "Histogram of Adult Volume", caption = "MSDS 401: Data Analysis #3, Q3.a")
+
+grid.arrange(q3a_1, q3a_2, ncol = 2)
 
 ```
 
@@ -490,7 +492,7 @@ __Answer:__
 
 The age class level coefficients show a clear increasingly trend in the Class variable with respect to L_Shuck. Given the
 intercept is negative (meaning the expected value of Shuck would be negative given a value of 0 for our predictors), this means that we 
-would expect to add an increasingly large negative number as the classes go from A3 -> A5 (A2 is arguably not stastically significant, at a 10% level,
+would expect to add an increasingly large negative number as the classes go from A3 -> A5 (A2 is arguably not stastically significant from A1, at a 10% level,
 while A3, A4 and A5 are), meaning that as that the class level variable increases, we would also expect L_Shuck to increase. 
 This is the pattern we also see in the displays.
 
@@ -964,7 +966,7 @@ present the findings above and present the various trade-offs each technique pre
 The qualifications here are that this is an observational study on which we had no control over the sample gathered, thefore causality cannot be firmly
 established if we cannot control the variables under study. This must be understood before applying techniques discovered through this analysis.
 
-Again, I am not an expert in the field of abalone harvesting, however if forced to pick a method from the data observed and the analysis performed, I would
+As previously noted, I am not an expert in the field of abalone harvesting, however, if forced to pick a method from the data observed and the analysis performed, I would
 recommend the Zero A1 Infants, as has the highest proportion of harvest yield by volume and the highest true-positive rate, while still protecting the most
 most important segment of the population which are A1 Infant abalones. This will ensure that further harvest will be sustainable by leaving the infants to 
 mature into adults. The high false-positive rate is indeed an area of concern, however, I believe this proportion could be misleading given the general
