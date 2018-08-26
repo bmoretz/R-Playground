@@ -40,3 +40,390 @@ pretty_vector <- function(vec, label = "") {
 
 
 ## 1.)
+
+Suppose that a class of 30 students is assigned to write an essay.
+
+a. Suppose 4 essays are randomly chosen to appear on the class bulletin board. How many different groups of 4 are possible? Selection order is not important.
+b. Suppose 4 essays are randomly chosen for awards of $10, $7, $5 and $3. How many different groups of 4 are possible? Selection order is important.
+c. Explain the differences between problems 1 and 2.
+
+
+```{r q1}
+
+choose(30, 4)
+
+```
+
+## 2.)
+
+For the given probability distribution, find the mean, variance, standard deviation, median and mode.
+
+
+```{r q2_setup, echo = F}
+
+q2 <- data.frame(rbind(c(0, 1, 2, 3, 4),c(0.37, 0.12, 0.06, 0.15, 0.30)))
+rownames(q2) <- c("x", "P(x)")
+
+pretty_kable(q2, "Probabilities")
+
+```
+
+
+```{r q2}
+
+```
+
+## 3.)
+
+For a standard normal distribution, find the percentage of data that are more than 2 standard
+deviations below the mean or more than 3 standard deviations above the mean.
+
+
+```{r q3}
+
+```
+
+## 4.)
+
+Use the results summarized in the table. One of the 100 test subjects is selected at random. If the person approves of the Mayor, what is the probability that they vote Democrat? Use Bayes’ theorem.
+
+
+```{r q4_setup}
+
+
+```
+
+
+```{r q4}
+
+```
+
+## 5.)
+
+Use the results summarized in the table above and test at the 5% level if party affiliation and approval of the Mayor are independent of each other using Pearson’s Chi-square test of independence.
+
+```{r q5}
+
+```
+
+## 6.)
+
+A police department states that the probabilities for 0, 1, 2, and 3 burglaries reported in a given day are 0.46, 0.41, 0.09, and 0.04, respectively. 
+
++ Find the mean, variance, standard deviation, median and mode. Round the answer to the nearest hundredth.
+
+```{r q6}
+
+```
+
+## 7.)
+
+Assume weight loss for the first month of a diet program varies between 6 pounds and 12 pounds, and is spread evenly forming a uniform distribution. 
+
++ Find the probability of losing between 8.5 and 10 pounds. 
++ Also, find the probability of losing between 10 and 14 pounds. 
+
+_Round to two decimal places._
+
++ A.) 1/4 and 1/3
++ B.) 1/2 and 2/3 
++ C.) 1/3 and 1/3 
++ D.) 1/4 and 2/3
+
+```{r q7}
+
+```
+
+## 8.)
+
+Find the indicated z-score. 
+
+The graph depicts the standard normal distribution with mean equal 0 and standard deviation equal 1 with a shared area of 0.0901.
+
++ A.) -1.34 
++ B.) -1.26
++ C.) -1.39 
++ D.) -1.45
+
+```{r q8}
+
+
+```
+
+## 9.)
+
+Here are two discrete probability distributions: dist_A and dist_B. 
+
+By construction each may be either a binomial or a Poisson distribution. 
+
+The mean and variance for dist_A are 5.00 and 5.00. The mean and variance for dist_B are 5.00 and 3.33. 
+
+_Pick the best answer._
+
++ A.) Dist_A is Poisson, Dist_B is binomial
++ B.) Dist_A is binomial, Dist_B is Poisson.
++ C.) Both are Poisson
++ D.) Both are binomial
+
+```{r q9}
+
+```
+
+## 10.)
+
+This problem involves estimating probabilities for a binomial variable X with p = 0.4 and n = 15. 
+
+Use the normal approximation with continuity correction to estimate the probabilities for the following three outcomes; X = 0, X = 6 and X >= 10. 
+
+_Select the best answer from the following choices:_
+
+```{r q10}
+
+```
+
+## 11.)
+
+True or False: in a hypothesis test, an increase in alpha will cause a decrease in the power of the test provided the sample size is kept fixed.
+
++ A.) True 
++ B.) False
+
+```{r q11}
+
+```
+
+## 12.)
+
+True or False: in a hypothesis test regarding a population mean, the probability of a type II error, beta, depends on the true value of the population mean.
+
++ A.) True 
++ B.) False
+
+```{r q12}
+
+```
+
+## 13.)
+
+True or False: in a hypothesis test regarding a population mean, if the sample size is increased and the probability of a type II error is fixed and does not change then the type I error rate does not change.
+
++ A.) True 
++ B.) False
+
+```{r q13}
+
+```
+
+## 14.)
+
+True or False: in a hypothesis test regarding a population mean, if the sample size is increased and the probability of a type I error is fixed and does not change then the type II error rate will decrease.
+
++ A.) True 
++ B.) False
+
+```{r q14}
+
+```
+
+> Short Answer
+
+## 15.)
+
+Suppose that you perform a hypothesis test regarding a population mean, and that the evidence does not warrant rejection of the null hypothesis. 
+When formulating the conclusion to the test, why is phrase “fail to reject the null hypothesis” more accurate than the phrase “accept the null hypothesis?”
+
+```{r q15}
+
+```
+
+## 16.)
+
+> Short Answer
+
+Identify the null hypothesis, alternative hypothesis, test statistic, p-value, conclusion about the null hypothesis, and the final conclusion that addresses the original claim.
+
+> According to a recent poll, 53% of Americans would vote for the incumbent president. If a random sample of 100 people results in 45% who would vote for the incumbent, 
+test the claim that the actual percentage is 53%. Use a 0.10 significance level.
+
+```{r q16}
+
+```
+
+## 17.)
+
+> Short Answer
+
+What does the linear correlation coefficient tell us regarding the usefulness of a regression equation for making predictions?
+
+```{r q17}
+
+```
+
+## 18.)
+
+A hypothesis test of the given claim will be conducted. A cereal company claims that the mean weight of the cereal in its packets is 14 oz. Identify the type I error for the test.
+
++ a.) Fail to reject the claim that the mean weight is 14 oz. when it is actually different from 14 oz.
++ b.) Reject the claim that the mean weight is 14 oz. when it is actually greater than 14 oz.
++ c.) Reject the claim that the mean weight is 14 oz. when it is actually 14 oz.
++ d.) Reject the claim that the mean weight is different from 14 oz. when it is actually 14 oz.
+
+```{r q18}
+
+```
+
+## 19.)
+
+Scores on a test are normally distributed with a mean of 68.2 and a standard deviation of 10.4. Estimate the probability that at least 20 of 75 randomly selected students score greater than 78.
+
++ A.) 0.0166 
++ B.) 0.0113 
++ C.) 0.0278 
++ D.) 0.1736
+
+```{r q19}
+
+q19 <- pnorm(78, 68.2, 10.4, lower.tail = F)
+
+pretty_vector(q19)
+
+```
+
+## 20.)
+
+Find the value of the linear correlation coefficient, r, using the following data. Determine if the null hypothesis of zero correlation is rejected with a 5% alpha (Type I error rate).
+
+
+```{r q20_setup}
+
+q20_data <- data.frame(rbind(c(62, 53, 64, 52, 52, 54, 58), c(158, 176, 151, 164, 164, 174, 162)))
+rownames(q20_data) <- c("x", "y")
+colnames(q20_data) <- rep(c(""), 7)
+
+pretty_kable(q20_data, "")
+
+```
+
++ A.) 0.754, don’t reject 
++ B.) -0.775, reject
++ C.) -0.081, don’t reject 
++ D.) 0.754, reject
+
+```{r q20}
+
+```
+
+## 21.)
+
+A researcher wants to estimate what proportion of U.S. refinery workers are contract workers. The researcher wants to be 95% confident of her results and be within 0.05 of the actual proportion. 
+There have been no prior studies. The researcher has no idea what is the actual population proportion. How large a sample size should be taken? Round to the next largest integer.
+
++ A.) n = 664 
++ B.) n = 385 
++ C.) n = 271 
++ D.) n = 543
+
+```{r q21}
+
+```
+
+## 22.)
+
+Use the traditional method to test the given hypothesis. 
+
++ Assume that the samples are independent and that they have been randomly selected. 
++ Use the given sample data to test the claim that p1 > p2. Use a significance level of 0.01.
+
+
+```{r q22_setup, echo = F}
+
+q22_data <- data.frame(c("n1 = 85", "x1 = 38"), c("n2 = 90", "x2 = 23"))
+colnames(q22_data) <- c("Sample 1", "Sample 2")
+
+pretty_kable(q22_data, "Samples")
+
+```
+
+```{r q22}
+
+```
+
+## 23.)
+
+A researcher was interested in comparing the average length of time (in hours) spent watching television by women and by men. Independent simple random samples of 14 women and 17 men were selected, 
+and each person was asked how many hours he or she had watched television during the previous week. 
+
+_The summary statistics are as follows_:
+
+```{r q23_setup, echo = F}
+
+q23_data <- data.frame(c("x1 = 12.5 hr", "s1 = 3.9 hr", "n1 = 14"), c("x2 = 13.8 hr", "s2 = 5.2 hr", "n2 = 17"))
+colnames(q23_data) <- c("Women", "Men")
+
+pretty_kable(q23_data, "Samples")
+
+```
+
++ Use a 0.05 significance level to test the claim that the average length of time spent watching television by women is smaller than the average length amount of time spent watching television by men. 
++ Use a t test for hypothesis testing. Do not assume that the population standard deviations are equal.
+
+
+```{r q23}
+
+```
+
+## 24.)
+
+A researcher was interested in comparing the average length of time spent watching television by women and by men. 
+Independent simple random samples of 14 women and 17 men were selected, and each person asked how many hours he or she had watched television during the previous week. 
+
+_The summary statistics are as follows_:
+
+```{r q24_setup, echo = F}
+
+q24_data <- data.frame(c("x1 = 11.4 hr", "s1 = 4.1 hr", "n1 = 14"), c("x2 = 16.8 hr", "s2 = 4.7 hr", "n2 = 17"))
+colnames(q24_data) <- c("Women", "Men")
+
+pretty_kable(q24_data, "Samples")
+
+```
+
+Use a 0.05 significance level to test the claim that the average length of time spent watching television by women is smaller than the average length of time spent watching television by men. 
+Use the traditional method of hypothesis testing. 
+
+__Assume that the population standard deviations are equal__
+
+## 25.)
+
+Construct a 90% confidence interval for the difference between population proportions, (p1 - p2). 
+
+Assume that the samples are independent and that they have been randomly selected.
+
+x1 = 15, n1 = 50 and x2 = 23, n2 = 60. Do not use a continuity correction.
+
+
+```{r}
+
+```
+
+## 26.)
+
+## 27.)
+
+## 28.)
+
+## 29.)
+
+## 30.)
+
+## 31.)
+
+## 32.)
+
+## 33.)
+
+## 34.)
+
+## 35.)
+
+
