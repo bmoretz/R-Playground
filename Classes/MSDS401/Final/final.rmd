@@ -22,6 +22,7 @@ library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
 library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
 library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
 
 theme_set(theme_light())
 
@@ -32,6 +33,11 @@ theme_update(plot.title = element_text(hjust = 0.5),
 			 axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
 			 legend.position = "top", legend.title = element_blank())
 
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig, big.mark = "'") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"))
+}
+
 pretty_vector <- function(vec, label = "") {
   pander::pander(vec)
 }
@@ -39,7 +45,7 @@ pretty_vector <- function(vec, label = "") {
 ```
 
 
-## 1.)
+## 1.) Combinations and Permutations
 
 Suppose that a class of 30 students is assigned to write an essay.
 
@@ -50,9 +56,18 @@ c. Explain the differences between problems 1 and 2.
 
 ```{r q1}
 
-choose(30, 4)
+pretty_vector( c("a.)" = choose(30, 4) ))
+
+pretty_vector(c("b.)" = choose(30, 4) * factorial(4)))
 
 ```
+
++ c.)
+
+> Item (a) asks for the combinations or groups of four possible. There isn't a sense
+in which the order of the four essays selected is meaningful. Item (b) asks for the
+permutations possible when four are selected from 30. Here, there is a meaningful
+difference in the order - i.e. prizes awarded - of the four selected. 
 
 ## 2.)
 
@@ -61,15 +76,18 @@ For the given probability distribution, find the mean, variance, standard deviat
 
 ```{r q2_setup, echo = F}
 
-q2 <- data.frame(rbind(c(0, 1, 2, 3, 4),c(0.37, 0.12, 0.06, 0.15, 0.30)))
-rownames(q2) <- c("x", "P(x)")
+q2_data <- data.frame(rbind(c(0, 1, 2, 3, 4),c(0.37, 0.12, 0.06, 0.15, 0.30)))
+rownames(q2_data) <- c("x", "P(x)")
+colnames(q2_data) <- rep("", ncol(q2))
 
-pretty_kable(q2, "Probabilities")
+pretty_kable(q2_data, "Probabilities")
 
 ```
 
 
 ```{r q2}
+
+q2 <- as.data.table(q2_data)
 
 ```
 
