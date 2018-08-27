@@ -399,8 +399,15 @@ Construct a 90% confidence interval for the difference between population propor
 
 Assume that the samples are independent and that they have been randomly selected.
 
-x1 = 15, n1 = 50 and x2 = 23, n2 = 60. Do not use a continuity correction.
+x1 = 15, n1 = 50 and x2 = 23, n2 = 60. 
 
+__Do not use a continuity correction__.
+
+
++ A.) -0.232 < (p1 - p2) < 0.065 
++ B.) 0.151 < (p1 - p2) < 0.449
++ C.) 0.477 < (p1 - p2) < 0.122 
++ D.) 0.123 < (p1 - p2) < 0.477
 
 ```{r}
 
@@ -408,22 +415,196 @@ x1 = 15, n1 = 50 and x2 = 23, n2 = 60. Do not use a continuity correction.
 
 ## 26.)
 
+Use the given data to find the equation of the regression line. Round the final values to three significant digits. The variable y denotes the predicted value for the dependent variable y.
+
+
+```{r q26_setup, echo = F}
+
+q26_data <- data.frame(rbind(c(6, 8, 20, 28, 36), c(2,4,13,20,30)))
+rownames(q26_data) <- c("x", "y")
+colnames(q26_data) <- rep(c(""), 5)
+
+pretty_kable(q26_data, "")
+
+```
+
++ A.) y = -2.79 + 0.897x 
++ B.) y -2.79 + 0.950x 
++ C.) y = -.79 + 0.801x 
++ D.) y = -3.79 +0.897x
+
+
+```{r q26}
+
+```
+
 ## 27.)
+
+Using the data in problem 26, construct 95% confidence intervals for the coefficients in the resulting regression model.
+
+
+```{r q27_setup, echo = F}
+
+q27_data <- data.frame(rbind(
+	c("(-6.73, 1.148)", "(-6.73, 1.148)", "(-7.73, 0.148)", "(-4.73, 4.148)"),
+    c("(0.724, 1.071)", "(0.774, 1.121)", "(0.724, 1.071)", "(0.654, 1.001)")))
+
+rownames(q27_data) <- c("intercept", "x")
+colnames(q27_data) <- c("A", "B", "C", "D")
+
+pretty_kable(q27_data, "Answer Choices")
+
+```
+
+
+```{r q27}
+
+```
 
 ## 28.)
 
+A web service is interested in whether or not having signed up for email updates and offers is independent of purchasing choice (has purchased or has not). 
+Conduct a chi-square test of independence. 
+State the hypotheses, determine chi- square statistic and p-value using the contingency table below:
+
+
+```{r q28_setup, echo = F}
+
+q28_data <- data.frame(rbind(
+	c(30, 60),
+	c(20, 75)))
+
+rownames(q28_data) <- c("Has signed up.", "Has not signed up.")
+colnames(q28_data) <- c("Has made purchase.", "Has not made purchase.")
+
+pretty_kable(q28_data, "Contingency Table")
+
+```
+
+
+```{r q28}
+
+```
+
 ## 29.)
+
+An urgent care center is interested in whether visits per day of the week are uniformly distributed. 
+Conduct a chi-square goodness of fit test. State the null and alternative hypotheses. 
+
+_Provide the chi-square value and associated p-value_.
+
+
+```{r q29_setup, echo = F}
+
+q29_data <- data.frame( cbind(c(24), c(19), c(26), c(29), c(30), c(23)))
+colnames(q29_data) <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+
+pretty_kable(q29_data, "Visits")
+
+```
 
 ## 30.)
 
+Test the hypothesis of a zero correlation using the procedure shown by Wilcox in Basic Statistics. 
+
+Assume n = 47, r = -0.286. 
+
+Test the null hypothesis of zero correlation versus the alternative that the correlation is negative at 95% confidence. 
+
+_Also calculate the p-value_.
+
+
+```{r q30}
+
+```
+
 ## 31.)
+
+A project manager is trying to assemble a five-member team. She has a list of 30 volunteers that she intends to draw five (5) from randomly, so as not to alienate anyone. 
+However, only four (4) of the 30 have a specific certification that the project manager knows she’ll need. 
+
++ What is the likelihood that two of the five members randomly selected will be one of the four with the needed certification? 
++ What is the probability that at least one of the five members randomly selected will have the needed certification?
+
+```{r q31}
+
+```
 
 ## 32.)
 
+Consumers are asked to rate a company both before and after viewing a video on the company twice a day for a week. Use the paired data given below. 
+Test at the 1% significance level if the “after” results are less than the “before” results. Assume the data are normally distributed.
+
+
+```{r q32_setup, echo = F}
+
+q32_data <- data.frame(rbind(
+	c(1, 2, 3, 4, 5, 6, 7, 8, 9),
+	c(38, 27, 30, 41, 36, 38, 33, 36, 44),
+	c(22, 28,21,38,38,26,19,31,35)))
+
+rownames(q32_data) <- c("pair", "before", "after")
+colnames(q32_data) <- rep(c(""), ncol(q32_data))
+
+pretty_kable(q32_data, "Raitings")
+
+```
+
 ## 33.)
+
+Random samples of men from two different towns were obtained and the weights of the men measured in pounds. 
+Using the data below test the claim there is more variation in weights of men from town A versus the weights of men from town B. 
+
+_Use a 5% significance level_.
+
+
+```{r q33_setup, echo = F}
+
+q33_data <- data.frame(rbind(
+	c(41, 165.1, 26.2),
+	c(21, 159.5, 24.1)))
+
+rownames(q33_data) <- c("Town A", "Town B")
+colnames(q33_data) <- c("sample size", "sample average", "Sample standard deviation")
+
+pretty_kable(q33_data, "Samples")
+
+```
 
 ## 34.)
 
+Use the p-value method to test the claim that the population standard deviation of the systolic blood pressures of adults aged 40-50 is equal to 22 mmHG. 
+
+Use the following sample statistics: n = 23, sample mean = 132.3 mmHg, and sample standard deviation s = 26.6 mmHg. 
+
+Determine the value of the test statistic, the p-value and your conclusion. 
+
+Use a 5% significance level. 
+
+Assume normality. 
+
+This is a two-sided test. 
+
+Also, calculate a 95% confidence interval for the population standard deviation.
+
+```{r q35}
+
+```
+
 ## 35.)
 
+Fill in the missing entries in the following one-way ANOVA table and determine the p-value and the critical value for the F-statistic.
 
+```{r q35_setup, echo = F}
+
+q35_data <- data.frame(rbind(
+	c("3", "", "", "11.16"),
+	c("", "13.72", "0.686", ""),
+	c("", "", "", "")))
+
+rownames(q35_data) <- c("Treatment", "Error", "Total")
+colnames(q35_data) <- c("Source", "SS", "MS=SS/df", "F-statistic")
+
+pretty_kable(q35_data, "ANOVA Table")
+
+```
