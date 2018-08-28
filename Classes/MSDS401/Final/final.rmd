@@ -98,9 +98,9 @@ mode <- x[P.x == max(P.x)]
 
 ```{r q2_display, echo = F}
 
-pretty_vector(c("Mean" = ev, "Variance" = var, "Standard Deviation" = sd, "Median" = med, "Mode" = mode))
-plot(x, cumsum(P.x), main = "cdf for P.x", type = "h", ylim = c(0, 1.0))
-abline(h = 0.5, col = "red")
+    pretty_vector(c("Mean" = ev, "Variance" = var, "Standard Deviation" = sd, "Median" = med, "Mode" = mode))
+    plot(x, cumsum(P.x), main = "cdf for P.x", type = "h", ylim = c(0, 1.0))
+    abline(h = 0.5, col = "red")
 
 ```
 
@@ -136,11 +136,10 @@ pretty_vector( c( Probability = round( pnorm(-2, 0, 1, lower.tail = TRUE) + pnor
 
 Use the results summarized in the table. One of the 100 test subjects is selected at random. If the person approves of the Mayor, what is the probability that they vote Democrat? Use Bayes’ theorem.
 
-
 + a.) 0.674
 + b.) 0.581
 + c.) 0.391
-+ d.) 0.545
++ __d.) 0.545__
 
 ```{r q4_setup, echo = F}
 
@@ -186,7 +185,7 @@ pretty_vector(c(LongWay = q4))
 
 Use the results summarized in the table above and test at the 5% level if party affiliation and approval of the Mayor are independent of each other using Pearson’s Chi-square test of independence.
 
-+ a.) df = 2, p-value > 0.05, don’t reject 
++ __a.) df = 2, p-value > 0.05, don’t reject__
 + b.) df = 2, p-value < 0.05, reject
 + c.) df = 5, p-value < 0.05, don’t reject
 + d.) df = 5, p-value > 0.05, reject
@@ -223,7 +222,7 @@ mode <- x[ P.x == max(P.x) ]
 
 ```
 
-```{r q7_display, echo = F}
+```{r q6_display, echo = F}
 
     pretty_vector(c("Mean" = ev, "Variance" = var, "Standard Deviation" = sd, "Median" = med, "Mode" = mode))
     plot(x, cumsum(P.x), main = "cdf for P.x", type = "h", ylim = c(0, 1.0))
@@ -231,7 +230,7 @@ mode <- x[ P.x == max(P.x) ]
 
 ```
 
-## 7.)
+## 7.) Uniform Distribution
 
 Assume weight loss for the first month of a diet program varies between 6 pounds and 12 pounds, and is spread evenly forming a uniform distribution. 
 
@@ -240,32 +239,58 @@ Assume weight loss for the first month of a diet program varies between 6 pounds
 
 _Round to two decimal places._
 
-+ A.) 1/4 and 1/3
++ __A.) 1/4 and 1/3__
 + B.) 1/2 and 2/3 
 + C.) 1/3 and 1/3 
 + D.) 1/4 and 2/3
 
 ```{r q7}
 
+punif(10, 6, 12, lower.tail = T) - punif(8.5, 6, 12, lower.tail = T)
+
+punif(10, 6, 12, lower.tail = F)
+
 ```
 
-## 8.)
+```{r q7_display, echo = F}
+
+ggplot(data.table(X = seq(6, 12, length = 2000)), aes(x = X)) +
+	stat_function(fun = dunif)
+```
+
+## 8.) Z-Score (Normal)
+
 
 Find the indicated z-score. 
 
 The graph depicts the standard normal distribution with mean equal 0 and standard deviation equal 1 with a shared area of 0.0901.
 
-+ A.) -1.34 
-+ B.) -1.26
-+ C.) -1.39 
-+ D.) -1.45
++ __a.) -1.34__ 
++ b.) -1.26
++ c.) -1.39 
++ d.) -1.45
 
-```{r q8}
 
+```{r q8_setup, echo = F}
+
+q8_prob <- .0901
+q8_area <- qnorm(q8_prob)
+
+ggplot(data.table(X = seq(-4, 4, length = 2000)), aes(x = X)) +
+	stat_function(fun = dnorm) +
+	stat_function(fun = dnorm, xlim = c(-4, q8_area), geom = "area", fill = "steelblue") +
+	geom_text(aes(x = q8_area + .5, y = .05), label = q8_prob) +
+    labs( title = paste( "Z-Score:", round(q8_area,2) ))
 
 ```
 
-## 9.)
+```{r q8}
+
+pretty_vector(c("Z-Score" = qnorm(q8_prob)))
+
+```
+
+## 9.) Binomial and Poisson
 
 Here are two discrete probability distributions: dist_A and dist_B. 
 
@@ -275,16 +300,37 @@ The mean and variance for dist_A are 5.00 and 5.00. The mean and variance for di
 
 _Pick the best answer._
 
-+ A.) Dist_A is Poisson, Dist_B is binomial
-+ B.) Dist_A is binomial, Dist_B is Poisson.
-+ C.) Both are Poisson
-+ D.) Both are binomial
++ __a.) Dist_A is Poisson, Dist_B is binomial.__
++ b.) Dist_A is binomial, Dist_B is Poisson.
++ c.) Both are Poisson
++ d.) Both are binomial
 
 ```{r q9}
+x <- seq(0, 15)
+dist_A <- round(dpois(x, 5), digits = 4)
+dist_A[16] <- 0.0003
+dist_B <- round(dbinom(x, 15, 1 / 3), digits = 4)
+plot(x, dist_A, type = "b", ylim = c(0, 0.25), col = "red", ylab = "probability",
+	 lwd = "2", main = "Plot of Two Discrete Probability Distributions")
+lines(x, dist_B, col = "green", lwd = "2", type = "b")
+legend("topright", legend = c("dist_A is red", "dist_B is green"))
+
+# Solution
+mean_A <- round(sum(x * dist_A), digits = 2) # [1] 5.0003
+variance_A <- round(sum(dist_A * (x - mean_A) ^ 2), digits = 2) #  [1] 5.0019
+mean_B <- round(sum(x * dist_B), digits = 2) #  [1] 4.9995
+variance_B <- round(sum(dist_B * (x - mean_B) ^ 2), digits = 2) #  [1] 3.332
+mean_A
+variance_A
+mean_B
+variance_B
+
+#  dist_A is Poisson.  The variance equals the mean, whereas dist_B is Binomial.
+#  The variance is less than the mean, i.e., n*p > n*p*(1-p).  p = 1/3.
 
 ```
 
-## 10.)
+## 10.) Normal Approximation
 
 This problem involves estimating probabilities for a binomial variable X with p = 0.4 and n = 15. 
 
@@ -292,60 +338,95 @@ Use the normal approximation with continuity correction to estimate the probabil
 
 _Select the best answer from the following choices:_
 
-```{r q10}
+
+```{r q10_setup, echo = F}
+
+q10_data <- data.frame(rbind(
+    c(0.0011, 0.2071, 0.0340),
+	c(0.0019, 0.2079, 0.0325),
+	c(0.0014, 0.2103, 0.0227),
+	c(0.0008, 0.2079, 0.0175)))
+
+rownames(q10_data) <- c("A", "B", "C", "D")
+colnames(q10_data) <- c("P[X = 0]", "P[X = 6]", "P[X >= 10]")
+
+pretty_kable(q10_data, "Answer Choices", dig = 4)
 
 ```
 
-## 11.)
+```{r q10}
+
+dbinom(0, 15, 0.4)
+dbinom(6, 15, 0.4)
+dbinom(10, 15, 0.4)
+
+```
+
+## 11.) Power Test
 
 True or False: in a hypothesis test, an increase in alpha will cause a decrease in the power of the test provided the sample size is kept fixed.
 
-+ A.) True 
-+ B.) False
++ a.) True 
++ __b.) False__
 
-```{r q11}
+__FALSE__. 
 
-```
+> The power of a test - the probability of rejecting the null hypothesis when
+the alternative hypothesis is true - decreases as a function of beta; the probability
+of failing to reject the null hypothesis when the alternative hypothesis is true. An
+increase in alpha will decrease beta, thus increasing power. 
 
-## 12.)
+_However, please remember that alpha and beta aren't symmetric and we won't try to control one via the other._
+
+## 12.) Type II Error with Means
 
 True or False: in a hypothesis test regarding a population mean, the probability of a type II error, beta, depends on the true value of the population mean.
 
-+ A.) True 
-+ B.) False
++ __a.) True__
++ b.) False
 
-```{r q12}
+__TRUE__. 
 
-```
+> The probability of a type II error - failure to reject a false null
+hypothesis - is dependent on the "true value" of the test statistic. In a broad 
+sense, either type error will have some relationship with the true mean. However, 
+alpha is much more directly related to the test statistic - the probability 
+associated with our data given the null hypothesis. Power, however, is related 
+directly to the difference between the true and hypothesized mean and how easily, 
+how "powerfully" we can resolve smaller and smaller differences between the true 
+and hypothetical mean.
 
-## 13.)
+## 13.) Hypothesis Test Sample Size
 
 True or False: in a hypothesis test regarding a population mean, if the sample size is increased and the probability of a type II error is fixed and does not change then the type I error rate does not change.
 
 + A.) True 
-+ B.) False
++ __B.) False__
 
-```{r q13}
+__FALSE__. 
 
-```
+> Keeping the power the same, an increase in sample size provides more data 
+for the statistical test making it less likely that a type I error will occur.  
 
-## 14.)
+## 14.) Hypothesis Test Mean Errors
 
 True or False: in a hypothesis test regarding a population mean, if the sample size is increased and the probability of a type I error is fixed and does not change then the type II error rate will decrease.
 
 + A.) True 
 + B.) False
 
-```{r q14}
+__TRUE__. 
 
-```
-
-> Short Answer
+> With alpha constant, an increase in sample size provides more data for the 
+statistical test increasing the power.  Thus it less likely that a type II error 
+will occur.
 
 ## 15.)
 
 Suppose that you perform a hypothesis test regarding a population mean, and that the evidence does not warrant rejection of the null hypothesis. 
 When formulating the conclusion to the test, why is phrase “fail to reject the null hypothesis” more accurate than the phrase “accept the null hypothesis?”
+
+> Short Answer
 
 ```{r q15}
 
