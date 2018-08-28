@@ -338,6 +338,9 @@ Use the normal approximation with continuity correction to estimate the probabil
 
 _Select the best answer from the following choices:_
 
+__Note:_
+
+Normal approximation to the binomial uses *z = (x - n*p)/sqrt(n * p * (1-p))*
 
 ```{r q10_setup, echo = F}
 
@@ -351,6 +354,35 @@ rownames(q10_data) <- c("A", "B", "C", "D")
 colnames(q10_data) <- c("P[X = 0]", "P[X = 6]", "P[X >= 10]")
 
 pretty_kable(q10_data, "Answer Choices", dig = 4)
+
+```
+
+
+```{r q10_display, echo = F}
+
+ggplot(data.table(X = seq(-4, 4, length = 2000)), aes(x = X)) +
+   stat_function(fun = dnorm)
+
+x <- seq(0, 15)
+n <- 15
+p <- .4
+m <- which.max(dbinom(x, n, p)) # midpoint
+
+binom.est <- function(x, n, p, m, lower.tail = T ) {
+
+  exp <- n * p
+  std <- exp * (1 - p)
+
+  ifelse(x < m, pnorm((x - exp + 0.5) / sqrt(std)), pnorm(x - exp - 0.5, exp, sqrt(std), lower.tail))
+}
+
+binom.est(0, n, p, m)
+binom.est(6, n, p, m, lower.tail = F)
+binom.est(10, n, p, m, lower.tail = F)
+
+pnorm( ( 0 - exp + 0.5 ) / sqrt(std) )
+pnorm((6 - exp + 0.5) / sqrt(std))
+
 
 ```
 
