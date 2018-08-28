@@ -62,75 +62,172 @@ pretty_vector(c("b.)" = choose(30, 4) * factorial(4)))
 
 ```
 
-+ c.)
-
-> Item (a) asks for the combinations or groups of four possible. There isn't a sense
-in which the order of the four essays selected is meaningful. Item (b) asks for the
+__c.)__ Item __(a)__ asks for the combinations or groups of four possible. There isn't a sense
+in which the order of the four essays selected is meaningful. Item __(b)__ asks for the
 permutations possible when four are selected from 30. Here, there is a meaningful
 difference in the order - i.e. prizes awarded - of the four selected. 
 
-## 2.)
+## 2.) Basic Stats
 
 For the given probability distribution, find the mean, variance, standard deviation, median and mode.
 
-
 ```{r q2_setup, echo = F}
 
-q2_data <- data.frame(rbind(c(0, 1, 2, 3, 4),c(0.37, 0.12, 0.06, 0.15, 0.30)))
+x <- c(0, 1, 2, 3, 4)
+P.x <- c(0.37, 0.12, 0.06, 0.15, 0.30)
+
+q2_data <- data.frame(rbind(x,P.x))
 rownames(q2_data) <- c("x", "P(x)")
-colnames(q2_data) <- rep("", ncol(q2))
+colnames(q2_data) <- rep("", ncol(q2_data))
 
 pretty_kable(q2_data, "Probabilities")
 
 ```
 
-
 ```{r q2}
 
-q2 <- as.data.table(q2_data)
+ev <- sum(x * P.x)
+var <- sum(P.x * (x - ev) ^ 2)
+sd <- sqrt(var)
+med <- median(x)
+
+mode <- x[P.x == max(P.x)]
 
 ```
 
-## 3.)
 
-For a standard normal distribution, find the percentage of data that are more than 2 standard
-deviations below the mean or more than 3 standard deviations above the mean.
+```{r q2_display, echo = F}
 
+pretty_vector(c("Mean" = ev, "Variance" = var, "Standard Deviation" = sd, "Median" = med, "Mode" = mode))
+plot(x, cumsum(P.x), main = "cdf for P.x", type = "h", ylim = c(0, 1.0))
+abline(h = 0.5, col = "red")
+
+```
+
+## 3.) Normal Probability
+
+For a standard normal distribution, find the percentage of data that are __more than 2 standard
+deviations below the mean__ _or_ __more than 3 standard deviations above the mean__.
+
++ __a.) 2.41%__
++ b.) 0.26% 
++ c.) 4.56%
++ d.) 97.59%
+
+```{r q3_display, echo = F}
+
+area <- 1 - (pnorm(2) - pnorm(3, lower.tail = F))
+
+ggplot(data.table(X = seq(-4, 4, length = 2000 )), aes(x = X)) +
+	stat_function(fun = dnorm) +
+	stat_function(fun = dnorm, xlim = c(-4, -2), geom = "area", fill = "steelblue") +
+	stat_function(fun = dnorm, xlim = c(4, 3), geom = "area", fill = "steelblue") +
+    labs(title = paste("AUC = ", round(area, 5) * 100 ))
+
+```
 
 ```{r q3}
 
+pretty_vector( c( Probability = round( pnorm(-2, 0, 1, lower.tail = TRUE) + pnorm(3, 0, 1, lower.tail = FALSE), 5) * 100 ))
+
 ```
 
-## 4.)
+## 4.) Bayes' Therom
 
 Use the results summarized in the table. One of the 100 test subjects is selected at random. If the person approves of the Mayor, what is the probability that they vote Democrat? Use Bayes’ theorem.
 
 
-```{r q4_setup}
++ a.) 0.674
++ b.) 0.581
++ c.) 0.391
++ d.) 0.545
 
+```{r q4_setup, echo = F}
+
+q4_data <- data.frame(rbind(
+	c(8, 17),
+	c(18, 13),
+	c(7, 37)))
+
+rownames(q4_data) <- c("Republican", "Democrat", "Independent")
+colnames(q4_data) <- c("Approve of Mayor", "Do not approve of Mayor")
+
+pretty_kable(q4_data, "Votes")
 
 ```
-
 
 ```{r q4}
 
+# We know the person approves of the Mayor. Let's look at only those individuals.
+# Of the "Mayor approvers," 18 vote Democrat.
+
+pretty_vector( c( ShortWay = 18 / (8 + 18 + 7) ))# [1] 0.5454545
+
+# Long Way
+
+n <- sum(q4_data)
+
+p.approve <- sum( q4_data[,1] ) / n
+p.disaprove <- 1 - p.approve
+
+p.democrat <- sum(q4_data[2,]) / n
+p.not_democrat <- 1 - p.democrat
+
+p.democrat.approves <- 18 / sum( q4_data[2,] )
+p.not_democrat.approves <- sum(q4_data[c(1, 3), 1]) / sum( q4_data[c(1,3),] )
+
+q4 <- (p.democrat * p.democrat.approves) / ((p.democrat * p.democrat.approves) + (p.not_democrat * p.not_democrat.approves))
+
+pretty_vector(c(LongWay = q4))
+
 ```
 
-## 5.)
+## 5.) Chi-Squared Test
 
 Use the results summarized in the table above and test at the 5% level if party affiliation and approval of the Mayor are independent of each other using Pearson’s Chi-square test of independence.
 
++ a.) df = 2, p-value > 0.05, don’t reject 
++ b.) df = 2, p-value < 0.05, reject
++ c.) df = 5, p-value < 0.05, don’t reject
++ d.) df = 5, p-value > 0.05, reject
+
 ```{r q5}
+
+approve <- c(8, 18, 7)
+not.approve <- c(17, 13, 37)
+vote <- cbind(approve, not.approve)
+
+results <- chisq.test(vote, correct = FALSE)
+
+ifelse( results$p.value < 0.05, "Don't Reject", "Reject")
 
 ```
 
-## 6.)
+## 6.) Basic Stats #2
 
 A police department states that the probabilities for 0, 1, 2, and 3 burglaries reported in a given day are 0.46, 0.41, 0.09, and 0.04, respectively. 
 
 + Find the mean, variance, standard deviation, median and mode. Round the answer to the nearest hundredth.
 
 ```{r q6}
+
+x <- c(0, 1, 2, 3)
+P.x <- c(0.46, 0.41, 0.09, 0.04)
+
+ev <- sum(P.x * x)
+var <- sum(P.x * (x - ev) ^ 2)
+sd <- sqrt(var)
+med <- 1
+
+mode <- x[ P.x == max(P.x) ]
+
+```
+
+```{r q7_display, echo = F}
+
+    pretty_vector(c("Mean" = ev, "Variance" = var, "Standard Deviation" = sd, "Median" = med, "Mode" = mode))
+    plot(x, cumsum(P.x), main = "cdf for P.x", type = "h", ylim = c(0, 1.0))
+    abline(h = 0.5, col = "red")
 
 ```
 
