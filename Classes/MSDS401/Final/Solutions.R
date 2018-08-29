@@ -218,8 +218,6 @@ pnorm(((m-1)-exp+0.5)/sqrt(std),0,1,lower.tail=TRUE)-
 pnorm(10-0.5, n*p, sqrt(n*p*(1-p)), lower.tail=FALSE )
 
 
-
-
 ###########
 # 11)	True or False:  in a hypothesis test, an increase in alpha will cause a 
 #     decrease in the power of the test provided the sample size is kept fixed.

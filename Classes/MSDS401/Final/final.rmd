@@ -338,7 +338,7 @@ Use the normal approximation with continuity correction to estimate the probabil
 
 _Select the best answer from the following choices:_
 
-__Note:_
+__Note:__
 
 Normal approximation to the binomial uses *z = (x - n*p)/sqrt(n * p * (1-p))*
 
@@ -378,12 +378,12 @@ p_6 <- pnorm(((m - 1) - exp + 0.5) / sqrt(std), 0, 1, lower.tail = TRUE) -
 # 10
 p_tg10 <- pnorm(10 - 0.5, n * p, sqrt(n * p * (1 - p)), lower.tail = FALSE)
 
-# Results
-pretty_vector(c("Prob = 0" = round(p_0,4), "Prob = 6" = round(p_6,4), "Prob >= 10 " = round(p_tg10,4)))
-
 ```
 
 ```{r q10_display, echo = F}
+
+# Results
+pretty_vector(c("Prob = 0" = round(p_0, 4), "Prob = 6" = round(p_6, 4), "Prob >= 10 " = round(p_tg10, 4)))
 
 prob.norm <- function(x) {
 	pnorm(((x) - exp + 0.5) / sqrt(std), 0, 1, lower.tail = TRUE) -
@@ -495,9 +495,14 @@ pretty_vector(c("Point Estimate" = round(p_estimate, 3)))
 # Calculate critical z score:
 critcal_z <- qnorm(1 - sig.level / 2, lower.tail = F) # [1] -1.644854
 
+```
+
+
+```{r q16_results, echo = F}
+
 pretty_vector(c("Critical Z-Score" = round(critcal_z, 2)))
 
-pretty_vector( c("Result" = ifelse( p_estimate < sig.level, "Reject", "Fail to Reject" ) ))
+pretty_vector(c("Result" = ifelse(p_estimate < sig.level, "Reject", "Fail to Reject")))
 
 ```
 
@@ -526,29 +531,67 @@ A hypothesis test of the given claim will be conducted. A cereal company claims 
 
 __A type I error is the incorrect rejection of a "true" null hypothesis.__
 
-## 19.)
+## 19.) Test Scores
 
 Scores on a test are normally distributed with a mean of 68.2 and a standard deviation of 10.4. Estimate the probability that at least 20 of 75 randomly selected students score greater than 78.
 
-+ A.) 0.0166 
-+ B.) 0.0113 
-+ C.) 0.0278 
-+ D.) 0.1736
++ a.) 0.0166 
++ b.) 0.0113 
++ __c.) 0.0278__
++ d.) 0.1736
 
 ```{r q19}
 
-q19 <- pnorm(78, 68.2, 10.4, lower.tail = F)
+mu <- 68.2
+sd <- 10.4
+gt <- 78
 
-pretty_vector(q19)
+# We need to determine the z-score associated with our score of interest, 78.
+z <- (gt - mu) / sd
+
+# We need to determine the probability associated with a random value being greater than 78
+p <- pnorm(z, 0, 1, lower.tail = F)
+
+# This sequence "provides" the => 20 possible instances (56 of a total 75) that we need for
+# summing our probabilities:
+x <- seq(20, 75, 1)
+
+q19_prob <- sum(dbinom(x, 75, p))
+
+# We may want the normal approximation, for which:
+
+# This formula returns a z-score for the normal approximation:
+b <- (19.5 - p * 75) / sqrt(75 * p * (1 - p))
+
+# This returns the probability associated with our "corrected" z-score:
+q19_normal_approx <- pnorm(b, 0, 1, lower.tail = FALSE)
 
 ```
 
-## 20.)
+```{r q19_results, echo = F}
+pretty_vector(c("True Prob:" = round(q19_prob, 4), "Normal Approx.:" = round(q19_normal_approx, 4)))
+```
+
+> __EXPLANATION__:  We assume a normal distribution, but we rely on a binomial distribution
+when we want the likelihood of => 20 "successes". So, 0.173 is the probability associated
+with any "random" test taker scoring greater than 78; this we solve assuming (and
+employing a normal distribution; pnorm()). However, when we go to look at the likelihood
+that at least 20 of our test takers achieve this score we rely on a binomial, even though
+we still assume (and rightly) that our test scores are normally distributed.
+
+> So, looking at the sum(dbinom(x, 75, p)). This is the exact binomial probability associated
+with our conditions; 20 or more successes (test score > 78) out of 75 test takers. What we
+want is to correct for the fact that we've had to use a discrete distribution (binomial) to
+approach a continuous, normally distributed problem/reality.
+
+_The (19.5 - p * 75)/ sqrt(75 * p * (1-p)) gives us our "corrected" z-score that we can then
+"plug in" to our cumulative probability function, pnorm()._
+
+## 20.) Correlation
 
 Find the value of the linear correlation coefficient, r, using the following data. Determine if the null hypothesis of zero correlation is rejected with a 5% alpha (Type I error rate).
 
-
-```{r q20_setup}
+```{r q20_setup, echo = F}
 
 q20_data <- data.frame(rbind(c(62, 53, 64, 52, 52, 54, 58), c(158, 176, 151, 164, 164, 174, 162)))
 rownames(q20_data) <- c("x", "y")
@@ -558,30 +601,57 @@ pretty_kable(q20_data, "")
 
 ```
 
-+ A.) 0.754, don’t reject 
-+ B.) -0.775, reject
-+ C.) -0.081, don’t reject 
-+ D.) 0.754, reject
++ a.) 0.754, don’t reject 
++ b.) __-0.775, reject__
++ c.) -0.081, don’t reject 
++ d.) 0.754, reject
 
 ```{r q20}
 
+x <- as.numeric(q20_data[1,])
+y <- as.numeric(q20_data[2,])
+
+c <- cor( x, y ) # [1] -0.7749395
+t <- cor.test(x, y)
+
 ```
 
-## 21.)
 
-A researcher wants to estimate what proportion of U.S. refinery workers are contract workers. The researcher wants to be 95% confident of her results and be within 0.05 of the actual proportion. 
+```{r q20_results, echo = F}
+
+pretty_vector( c( "Correlation" = round(c, 3 ) ))
+
+t
+
+pretty_vector( c( "Test Result" = ifelse( t$p.value < 0.05, "Reject", "Can't Reject" ) ))
+
+```
+
+## 21.) Sample Size (Unknown mu & var)
+
+A researcher wants to estimate what proportion of U.S. refinery workers are contract workers. The researcher wants to be __95%__ confident of her results and be within __0.05__ of the actual proportion. 
 There have been no prior studies. The researcher has no idea what is the actual population proportion. How large a sample size should be taken? Round to the next largest integer.
 
-+ A.) n = 664 
-+ B.) n = 385 
-+ C.) n = 271 
-+ D.) n = 543
++ a.) n = 664 
++ __b.) n = 385__
++ c.) n = 271 
++ d.) n = 543
 
 ```{r q21}
 
+z <- qnorm(1 - (1 - 0.95) / 2)
+moe <- 0.05
+n = .25 * (z / moe) ** 2
+
 ```
 
-## 22.)
+```{r q_21_result, echo = F}
+
+pretty_vector( c( "Sample Size:" = ceiling( n ) ))
+
+```
+
+## 22.) Traditional Test
 
 Use the traditional method to test the given hypothesis. 
 
@@ -600,9 +670,36 @@ pretty_kable(q22_data, "Samples")
 
 ```{r q22}
 
+x1 <- 38
+n1 <- 85
+
+x2 <- 23
+n2 <- 90
+
+p1 <- x1 / n1
+p2 <- x2 / n2
+
+# Calculate pooled sample proportion:
+p <- (((p1) * n1) + ((p2) * n2)) / (n1 + n2)
+
+# Calculate standard error:
+stdErr <- sqrt(p * (1 - p) * ((1 / n1) + (1 / n2)))
+
+z <- (p1 - p2) / stdErr
+z # [1] 2.657104
+
+# Calculate the critical z-score:
+critcal_z <- qnorm(1 - 0.01) # [1] 2.326348
+
 ```
 
-## 23.)
+
+```{r q22_results, echo = F}
+pretty_vector( c("Z-Score" = round(z, 3), "Critical Z-Score" = critcal_z))
+pretty_vector(c("Test Result" = ifelse(critcal_z < z, "Reject", "Can't Reject")))
+```
+
+## 23.) T-Test (unequal sd)
 
 A researcher was interested in comparing the average length of time (in hours) spent watching television by women and by men. Independent simple random samples of 14 women and 17 men were selected, 
 and each person was asked how many hours he or she had watched television during the previous week. 
@@ -619,14 +716,54 @@ pretty_kable(q23_data, "Samples")
 ```
 
 + Use a 0.05 significance level to test the claim that the average length of time spent watching television by women is smaller than the average length amount of time spent watching television by men. 
-+ Use a t test for hypothesis testing. Do not assume that the population standard deviations are equal.
++ Use a t test for hypothesis testing. 
 
+__Do not assume that the population standard deviations are equal.__
+
++ H0 = avg(women) < avg(men)
++ Ha = avg(women) > avg(men)
 
 ```{r q23}
 
+x1 <- 12.5
+s1 <- 3.9
+n1 <- 14
+
+x2 <- 13.8
+s2 <- 5.2
+n2 <- 17
+
+# Calculate our t:
+t <- (x1 - x2) / sqrt(s1 ^ 2 / n1 + s2 ^ 2 / n2)
+t # [1] -0.7945437
+
+s1n1 <- s1 ^ 2 / n1
+s2n2 <- s2 ^ 2 / n2
+
+df.calculated <- ((s1n1 + s2n2) ^ 2) / (s1n1 ^ 2 / (n1 - 1) + s2n2 ^ 2 / (n2 - 1))
+
+alt.df <- n1 + n2 - 2 # Alt. Df, 29
+
+# Calculate the critical t:
+critcal_t <- qt(1 - 0.05, df = df.calculated, lower.tail = F) # [1] -1.699535
+
 ```
 
-## 24.)
+
+```{r q23_display, echo = F}
+pretty_vector(c("Df Calculated" = round(df.calculated, 3), "Alt Df" = alt.df))
+
+pretty_vector(c("T-Score" = round(t, 3), "Critical T-Score" = critcal_t))
+pretty_vector(c("Test Result" = ifelse(t < critcal_t, "Reject", "Fail to Reject")))
+```
+
+_At our adopted significance level (0.05), we fail to reject the null hypothesis._
+
+> There is insufficient evidence for the claim that the mean amount of time spent
+watching television by women is smaller than the mean amount of time spent
+watching television by men.
+
+## 24.) T-Test (equal sd)
 
 A researcher was interested in comparing the average length of time spent watching television by women and by men. 
 Independent simple random samples of 14 women and 17 men were selected, and each person asked how many hours he or she had watched television during the previous week. 
@@ -645,9 +782,45 @@ pretty_kable(q24_data, "Samples")
 Use a 0.05 significance level to test the claim that the average length of time spent watching television by women is smaller than the average length of time spent watching television by men. 
 Use the traditional method of hypothesis testing. 
 
-__Assume that the population standard deviations are equal__
+__Assume that the population standard deviations are equal.__
 
-## 25.)
++ H0 = avg(women) < avg(men)
++ Ha = avg(women) > avg(men)
+
+```{r q24}
+
+x1 <- 11.4
+s1 <- 4.1
+n1 <- 14
+
+x2 <- 16.8
+s2 <- 4.7
+n2 <- 17
+
+# Calculate our pooled standard deviation
+s <- sqrt(((n1 - 1) * s1 ^ 2 + (n2 - 1) * s2 ^ 2) / (n1 + n2 - 2))
+
+# Calculate our t:
+t <- (x1 - x2) / (s * sqrt(1 / n1 + 1 / n2))
+
+# Calculate the critical t:
+critcal_t <- qt(1 - 0.05, df = n1 + n2 - 2, lower.tail = F) # [1] -1.699127
+
+```
+
+```{r q24_display, echo = F}
+
+pretty_vector(c("T-Score" = round(t, 3), "Critical T-Score" = critcal_t))
+pretty_vector(c("Test Result" = ifelse(t < critcal_t, "Reject", "Fail to Reject")))
+
+```
+
+> At our adopted significance level (0.05), we reject the null hypothesis. There
+is sufficient evidence for the claim that the mean amount of time spent watching
+television by women is smaller than the mean amount of time spent watching
+television by men.
+
+## 25.) Population Proportions
 
 Construct a 90% confidence interval for the difference between population proportions, (p1 - p2). 
 
@@ -657,14 +830,48 @@ x1 = 15, n1 = 50 and x2 = 23, n2 = 60.
 
 __Do not use a continuity correction__.
 
-
-+ A.) -0.232 < (p1 - p2) < 0.065 
-+ B.) 0.151 < (p1 - p2) < 0.449
-+ C.) 0.477 < (p1 - p2) < 0.122 
-+ D.) 0.123 < (p1 - p2) < 0.477
++ __a.) -0.232 < (p1 - p2) < 0.065__
++ b.) 0.151 < (p1 - p2) < 0.449
++ c.) 0.477 < (p1 - p2) < 0.122 
++ d.) 0.123 < (p1 - p2) < 0.477
 
 ```{r}
 
+x1 <- 15
+n1 <- 50
+
+x2 <- 23
+n2 <- 60
+
+p1 <- x1 / n1
+p2 <- x2 / n2
+
+# Calculate the standard deviation of the difference between proportions:
+s <- sqrt(p1 * (1 - p1) / n1 + p2 * (1 - p2) / n2)
+
+# Calculate the critical z:
+critical_z <- qnorm(1 - 0.10 / 2) # [1] 1.644854
+
+p1 <- (p1 - p2) - (qnorm(1 - 0.10 / 2) * s) # [1] -0.2317335
+p2 <- (p1 - p2) + (qnorm(1 - 0.10 / 2) * s) # [1] 0.06506688
+
+# Alternative calculation
+
+c1 <- c(15, 23)
+c2 <- c(50, 60)
+c2 <- c2 - c1
+x <- cbind(c1, c2)
+
+t <- qt(0.054861 / 2, 1, lower.tail = TRUE)
+
+prop.test(x, alternative = c("two.sided"), conf.level = 0.90, correct = FALSE)
+
+```
+
+```{r q25_results, echo = F}
+pretty_vector(c("Z-Score" = round(z, 3), "Critical Z-Score" = critcal_z))
+pretty_vector(c("p1" = round(p1, 3), "p2" = round(p2,3)))
+pretty_vector(c("Test Result" = ifelse(critcal_z < z, "Reject", "Can't Reject")))
 ```
 
 ## 26.)
