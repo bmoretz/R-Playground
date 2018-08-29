@@ -217,14 +217,6 @@ pnorm(((m-1)-exp+0.5)/sqrt(std),0,1,lower.tail=TRUE)-
   pnorm(((m-1)-exp-0.5)/sqrt(std),0,1,lower.tail=TRUE)
 pnorm(10-0.5, n*p, sqrt(n*p*(1-p)), lower.tail=FALSE )
 
-prob.norm <- function(x){
-  pnorm(((x)-exp+0.5)/sqrt(std),0,1,lower.tail=TRUE)-
-    pnorm(((x)-exp-0.5)/sqrt(std),0,1,lower.tail=TRUE)
-}
-
-plot(x,dbinom(x,n,p))
-lines(x-0.5,prob.norm(x),col = "red", type = "s")
-abline(v=m-1)
 
 
 

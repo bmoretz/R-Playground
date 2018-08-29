@@ -357,40 +357,42 @@ pretty_kable(q10_data, "Answer Choices", dig = 4)
 
 ```
 
-
-```{r q10_display, echo = F}
-
-ggplot(data.table(X = seq(-4, 4, length = 2000)), aes(x = X)) +
-   stat_function(fun = dnorm)
+```{r q10}
 
 x <- seq(0, 15)
 n <- 15
 p <- .4
+
 m <- which.max(dbinom(x, n, p)) # midpoint
 
-binom.est <- function(x, n, p, m, lower.tail = T ) {
+exp <- n * p
+std <- exp * (1 - p)
 
-  exp <- n * p
-  std <- exp * (1 - p)
+# 0
+p_0 <- pnorm((0 - exp + 0.5) / sqrt(std), 0, 1, lower.tail = TRUE)
 
-  ifelse(x < m, pnorm((x - exp + 0.5) / sqrt(std)), pnorm(x - exp - 0.5, exp, sqrt(std), lower.tail))
-}
+# 6
+p_6 <- pnorm(((m - 1) - exp + 0.5) / sqrt(std), 0, 1, lower.tail = TRUE) -
+	pnorm(((m - 1) - exp - 0.5) / sqrt(std), 0, 1, lower.tail = TRUE)
 
-binom.est(0, n, p, m)
-binom.est(6, n, p, m, lower.tail = F)
-binom.est(10, n, p, m, lower.tail = F)
+# 10
+p_tg10 <- pnorm(10 - 0.5, n * p, sqrt(n * p * (1 - p)), lower.tail = FALSE)
 
-pnorm( ( 0 - exp + 0.5 ) / sqrt(std) )
-pnorm((6 - exp + 0.5) / sqrt(std))
-
+# Results
+pretty_vector(c("Prob = 0" = round(p_0,4), "Prob = 6" = round(p_6,4), "Prob >= 10 " = round(p_tg10,4)))
 
 ```
 
-```{r q10}
+```{r q10_display, echo = F}
 
-dbinom(0, 15, 0.4)
-dbinom(6, 15, 0.4)
-dbinom(10, 15, 0.4)
+prob.norm <- function(x) {
+	pnorm(((x) - exp + 0.5) / sqrt(std), 0, 1, lower.tail = TRUE) -
+	pnorm(((x) - exp - 0.5) / sqrt(std), 0, 1, lower.tail = TRUE)
+}
+
+plot(x, dbinom(x, n, p))
+lines(x - 0.5, prob.norm(x), col = "red", type = "s")
+abline(v = m - 1)
 
 ```
 
@@ -453,52 +455,76 @@ __TRUE__.
 statistical test increasing the power.  Thus it less likely that a type II error 
 will occur.
 
-## 15.)
+## 15.) Hypothesis Tests
 
 Suppose that you perform a hypothesis test regarding a population mean, and that the evidence does not warrant rejection of the null hypothesis. 
 When formulating the conclusion to the test, why is phrase “fail to reject the null hypothesis” more accurate than the phrase “accept the null hypothesis?”
 
-> Short Answer
+> A hypothesis test does not "prove" the null hypothesis. Rather, it is meant to determine
+whether or not there is sufficient evidence to reject it. Insufficient evidence does not
+validate the null hypothesis; it just leaves us without grounds for rejecting it.
 
-```{r q15}
+## 16.) Identify Test
 
-```
-
-## 16.)
-
-> Short Answer
-
-Identify the null hypothesis, alternative hypothesis, test statistic, p-value, conclusion about the null hypothesis, and the final conclusion that addresses the original claim.
+_Identify the null hypothesis, alternative hypothesis, test statistic, p-value, conclusion about the null hypothesis, and the final conclusion that addresses the original claim._
 
 > According to a recent poll, 53% of Americans would vote for the incumbent president. If a random sample of 100 people results in 45% who would vote for the incumbent, 
 test the claim that the actual percentage is 53%. Use a 0.10 significance level.
 
++ H0:  p  = 0.53  (null hypothesis)
++ H1:  p != 0.53  (alternative hypothesis)
++ z = -1.60
++ p = 0.1095986
++ critical z = -1.645
+
 ```{r q16}
+
+sig.level <- .10
+
+# Calculate z-score:
+stdDev <- sqrt((100 * 0.53) * (1 - 0.53))
+
+z <- (45 - (100 * 0.53)) / stdDev
+pretty_vector( c( "Z-Score" = round(z, 2) )) # [1] -1.602888
+
+# Estimate p-value:
+p_estimate <- 2 * pnorm(-1.60) # [1] 0.1095986
+
+pretty_vector(c("Point Estimate" = round(p_estimate, 3)))
+
+# Calculate critical z score:
+critcal_z <- qnorm(1 - sig.level / 2, lower.tail = F) # [1] -1.644854
+
+pretty_vector(c("Critical Z-Score" = round(critcal_z, 2)))
+
+pretty_vector( c("Result" = ifelse( p_estimate < sig.level, "Reject", "Fail to Reject" ) ))
 
 ```
 
-## 17.)
+> Given our p-value and adopted significance level, 0.110 > 0.10, we fail to reject the
+null hypothesis. There is insufficient evidence to reject the claim that the “true”
+percentage is 53%.
 
-> Short Answer
+## 17.) Linear Correlation
 
 What does the linear correlation coefficient tell us regarding the usefulness of a regression equation for making predictions?
 
-```{r q17}
+> The linear regression equation is appropriate for predictions when there is
+a significant linear correlation between two variables. The linear correlation 
+coefficient quantifies the strength of a linear relationship, and significant
+magnitudes indicate the likely usefulness of the linear regression equation for
+the purpose of prediction.
 
-```
-
-## 18.)
+## 18.) Type I Error
 
 A hypothesis test of the given claim will be conducted. A cereal company claims that the mean weight of the cereal in its packets is 14 oz. Identify the type I error for the test.
 
 + a.) Fail to reject the claim that the mean weight is 14 oz. when it is actually different from 14 oz.
 + b.) Reject the claim that the mean weight is 14 oz. when it is actually greater than 14 oz.
-+ c.) Reject the claim that the mean weight is 14 oz. when it is actually 14 oz.
++ __c.) Reject the claim that the mean weight is 14 oz. when it is actually 14 oz.__
 + d.) Reject the claim that the mean weight is different from 14 oz. when it is actually 14 oz.
 
-```{r q18}
-
-```
+__A type I error is the incorrect rejection of a "true" null hypothesis.__
 
 ## 19.)
 
