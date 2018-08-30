@@ -126,7 +126,7 @@ ggplot(data.table(X = seq(-4, 4, length = 2000 )), aes(x = X)) +
 
 ```
 
-```{r q3}
+```{r q3, echo = F}
 
 pretty_vector( c( Probability = round( pnorm(-2, 0, 1, lower.tail = TRUE) + pnorm(3, 0, 1, lower.tail = FALSE), 5) * 100 ))
 
@@ -198,7 +198,12 @@ vote <- cbind(approve, not.approve)
 
 results <- chisq.test(vote, correct = FALSE)
 
-ifelse( results$p.value < 0.05, "Don't Reject", "Reject")
+```
+
+
+```{r q5_results, echo = F}
+
+ifelse(results$p.value < 0.05, "Don't Reject", "Reject")
 
 ```
 
@@ -874,7 +879,7 @@ pretty_vector(c("p1" = round(p1, 3), "p2" = round(p2,3)))
 pretty_vector(c("Test Result" = ifelse(critcal_z < z, "Reject", "Can't Reject")))
 ```
 
-## 26.)
+## 26.) Regression Line
 
 Use the given data to find the equation of the regression line. Round the final values to three significant digits. The variable y denotes the predicted value for the dependent variable y.
 
@@ -889,17 +894,29 @@ pretty_kable(q26_data, "")
 
 ```
 
-+ A.) y = -2.79 + 0.897x 
-+ B.) y -2.79 + 0.950x 
-+ C.) y = -.79 + 0.801x 
-+ D.) y = -3.79 +0.897x
++ a.) y = -2.79 + 0.897x 
++ b.) y -2.79 + 0.950x 
++ c.) y = -.79 + 0.801x 
++ __d.) y = -3.79 +0.897x__
 
 
 ```{r q26}
 
+x <- c(6, 8, 20, 28, 36)
+y <- c(2, 4, 13, 20, 30)
+
+lm.fit <- lm(y ~ x)
+
 ```
 
-## 27.)
+
+```{r q26_results, echo = F}
+
+pretty_vector(lm.fit$coefficients, "Coefficients")
+
+```
+
+## 27.) Confidence Intervals
 
 Using the data in problem 26, construct 95% confidence intervals for the coefficients in the resulting regression model.
 
@@ -920,6 +937,16 @@ pretty_kable(q27_data, "Answer Choices")
 
 ```{r q27}
 
+lm.sum <- summary(lm.fit)
+
+result <- confint(lm.fit, level = .95)
+
+```
+
+__Answer: C__ 
+
+```{r q27_results, echo = F}
+pretty_kable(as.data.table(result), "95% Confidence Intervals", dig = 3 )
 ```
 
 ## 28.)
