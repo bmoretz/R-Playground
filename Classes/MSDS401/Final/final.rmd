@@ -1029,13 +1029,15 @@ is -1.679.  Since T = -2.00 < -1.679 the null hypothesis can be
 rejected.  The p-value is 0.0258 < 0.05.
 
 ```{r q30_results, echo = F}
+
 pretty_vector(c("T" = round(t, 3), "Critical T" = critical_t))
+
 pretty_vector(c("p" = round(p, 3)))
 pretty_vector(c("Test Result" = ifelse(t < critical_t, "Reject", "Can't Reject")))
 
 ```
 
-## 31.)
+## 31.) Hypergeometric Distribution
 
 A project manager is trying to assemble a five-member team. She has a list of 30 volunteers that she intends to draw five (5) from randomly, so as not to alienate anyone. 
 However, only four (4) of the 30 have a specific certification that the project manager knows she’ll need. 
@@ -1045,9 +1047,27 @@ However, only four (4) of the 30 have a specific certification that the project 
 
 ```{r q31}
 
+N <- 30 # size of population
+k <- 4 # number of "successes"
+n <- 5 # sample size, without replacement
+x <- 2 # quantity of interest
+
+((factorial(k) / (factorial(x) * factorial(k - x))) *
+	(factorial(N - k) / (factorial(n - x) * factorial((N - k) - (n - x))))) /
+	(factorial(N) / (factorial(n) * factorial(N - n)))
+
+# Or, using the dhyper() function:
+dhyper(2, 4, (30 - 4), 5) # [1] 0.1094691
+
+
+# What is the probability that at least one of the five members randomly selected
+# will have the needed certification?
+
+1 - phyper(0, 4, (30 - 4), 5) # [1] 0.5384054
+
 ```
 
-## 32.)
+## 32.) T-Test
 
 Consumers are asked to rate a company both before and after viewing a video on the company twice a day for a week. Use the paired data given below. 
 Test at the 1% significance level if the “after” results are less than the “before” results. Assume the data are normally distributed.
@@ -1066,6 +1086,27 @@ colnames(q32_data) <- rep(c(""), ncol(q32_data))
 pretty_kable(q32_data, "Raitings")
 
 ```
+
+
+```{r q32}
+
+alpha <- 0.01
+
+delta <- q32_data["before",] - q32_data["after",]
+
+sd <- sd(delta)
+
+t <- qt(1 - alpha, 8, lower.tail = T)
+
+results <- t.test( delta, alternative = c("greater"), mu = 0, paired = F, conf.level = 1 - alpha)
+
+```
+
+```{r q32_results, echo = F}
+pretty_vector(c("Test Result" = ifelse(results$p.value < alpha, "Reject", "Can't Reject")))
+```
+
+> At our adopted significance level, we reject the null hypothesis of no difference.
 
 ## 33.)
 
