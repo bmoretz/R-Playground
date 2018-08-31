@@ -949,7 +949,7 @@ __Answer: C__
 pretty_kable(as.data.table(result), "95% Confidence Intervals", dig = 3 )
 ```
 
-## 28.)
+## 28.) Chi-Squared Test (independence)
 
 A web service is interested in whether or not having signed up for email updates and offers is independent of purchasing choice (has purchased or has not). 
 Conduct a chi-square test of independence. 
@@ -971,9 +971,11 @@ pretty_kable(q28_data, "Contingency Table")
 
 ```{r q28}
 
+chisq.test(q28_data, correct = FALSE)
+
 ```
 
-## 29.)
+## 29.) Chi-Squared (Uniform)
 
 An urgent care center is interested in whether visits per day of the week are uniformly distributed. 
 Conduct a chi-square goodness of fit test. State the null and alternative hypotheses. 
@@ -990,18 +992,46 @@ pretty_kable(q29_data, "Visits")
 
 ```
 
-## 30.)
+
+```{r q29}
+
+chisq.test(q29_data)
+
+```
+
+## 30.) Correlation Test
 
 Test the hypothesis of a zero correlation using the procedure shown by Wilcox in Basic Statistics. 
 
-Assume n = 47, r = -0.286. 
+Assume __n = 47__, __r = -0.286__. 
 
 Test the null hypothesis of zero correlation versus the alternative that the correlation is negative at 95% confidence. 
 
 _Also calculate the p-value_.
 
-
 ```{r q30}
+
+r <- -0.286
+n <- 47
+df <- n - 2
+
+t <- r * sqrt( df / ( 1 - ( r ) ^ 2 ) )
+
+critical_t <- qt(1 - 0.05, df, lower.tail = F)
+
+p <- 1 - pt(abs(t), df = n - 2)
+
+```
+
+> The T test statistic has a Student’s t-distribution with 45 degrees
+of freedom.  The test statistic value is -2.00.  The critical value
+is -1.679.  Since T = -2.00 < -1.679 the null hypothesis can be
+rejected.  The p-value is 0.0258 < 0.05.
+
+```{r q30_results, echo = F}
+pretty_vector(c("T" = round(t, 3), "Critical T" = critical_t))
+pretty_vector(c("p" = round(p, 3)))
+pretty_vector(c("Test Result" = ifelse(t < critical_t, "Reject", "Can't Reject")))
 
 ```
 
