@@ -1,19 +1,16 @@
-﻿---
-title: 'Week 5-6 Reading'
-author: Moretz, Brandon
-output:
-  html_document:
-    toc: true
-    toc_float: true
-    theme: spacelab
-    df_print: paged
 ---
-
-```{r setup, include = FALSE}
-
-knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
-
-```
+title: 'Problem Set #3'
+author: "Moretz_Brandon"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    df_print: paged
+    theme: spacelab
+    toc: yes
+    toc_float: yes
+---
 
 ```{r additional-libraries, echo=FALSE}
 
@@ -25,6 +22,7 @@ library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
 library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
 library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
 
 theme_set(theme_light())
 
@@ -35,23 +33,23 @@ theme_update(plot.title = element_text(hjust = 0.5),
 			 axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
 			 legend.position = "top", legend.title = element_blank())
 
+pretty_kable <- function(data, title, dig = 2) {
+  kable(data, caption = title, digits = dig, big.mark = "'") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"))
+}
+
 pretty_vector <- function(vec, label = "") {
   pander::pander(vec)
 }
 
-```
-
-```{r utility}
-
 normal_z <- function(pct, mean = 0, sd = 1) {
-    qnorm( 1 - (( 1 - pct ) / 2), mean, sd, lower.tail = T)
+	qnorm(1 - ((1 - pct) / 2), mean, sd, lower.tail = T)
 }
 
 ```
 
-# _Problem Set 3_
 
-## 1.)
+## 1.) Power Test
 
 + Assume a random sample of size n is from a normal population.
 + Assume a single sample t test is used to for hypothesis testing.
@@ -61,14 +59,15 @@ If the sample size is decreased, and the Type I error rate is unchanged, then th
 
 __Answer__
 
-> True.
+> False.
 <br/><br/>
 β varies inversley with sample size and α varies directly with sample size (as sample size increases, 
 β decreases, α increases, power increases).
 
 _Business Statistics, p.275._
 
-## 2.)
+
+## 2.) Critical Value
 
 + Assume the population has a normal distribution and the number of observations in a random sample is greater than fifty.
 
@@ -83,7 +82,7 @@ pretty_vector( qnorm(.95), 3 )
 
 ```
 
-## 3.)
+## 3.) Confidence Interval
 
 Use the degree of confidence and sample data to construct a confidence interval for the population proportion p.
 
@@ -104,7 +103,7 @@ pretty_vector(round(c(ciLower, pHat, ciUpper), 3))
 
 ```
 
-## 4.)
+## 4.) Sample Size
 
 Use the given data to find the sample size required to estimate the population proportion.
 
@@ -120,7 +119,7 @@ pretty_vector(n)
 
 ```
 
-## 5.)
+## 5.) Distribution Characteristics
 
 Which of the following statements is not true?
 
@@ -133,7 +132,7 @@ __Answer:__
 
 Choice __b.)__ is false. The QQ plot is used to determine wheather the data is normally distributed.
 
-## 6.)
+## 6.) Minimum Sample Size
 
 Use the information to find the minimum sample size required to estimate an unknown population mean µ. 
 
@@ -145,11 +144,12 @@ moe <- 135
 zValue <- qnorm(1 - 0.05 / 2)
 sigma <- 500
 n <- ((zValue ** 2 * sigma ** 2) / (moe ** 2))
-pretty_vector(n)
+
+pretty_vector(round( n ))
 
 ```
 
-## 7.)
+## 7.) Confidence Interval
 
 _Use the information provided to determine a 95% confidence interval for the population variance._
 
@@ -177,7 +177,7 @@ pretty_vector(round(conf.int, 2))
 ```
 
 
-## 8.)
+## 8.) Confidence Interval
 
 _Solve the problem._
 
@@ -210,7 +210,7 @@ pretty_vector(c(mu - moe, mu + moe))
 
 ```
 
-## 9.)
+## 9.) Sampling Characteristics
 
 Which of the following statements is __not true__ for sampling distributions?
 
@@ -224,7 +224,7 @@ Which of the following statements is __not true__ for sampling distributions?
 
 __None of the above.__
 
-## 10.)
+## 10.) P-Value
 
 + Assume normality and use the information given to find the p-value.
 
@@ -244,7 +244,7 @@ If the p-value is that than α/2, the decision is to reject the null hypothesis.
 
 p <- pnorm(-1.63)
 sig <- .1 / 2 # must divide by 2 in order to perform the two-tailed test.
-pretty_vector( p )
+pretty_vector(round( p, 3 ))
 pretty_vector(ifelse(p < ( 0.1 / 2 ), "Reject the Null", "Fail to Reject the Null"))
 
 ```

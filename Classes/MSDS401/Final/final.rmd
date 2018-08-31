@@ -955,7 +955,6 @@ A web service is interested in whether or not having signed up for email updates
 Conduct a chi-square test of independence. 
 State the hypotheses, determine chi- square statistic and p-value using the contingency table below:
 
-
 ```{r q28_setup, echo = F}
 
 q28_data <- data.frame(rbind(

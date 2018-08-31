@@ -11,11 +11,35 @@ output:
 ---
 
 
-```{r utility_functions}
+```{r utility_functions, echo = F}
 
 library(data.table, quietly = TRUE, warn.conflicts = FALSE)
 
 assignInNamespace("cedta.pkgEvalsUserCode", c(data.table:::cedta.pkgEvalsUserCode, "rtvs"), "data.table")
+
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(ggplot2, quietly = TRUE, warn.conflicts = FALSE)
+library(ggthemes, quietly = TRUE, warn.conflicts = FALSE)
+library(gridExtra, quietly = TRUE, warn.conflicts = FALSE)
+library(kableExtra, quietly = TRUE, warn.conflicts = FALSE)
+
+theme_set(theme_light())
+
+# Theme Overrides
+theme_update(plot.title = element_text(hjust = 0.5),
+			 axis.text.x = element_text(size = 10),
+			 axis.text.y = element_text(size = 10),
+			 axis.title = element_text(face = "bold", size = 12, colour = "steelblue4"),
+			 legend.position = "top", legend.title = element_blank())
+
+pretty_kable <- function(data, title, dig = 2) {
+	kable(data, caption = title, digits = dig, big.mark = "'") %>%
+	kable_styling(bootstrap_options = c("striped", "hover"))
+}
+
+pretty_vector <- function(vec, label = "") {
+	pander::pander(vec)
+}
 
 getMode <- function(values) {
 
@@ -87,7 +111,7 @@ winsorize <- function(vals, pct) {
 
 ```
 
-## 1.)
+## 1.) Extreme Outliers
 
 Consider the values below. Using the boxplot rule, is the value 200 an extreme outlier ?
 
@@ -105,21 +129,22 @@ q2 <- quantile(values, .75)
 
 outlier_range <- q2 + 3 * (q2 - q1) # 3 * IQR for Extreme Outliers
 
-200 > outlier_range
+pretty_vector( c( 200 > outlier_range) )
 
 ```
 
-## 2.)
+## 2.) Levels of Measurement
 
 Determine which of the four levels of measurement (nominal, ordinal, interval, ratio) is most appropriate for calendar years.
 
-```{r echo = T}
++ Ratio 
++ Nominal 
++ __Interval__
++ Ordinal
 
-print("Years <- Interval")
+__Answer:__ _Interval_
 
-```
-
-## 3.)
+## 3.) Summary Stats
 
 Here are some scores from a quiz.  Find the range for the given data.
 
@@ -127,13 +152,12 @@ Here are some scores from a quiz.  Find the range for the given data.
 
 scores <- c(31, 47, 29, 31, 16, 48, 41, 50, 54, 37, 22)
 
-getSummary(scores)[c(5, 6),]
-summary(scores)
+pretty_vector( getSummary(scores)[c(5, 6),] )
 
 ```
 
 
-## 4.)
+## 4.) Standard Deviation
 
 Find the sample standard deviation for the given sample data.  
 Round your answer to one more decimal place than is present in the original data.
@@ -142,12 +166,13 @@ Round your answer to one more decimal place than is present in the original data
 
 sample <- c(18, 18, 17, 9, 15, 5, 10, 5, 15, 17, 7, 12, 12)
 
-getSummary(sample)[8]
-round(sd(sample), 1)
+pretty_vector( getSummary(sample)[8] )
+
+pretty_vector( round(sd(sample), 1), "Standard Deviation" )
 
 ```
 
-## 5.)
+## 5.) Median
 
 + Find the median for the given sample data.
 + The normal monthly precipitation(in inches) for August is listed for 20 different U.S. cities. Find the median of the data.
@@ -155,28 +180,24 @@ round(sd(sample), 1)
 ```{r echo = T}
 
 monthly_precipitation <- c(3.6, 1.6, 2.4, 3.7, 4.1, 3.9, 1.0, 3.6, 4.2, 3.4, 3.7, 2.2, 1.5, 4.2, 3.5, 2.7, 0.4, 3.7, 2.0, 3.6)
-getSummary(monthly_precipitation)[2]
+
+pretty_vector( getSummary(monthly_precipitation)[2] )
 
 ```
 
-## 6.)
+## 6.) Eliminating Outlier
 
 Multiple Choice 
 
 Which of the following is not a reason for eliminating an identified outlier from a data set prior to further statistical analysis?
 
-<br />
-__Faulty Distribution Assumption__
-<br />
-Human error 
-<br />
-Intentional falsification 
-<br />
-Sampling the wrong population 
-<br />
-Standardization failure 
++ Faulty Distribution Assumption
++ Human error 
++ Intentional falsification 
++ __Sampling the wrong population__
++ Standardization failure 
 
-## 7.)
+## 7.) Chebyshev’s theorem
 
 + The heights of the adults in one town have a mean of 67.1 inches and a standard deviation of 3.5 inches.
 + What can you conclude from Chebyshev's theorem about the percentage of adults in the town whose heights are between 60.1 and 74.1 inches?  
@@ -187,13 +208,13 @@ _(Hint-study the section in Business Statistics that deals with this.)_
 
 mu <- 67.1
 sd <- 3.5
-mu + sd * 2
-mu - sd * 2
+
+pretty_vector(c("-2 sd" = mu - sd * 2, "+2 sd" = mu + sd * 2))
 
 ```
 
 
-## 8.)
+## 8.) Trimmed Mean
 
 + The data below consists of the heights (in inches) of 20 randomly selected women. 
 + Find the 20% trimmed mean of the data set.  Round to two decimal places. 
@@ -205,14 +226,14 @@ mu - sd * 2
 values <- c(69, 68, 64, 61, 65, 64, 71, 67, 62, 63, 61, 64, 75, 67, 60, 59, 64, 69, 65, 72)
 
 # Base R
-round(mean(values, trim = .2), 2)
+pretty_vector( round(mean(values, trim = .2), 2) )
 
 # Custom Fun
-round(trimmed_mean(values, pct = .2), 2)
+pretty_vector( round(trimmed_mean(values, pct = .2), 2) )
 
 ```
 
-## 9.)
+## 9.) Group Standard Deviation
 
 + Find the standard deviation of the sample data summarized in the given frequency distribution.
 
@@ -234,11 +255,15 @@ smfs <- sum(student.data$Mf) ** 2 / n
 
 var <- (smsf - smfs) / (n - 1)
 
-round(sqrt(var), 1)
+pretty_vector( round(sqrt(var), 1) )
 
 ```
 
-## 10.)
+## 10.) Range & Variance
+
+Find the range, variance, and standard deviation for each of the two samples, then compare the two sets of results.
+
+When investigating times required for drive-through service, the following results (in seconds) were obtained.
 
 ```{r}
 
@@ -247,7 +272,7 @@ restaurantB <- c(115, 126, 49, 56, 98, 76, 78, 95)
 
 sum_cols <- c("Range", "Variance", "StdDev")
 
-getSummary(restaurantA)[which(Statistic %in% sum_cols)]
-getSummary(restaurantB)[which(Statistic %in% sum_cols)]
+pretty_vector(getSummary(restaurantA)[which(Statistic %in% sum_cols)], "Restaurant A" )
+pretty_vector(getSummary(restaurantB)[which(Statistic %in% sum_cols)], "Restaurant B" )
 
 ```

@@ -39,7 +39,7 @@ pretty_vector <- function(vec, label = "") {
 ```
 
 
-## 1.)
+## 1.) Linear Regression
 
 True or False
 
@@ -49,7 +49,7 @@ Answer:
 
 __True__
 
-## 2.)
+## 2.) Population Proportions
 
 Choose the one alternative that best completes the statement or answers the question.
 
@@ -68,23 +68,25 @@ x1 <- 39
 n2 <- 100
 x2 <- 49
 
-p <- (x1 + x2) / (n1 + n2)
-std <- sqrt(p * (1 - p) * (1 / 100 + 1 / 100))
+p.hat <- (x1 + x2) / (n1 + n2)
+std <- sqrt(p.hat * (1 - p.hat) * (1 / 100 + 1 / 100))
 z <- (0.49 - 0.39) / std
-z
-1 - pnorm(z, 0, 1, lower.tail = T)
 
-pretty_vector(round(p, 4))
+pretty_vector( c( "Z-Score" = z ) )
+
+p <- 1 - pnorm(z, 0, 1, lower.tail = T)
+
+pretty_vector(round(p, 3))
 
 alpha <- ( 1 - .9 ) / 2
 
 crit.value <- qnorm(alpha, lower.tail = F)
 
-ifelse(z > crit.value, "Reject Null", "Fail To Reject" )
+pretty_vector( c( "Test Result" = ifelse(z > crit.value, "Reject Null", "Fail To Reject" ) ))
 
 ```
 
-## 3.)
+## 3.) Population Confidence Intervals
 
 Construct the indicated confidence interval for the difference between the two population means. 
 
@@ -124,7 +126,7 @@ pretty_vector(c(ci.lower, ci.upper), 1)
 ```
 
 
-## 4.)
+## 4.) Paired Confidence Interval
 
 Construct a 95% confidence interval for the mean difference µd using a sample of paired data for which summary statistics are given. 
 Assume the parent populations are normally distributed.  
@@ -148,14 +150,14 @@ pretty_vector(c(ci.lower, ci.upper), 3)
 
 ```
 
-## 5.)
+## 5.) ANOVA Characteristics
 
 One-way Analysis of Variance uses a F test to compare the variance between the treatment level means to the error variance (the pooled variance within levels).  For this test, 
 one assumption is that the observations are random samples drawn from normally distributed populations with unequal variances. 
 
 __False__
 
-## 6.)
+## 6.) ANOVA Table
 
 Use the given data to answer the question.
 
@@ -201,18 +203,20 @@ What is the critical value for the F- test at 95% confidence?
 
 ```{r echo = T}
 
-pretty_vector(round(qf(.95, 3, 16, lower.tail = T), 3), "Critical Value")
+crit.value <- qf(.95, 3, 16, lower.tail = T)
+
+pretty_vector(c( "Critical Value" = round(crit.value, 3) ))
 
 ```
 
-## 7.)
+## 7.) F-Statistic
 
 Solve the problem.
 
 A manager at a bank is interested in comparing the standard deviation of the waiting times when a single waiting line is used versus when individual lines are used. He wishes to test the claim that the population standard deviation for waiting times when multiple lines are used is greater than the population standard deviation for waiting times when a single line is used. This is a test of differences in variability.  Find the p-value for a test of this claim given the following sample data. If you use R, you will be able to calculate a precise p-value.  If you do a table lookup, you won't be able to find the exact p-value, but will be able to bound the p-value.   Retain at least 4 digits in the calculated p-value if you use R.  
 
-Sample 1: multiple waiting lines: n1 = 13, s1 = 2.0 minutes 
-Sample 2: single waiting line: n2 = 16, s2 = 1.1 minutes
++ Sample 1: multiple waiting lines: __n1 = 13__, __s1 = 2.0__ minutes 
++ Sample 2: single waiting line: __n2 = 16__, __s2 = 1.1__ minutes
 
 ```{r echo = T}
 
@@ -226,12 +230,12 @@ f.table <- qf((1 - 0.01), 12, 15)
 
 p <- f.table - f.calc
 
-0.01 <= p && p <= 0.025
+pretty_vector(c( "Result" = 0.01 <= p && p <= 0.025 ))
 
 ```
 
 
-## 8.)
+## 8.) ANOVA Table
 
 Provide an appropriate response.
 
@@ -270,7 +274,23 @@ Fill in the missing entries in the following partially completed one-way ANOVA t
 </tbody>
 </table>
 
-Answer:
+<br />
+
+```{r}
+
+pretty_vector( c( "treatment df" = 31 - 26 ) ) # treatment df
+
+pretty_vector( c( "Treatment MS-SS/df" =  22.2 / 5 )) # treatment MS-SS/df 
+
+pretty_vector(c("SS Error" = 26 * 4 )) # ss error
+
+pretty_vector(c("SS Total" = 104 + 22.2 )) # ss total
+
+pretty_vector(c("F-Statistic" = 4.44 / 4 )) # f-statistic
+
+```
+
+__Answer__:
 
 <table style="width: 472px; height: 106px;" border="1">
 <tbody>
@@ -305,21 +325,9 @@ Answer:
 </tbody>
 </table>
 
-```{r}
+<br />
 
-31 - 26 # treatment df
-
-22.2 / 5 # treatment MS-SS/df 
-
-26 * 4 # ss error
-
-104 + 22.2 # ss total
-
-4.44 / 4 # f-statistic
-
-```
-
-## 9.)
+## 9.) Regression Line
 
 Use the given data to find the equation of the regression line.  
 
@@ -353,11 +361,11 @@ b1 <- round( ( sxy - sxyn ) / sqrt( sshat ), 4 )
 
 y_hat <- round(b1 * ( sy / sx ), 4 )
 
-y_hat
+pretty_vector( c( "Regression Equation" =  paste0(y_hat,"x") ))
 
 ```
 
-## 10.)
+## 10.) Regression Characteristics
 
 If a linear correlation coefficient (Pearson correlation) is -0.8443 for data suitable for simple linear regression, then the slope of the simple linear regression line must be negative 
 and the r-squared value is 0.8443.
