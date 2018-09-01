@@ -44,6 +44,28 @@ pretty_vector <- function(vec, label = "") {
 
 ```
 
+Notes:
+
+__Procedure Used to Test for Significance__
+
+Whenever we perform a significance test, it involves comparing a test value that we have calculated to some critical value for the statistic. It doesn't matter what type of statistic we are calculating (e.g., a t-statistic, a chi-square statistic, an F-statistic, etc.), the procedure to test for significance is the same.
+
++ Decide on the critical alpha level you will use (i.e., the error rate you are willing to accept).
++ Conduct the research.
++ Calculate the statistic.
++ Compare the statistic to a critical value obtained from a table.
+
+__If your statistic is higher than the critical value from the table:__ _Your finding is significant._
+
++ You reject the null hypothesis.
++ The probability is small that the difference or relationship happened by chance, and __p is less than the critical alpha level (p < alpha ).__
+
+__If your statistic is lower than the critical value from the table:__ _Your finding is not significant._
+
++ You fail to reject the null hypothesis.
++ The probability is high that the difference or relationship happened by chance, and __p is greater than the critical alpha level (p > alpha ).__
+
+_See Example __#16__ for an example_
 
 ## 1.) Combinations and Permutations
 
@@ -507,7 +529,8 @@ critcal_z <- qnorm(1 - sig.level / 2, lower.tail = F) # [1] -1.644854
 
 pretty_vector(c("Critical Z-Score" = round(critcal_z, 2)))
 
-pretty_vector(c("Result" = ifelse(p_estimate < sig.level, "Reject", "Fail to Reject")))
+pretty_vector(c("p-value Result" = ifelse(p_estimate < sig.level, "Reject", "Fail to Reject")))
+pretty_vector(c("Test Result" = ifelse(z > critcal_z, "Fail To Reject", "Reject")))
 
 ```
 
@@ -1108,7 +1131,7 @@ pretty_vector(c("Test Result" = ifelse(results$p.value < alpha, "Reject", "Can't
 
 > At our adopted significance level, we reject the null hypothesis of no difference.
 
-## 33.)
+## 33.) Difference of Means
 
 Random samples of men from two different towns were obtained and the weights of the men measured in pounds. 
 Using the data below test the claim there is more variation in weights of men from town A versus the weights of men from town B. 
@@ -1129,11 +1152,37 @@ pretty_kable(q33_data, "Samples")
 
 ```
 
-## 34.)
+
+```{r q33}
+
+sA <- 26.2
+sB <- 24.1
+nA <- 41
+nB <- 21
+dfA <- nA - 1
+dfB <- nB - 1
+
+f_stat <- (sA / sB) ^ 2 # 1.181867
+f_crit <- qf(0.95, dfA, dfB, lower.tail = TRUE) # 1.993819
+
+prob <- pf(F_Stat, dfA, dfB, lower.tail = FALSE) # 0.3518687
+
+```
+
+```{r q33_results}
+pretty_vector(c( "P Value" = prob ))
+pretty_vector(c("Test Result" = ifelse(f_crit < f_stat, "Reject", "Can't Reject")))
+```
+
+## 34.) Chi-Squared
 
 Use the p-value method to test the claim that the population standard deviation of the systolic blood pressures of adults aged 40-50 is equal to 22 mmHG. 
 
-Use the following sample statistics: n = 23, sample mean = 132.3 mmHg, and sample standard deviation s = 26.6 mmHg. 
+Use the following sample statistics: 
+
++ n = __23__
++ sample mean = __132.3__ mmHg, and 
++ sample standard deviation s = __26.6__ mmHg. 
 
 Determine the value of the test statistic, the p-value and your conclusion. 
 
@@ -1145,11 +1194,39 @@ This is a two-sided test.
 
 Also, calculate a 95% confidence interval for the population standard deviation.
 
-```{r q35}
+```{r q34}
+
+alpha <- 0.05 / 2 # two-sided test, so divide by two
+
+n <- 23
+ev <- 132.3
+sd <- 26.6
+
+chi <- (n - 1) * (sd / (n - 1)) ^ 2
+
+# p-value
+p <- pchisq(chi, n - 1, lower.tail = FALSE)
+
+# critical value
+
+critical.values <- c(qchisq(0.975, n - 1, lower.tail = T), qchisq(0.025, n - 1, lower.tail = T))
+
+inverted <- sqrt(((n - 1) * 26.6 ^ 2) / critical.values)
 
 ```
 
-## 35.)
+> Since the p-value is greater than 2.5%, the null hypothesis of variance
+equality can not be rejected.
+
+```{r q34_results, echo = F}
+
+pretty_vector( c( "p-value" = p) )
+pretty_vector( c( "Test Result" = ifelse( alpha < p, "Can't Reject", "Reject" ) ))
+pretty_vector( c( "Critical Values" = inverted ) )
+
+```
+
+## 35.) ANOVA Table
 
 Fill in the missing entries in the following one-way ANOVA table and determine the p-value and the critical value for the F-statistic.
 
@@ -1164,5 +1241,49 @@ rownames(q35_data) <- c("Treatment", "Error", "Total")
 colnames(q35_data) <- c("Source", "SS", "MS=SS/df", "F-statistic")
 
 pretty_kable(q35_data, "ANOVA Table")
+
+```
+
+
+```{r q35}
+
+ms.error <- 0.686
+ss.error <- 13.72
+treatment <- 3
+f.stat <- 11.16
+
+error <- ss.error / ms.error
+total <- treatment + error
+
+#  (F-statistic * MS_Error)
+ms.treatment <- round( f.stat * ms.error, 2)
+
+# MS, Treatment (F-statistic * MS_Error)
+ss.treatment <- round( ms.treatment * treatment, 2 )
+
+ss.total <- round( ss.treatment + ss.error, 2 )
+
+q35 <- data.frame(rbind(
+	c(treatment, ss.treatment, ms.treatment, f.stat),
+	c(error, ss.error, ms.error, ""),
+	c(total, ss.total, "", " ")))
+
+p <- pf( f.stat, treatment, error, lower.tail = FALSE) # p-value = 0.0001607934
+# 99% Critical Value
+crit <- qf(0.99, treatment, error, lower.tail = TRUE) # critical value = 4.938
+
+test.statistic <- ms.treatment / ms.error # F-statistic
+
+```
+
+
+```{r q35_results, echo = F}
+
+rownames(q35) <- c("Treatment", "Error", "Total")
+colnames(q35) <- c("Source", "SS", "MS=SS/df", "F-statistic")
+
+pretty_kable(q35, "ANOVA Table")
+
+pretty_vector(c( "Test Statistic" = test.statistic, "p-value" = round( p, 3 ), "Critical Value" = round( crit, 3 )))
 
 ```
