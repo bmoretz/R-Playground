@@ -214,6 +214,8 @@ Use the results summarized in the table above and test at the 5% level if party 
 
 ```{r q5}
 
+alpha <- 0.05
+
 approve <- c(8, 18, 7)
 not.approve <- c(17, 13, 37)
 vote <- cbind(approve, not.approve)
@@ -224,9 +226,8 @@ results <- chisq.test(vote, correct = FALSE)
 
 
 ```{r q5_results, echo = F}
-
-ifelse(results$p.value < 0.05, "Don't Reject", "Reject")
-
+pretty_vector(c("p-value" = round( results$p.value, 3 ) ))
+pretty_vector(c("p-value Result" = ifelse(results$p.value < alpha, "Fail to Reject", "Reject")))
 ```
 
 ## 6.) Basic Stats #2
@@ -529,7 +530,7 @@ critcal_z <- qnorm(1 - sig.level / 2, lower.tail = F) # [1] -1.644854
 
 pretty_vector(c("Critical Z-Score" = round(critcal_z, 2)))
 
-pretty_vector(c("p-value Result" = ifelse(p_estimate < sig.level, "Reject", "Fail to Reject")))
+pretty_vector(c("p-value Result" = ifelse(p_estimate > sig.level, "Fail to Reject", "Reject")))
 pretty_vector(c("Test Result" = ifelse(z > critcal_z, "Fail To Reject", "Reject")))
 
 ```
@@ -1285,5 +1286,89 @@ colnames(q35) <- c("Source", "SS", "MS=SS/df", "F-statistic")
 pretty_kable(q35, "ANOVA Table")
 
 pretty_vector(c( "Test Statistic" = test.statistic, "p-value" = round( p, 3 ), "Critical Value" = round( crit, 3 )))
+
+```
+
+## 36.) Pearson Linear Coefficient
+
+For the data below, determine the value of thelinear correlation coefficient r between y and x2.
+
+
+```{r q36_setup, echo = F}
+
+q36_data <- data.frame(rbind(
+	c( 1.2, 2.7, 4.4, 6.6, 9.5 ),
+	c(1.6, 4.7, 9.9, 24.5, 39.0)))
+
+rownames(q36_data) <- c("x", "y")
+colnames(q36_data) <- c("", "", "", "")
+
+```
+
+
+```{r q36}
+
+x <- as.numeric( q36_data[1,] )
+y <- as.numeric(q36_data[2,])
+
+x_sq <- x ^ 2
+
+correlation <- cor(x_sq, y, method = c("pearson"))
+
+```
+
+
+```{r q36_results}
+pretty_vector( c( "Correlation" = correlation))
+```
+
+## 37.) Chi-Squared Frequency
+
+In studying the occurrence of genetic characteristics, the following sample data were obtained. At the 0.05 significance level, test the claim
+that the characteristics occur with the same frequency.
+
+```{r q37_data, echo = F}
+
+q37_values <- c(28, 30, 45, 48, 38, 39)
+
+q37_data <- data.frame(rbind(
+	c("A", "B", "C", "D", "E", "F"),
+    q37_values))
+
+rownames(q37_data) <- c("Characteristic", "Frequency")
+colnames(q37_data) <- rep(c(""), length(q37_values))
+
+pretty_kable(q37_data, "Data")
+
+```
+
++ This is a Chi-square goodness-of-fit test. The counts are expected to be equal under the null hypothesis.
++ The expectation is 38 which needs to be compared against the observed counts.
+
+```{r q37}
+
+alpha <- .05
+
+obs <- q37_values
+ec <- rep(sum(obs) / length(obs), times = 6 )
+
+diff <- sum((obs - ec) ^ 2 / ec) # f-statistic, 8.263158
+
+df <- length(obs) - 1
+
+p.value <- pchisq(diff, df, lower.tail = F) # p-value
+f.stat <- qchisq(1 - alpha, df, lower.tail = T) # f critical
+
+diff > f.stat
+p.value < alpha
+
+```
+
+
+```{r q37_results}
+pretty_vector(c("p-value" = p.value, "f-statistic" = f.stat))
+
+pretty_vector(c("p-value Result" = ifelse(p.value < alpha, "Reject", "Fail to Reject")))
+pretty_vector(c("Test Result" = ifelse(diff > f.stat, "Reject", "Fail To Reject")))
 
 ```
