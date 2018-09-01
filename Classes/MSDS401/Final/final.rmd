@@ -111,8 +111,7 @@ pretty_kable(q2_data, "Probabilities")
 ev <- sum(x * P.x)
 var <- sum(P.x * (x - ev) ^ 2)
 sd <- sqrt(var)
-med <- median(x)
-
+med <- 2 # look at the cdf
 mode <- x[P.x == max(P.x)]
 
 ```
@@ -637,6 +636,8 @@ pretty_kable(q20_data, "")
 
 ```{r q20}
 
+alpha <- 0.05
+
 x <- as.numeric(q20_data[1,])
 y <- as.numeric(q20_data[2,])
 
@@ -652,7 +653,7 @@ pretty_vector( c( "Correlation" = round(c, 3 ) ))
 
 t
 
-pretty_vector( c( "Test Result" = ifelse( t$p.value < 0.05, "Reject", "Can't Reject" ) ))
+pretty_vector(c("p-value Test Result" = ifelse(t$p.value < alpha, "Reject", "Fail to Reject")))
 
 ```
 
@@ -699,6 +700,8 @@ pretty_kable(q22_data, "Samples")
 
 ```{r q22}
 
+alpha <- 0.01
+
 x1 <- 38
 n1 <- 85
 
@@ -724,8 +727,11 @@ critcal_z <- qnorm(1 - 0.01) # [1] 2.326348
 
 
 ```{r q22_results, echo = F}
-pretty_vector( c("Z-Score" = round(z, 3), "Critical Z-Score" = critcal_z))
-pretty_vector(c("Test Result" = ifelse(critcal_z < z, "Reject", "Can't Reject")))
+pretty_vector(c("Z-Score" = round(z, 3), "Critical Z-Score" = critcal_z))
+
+pretty_vector(c("p-value Result" = ifelse(p > alpha, "Reject", "Fail to Reject")))
+pretty_vector(c("Test Result" = ifelse(z > critical_z, "Reject", "Fail to Reject")))
+
 ```
 
 ## 23.) T-Test (unequal sd)
@@ -783,7 +789,7 @@ critcal_t <- qt(1 - 0.05, df = df.calculated, lower.tail = F) # [1] -1.699535
 pretty_vector(c("Df Calculated" = round(df.calculated, 3), "Alt Df" = alt.df))
 
 pretty_vector(c("T-Score" = round(t, 3), "Critical T-Score" = critcal_t))
-pretty_vector(c("Test Result" = ifelse(t < critcal_t, "Reject", "Fail to Reject")))
+pretty_vector(c("Test Result" = ifelse(t > critcal_t, "Reject", "Fail to Reject")))
 ```
 
 _At our adopted significance level (0.05), we fail to reject the null hypothesis._
@@ -1370,5 +1376,217 @@ pretty_vector(c("p-value" = p.value, "f-statistic" = f.stat))
 
 pretty_vector(c("p-value Result" = ifelse(p.value < alpha, "Reject", "Fail to Reject")))
 pretty_vector(c("Test Result" = ifelse(diff > f.stat, "Reject", "Fail To Reject")))
+
+```
+
+## 38.) Pearson's Chi-squared Test
+
+Customers in a store were selected at random to participate in a taste test. Two hundred people participated and expressed a 
+preference for one of two beverages. Use the taste test data in the following table to test the hypothesis of
+equal preferences for the two beverages in the study.
+
++ Test at the 5% level.
++ Use an uncorrected Chi-square test.
+
+```{r q38_data, echo = F}
+
+alpha <- 0.05
+
+bev_a <- c(35, 23, 42)
+bev_b <- c(25, 30, 45)
+
+q38_data <- data.frame(rbind( bev_a, bev_b))
+
+rownames(q38_data) <- c("Beverage A", "Beverage B")
+colnames(q38_data) <- c("children", "men", "women")
+
+pretty_kable(q38_data, "Beverages")
+
+```
+
+
+```{r q38}
+
+data <- matrix(c(bev_a, bev_b), nrow = 2, byrow = T)
+
+results <- chisq.test(data, correct = F)
+
+qchisq(.95, 2, lower.tail = T)
+
+```
+
+
+```{r q38_results}
+pretty_vector(c("p-value" = results$p.value))
+pretty_vector(c("p-value Result" = ifelse(results$p.value < alpha, "Reject", "Fail to Reject")))
+```
+
+## 39.) Quantiles
+
+The systolic blood pressures of the patients at the hospital are normally distributed with a mean of 138 mm Hg
+and aa standard deviation of 13.5 mm Hg. Find the two blood pressures having these properties:
+
++ The mean is midway between them and 
++ 90% of all blood pressures are between them.
+
+__Answer:__
+
+
+```{r q39}
+
+upper <- qnorm(0.95, 138, 13.5)
+lower <- qnorm(0.05, 138, 13.5, lower.tail = T)
+
+```
+
+```{r q39_result}
+pretty_vector(c("Lower" = lower, "Upper" = upper))
+
+```
+
+## 40.) Two-sided Confidence Interval
+
+Assume a binomial experiment has been completed and two independent random samples were collected.
+For the first sample there were 18 successes out of 50 trials (__p1 = 18/50__). For the second sample
+there were 30 successes out of 60 trials (__p2 = 30/60__).
+
++ Construct a 90% two-sided confidence interval for the difference p1 - p2.
++ Determine if this is a statistically significant difference.
+
+```{r q40}
+
+alpha <- .1
+
+n1 <- 50
+s1 <- 18
+
+n2 <- 60
+s2 <- 30
+
+p1 <- s1 / n1
+p2 <- s2 / n2
+
+p_hat <- p1 - p2
+
+# Section 10.4, Business Statistics
+
+p_bar <- ( s1 + s2 ) / (n1 + n2)
+std <- sqrt(p_bar * (1 - p_bar) * (1 / n1 + 1 / n2))
+z <- p_hat / std
+
+p <- round(pnorm(z), 4)
+
+q.z <- qnorm(1 - (alpha / 2)) # divide by two for two-sided confidence interval
+
+conf_int <- p_hat + round(c(-q.z, q.z) * std, digits = 4)
+
+```
+
+
+```{r q40_result, echo = F}
+pretty_vector(c("p-value" = p ))
+pretty_vector(c("p-value Result" = ifelse(p < alpha, "Reject", "Fail to Reject")))
+```
+
+## 41.) Discrete Statistics
+
+A discrete random variable has the follow outcomes:
+
+```{r q41_setup, echo = F}
+x <- c(0, 1, 2, 3, 4, 5, 6)
+P.x <- c(0.215, 0.230, 0.240, 0.181, 0.130, 0.003, 0.001)
+
+q40_data <- data.frame(rbind(x, P.x))
+rownames(q40_data) <- c("x", "P(x)")
+colnames(q40_data) <- rep("", ncol(q40_data))
+
+pretty_kable(q40_data, "Probabilities")
+
+```
+
++ Determine the value of _median_, _mean_, _mode_ and _variance_ for this variable.
+
+Quantiles for a discrete random variable are selected from the possible values of the variable based upon the probability distribution.
+
+
+```{r q41}
+
+avg <- round(sum(x * P.x), digits = 3) # 1.794
+var <- round(sum(P.x * (x - avg) ^ 2), digits = 3) # 1.792
+mode <- x[ P.x == max(P.x) ] # 2
+sd <- sqrt(var)
+med <- 2 # look at the cdf
+
+```
+
+```{r q41_display, echo = F}
+
+    pretty_vector(c("Mean" = ev, "Variance" = var, "Standard Deviation" = sd, "Median" = med, "Mode" = mode))
+    plot(x, cumsum(P.x), main = "cdf for P.x", type = "h", ylim = c(0, 1.0))
+    abline(h = 0.5, col = "red")
+
+```
+
+## 42.) T-Test (unequal sd)
+
+A researcher was interested in comparing the average length of time (in hours) spent watching television by women and by men. Independent simple random samples of 14 women and 17 men were selected, 
+and each person was asked how many hours he or she had watched television during the previous week. 
+
+_The summary statistics are as follows_:
+
+```{r q42_setup, echo = F}
+
+q23_data <- data.frame(c("x1 = 11.4 hr", "s1 = 4.1 hr", "n1 = 14"), c("x2 = 16.8 hr", "s2 = 4.7 hr", "n2 = 17"))
+colnames(q23_data) <- c("Women", "Men")
+
+pretty_kable(q23_data, "Samples")
+
+```
+
++ Use a 0.05 significance level to test the claim that the average length of time spent watching television by women is smaller than the average length amount of time spent watching television by men. 
++ Use the t radition method of hypothesis testing. 
+
+__Assume that the population variances are equal.__
+
++ H0 = avg(women) < avg(men)
++ Ha = avg(women) > avg(men)
+
+__For this problem, a one-sided test is required. The alternative will be framed as a positive.__
+
+```{r q42}
+
+alpha <- 0.05
+
+s1.2 <- 4.1 ^ 2
+s2.2 <- 4.7 ^2
+
+n1 <- 14
+n2 <- 17
+
+df <- n1 + n2 - 2
+
+pool <- sqrt((s1.2 * (n1 - 1) + s2.2 * (n2 - 1)) / df)
+
+den <- pool * sqrt( 1 / n1 + 1 / n2)
+
+x1 <- 11.4
+x2 <- 16.8
+
+t <- (x2 - x1) / den
+
+p.value <- pt(t, df, lower.tail = F)
+
+critical_t <- qt(0.95, df, lower.tail = T)
+
+```
+
+
+```{r q42_display, echo = F}
+
+pretty_vector(c("p-value" = round(p.value,3)))
+pretty_vector(c("T-Score" = round(t, 3), "Critical T-Score" = critcal_t))
+
+pretty_vector(c("p-value Test Result" = ifelse(p.value < alpha, "Reject", "Fail to Reject")))
+pretty_vector(c("Test Statistic Result" = ifelse(t > critcal_t, "Reject", "Fail to Reject")))
 
 ```
