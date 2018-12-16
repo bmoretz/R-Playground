@@ -5,7 +5,6 @@ setDefaults(getSymbols.yahoo, from = "2016-01-01", to = "2016-12-31")
 
 setDefaults(getSymbols.av, api.key = "2W7RF4LLXP5CGY6E")
 
-
 Quandl.api_key("5qmM13nNYrWsCxwsKRn_")
 
 # Set the default to pull data from Alpha Vantage
