@@ -22,7 +22,7 @@ choose(30,4)*factorial(4)  # [1] 657720
 # Item (a) asks for the combinations or groups of four possible. There isn't a sense
 # in which the order of the four essays selected is meaningful. Item (b) asks for the
 # permutations possible when four are selected from 30. Here, there is a meaningful
-# difference in the order - i.e. prizes awarded - of the four selected. 
+# difference in the order - i.e. prizes awarded - of the four selected.
 
 
 ###########
@@ -240,7 +240,7 @@ pnorm(10-0.5, n*p, sqrt(n*p*(1-p)), lower.tail=FALSE )
 # associated with our data given the null hypothesis. Power, however, is related 
 # directly to the difference between the true and hypothesized mean and how easily, 
 # how "powerfully" we can resolve smaller and smaller differences between the true 
-# and hypothetical mean.
+# and hypothetical mean.a
 
 ###########
 # 13)	True or False:  In a hypothesis test regarding a population mean, if the

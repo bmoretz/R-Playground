@@ -44,6 +44,28 @@ pretty_vector <- function(vec, label = "") {
 
 ```
 
+Notes:
+
+__Procedure Used to Test for Significance__
+
+Whenever we perform a significance test, it involves comparing a test value that we have calculated to some critical value for the statistic. It doesn't matter what type of statistic we are calculating (e.g., a t-statistic, a chi-square statistic, an F-statistic, etc.), the procedure to test for significance is the same.
+
++ Decide on the critical alpha level you will use (i.e., the error rate you are willing to accept).
++ Conduct the research.
++ Calculate the statistic.
++ Compare the statistic to a critical value obtained from a table.
+
+__If your statistic is higher than the critical value from the table:__ _Your finding is significant._
+
++ You reject the null hypothesis.
++ The probability is small that the difference or relationship happened by chance, and __p is less than the critical alpha level (p < alpha ).__
+
+__If your statistic is lower than the critical value from the table:__ _Your finding is not significant._
+
++ You fail to reject the null hypothesis.
++ The probability is high that the difference or relationship happened by chance, and __p is greater than the critical alpha level (p > alpha ).__
+
+_See Example __#16__ for an example_
 
 ## 1.) Combinations and Permutations
 
@@ -89,8 +111,7 @@ pretty_kable(q2_data, "Probabilities")
 ev <- sum(x * P.x)
 var <- sum(P.x * (x - ev) ^ 2)
 sd <- sqrt(var)
-med <- median(x)
-
+med <- 2 # look at the cdf
 mode <- x[P.x == max(P.x)]
 
 ```
@@ -126,7 +147,7 @@ ggplot(data.table(X = seq(-4, 4, length = 2000 )), aes(x = X)) +
 
 ```
 
-```{r q3}
+```{r q3, echo = F}
 
 pretty_vector( c( Probability = round( pnorm(-2, 0, 1, lower.tail = TRUE) + pnorm(3, 0, 1, lower.tail = FALSE), 5) * 100 ))
 
@@ -192,14 +213,20 @@ Use the results summarized in the table above and test at the 5% level if party 
 
 ```{r q5}
 
+alpha <- 0.05
+
 approve <- c(8, 18, 7)
 not.approve <- c(17, 13, 37)
 vote <- cbind(approve, not.approve)
 
 results <- chisq.test(vote, correct = FALSE)
 
-ifelse( results$p.value < 0.05, "Don't Reject", "Reject")
+```
 
+
+```{r q5_results, echo = F}
+pretty_vector(c("p-value" = round( results$p.value, 3 ) ))
+pretty_vector(c("p-value Result" = ifelse(results$p.value < alpha, "Fail to Reject", "Reject")))
 ```
 
 ## 6.) Basic Stats #2
@@ -502,7 +529,8 @@ critcal_z <- qnorm(1 - sig.level / 2, lower.tail = F) # [1] -1.644854
 
 pretty_vector(c("Critical Z-Score" = round(critcal_z, 2)))
 
-pretty_vector(c("Result" = ifelse(p_estimate < sig.level, "Reject", "Fail to Reject")))
+pretty_vector(c("p-value Result" = ifelse(p_estimate > sig.level, "Fail to Reject", "Reject")))
+pretty_vector(c("Test Result" = ifelse(z > critcal_z, "Fail To Reject", "Reject")))
 
 ```
 
@@ -608,6 +636,8 @@ pretty_kable(q20_data, "")
 
 ```{r q20}
 
+alpha <- 0.05
+
 x <- as.numeric(q20_data[1,])
 y <- as.numeric(q20_data[2,])
 
@@ -623,7 +653,7 @@ pretty_vector( c( "Correlation" = round(c, 3 ) ))
 
 t
 
-pretty_vector( c( "Test Result" = ifelse( t$p.value < 0.05, "Reject", "Can't Reject" ) ))
+pretty_vector(c("p-value Test Result" = ifelse(t$p.value < alpha, "Reject", "Fail to Reject")))
 
 ```
 
@@ -670,6 +700,8 @@ pretty_kable(q22_data, "Samples")
 
 ```{r q22}
 
+alpha <- 0.01
+
 x1 <- 38
 n1 <- 85
 
@@ -695,8 +727,11 @@ critcal_z <- qnorm(1 - 0.01) # [1] 2.326348
 
 
 ```{r q22_results, echo = F}
-pretty_vector( c("Z-Score" = round(z, 3), "Critical Z-Score" = critcal_z))
-pretty_vector(c("Test Result" = ifelse(critcal_z < z, "Reject", "Can't Reject")))
+pretty_vector(c("Z-Score" = round(z, 3), "Critical Z-Score" = critcal_z))
+
+pretty_vector(c("p-value Result" = ifelse(p > alpha, "Reject", "Fail to Reject")))
+pretty_vector(c("Test Result" = ifelse(z > critical_z, "Reject", "Fail to Reject")))
+
 ```
 
 ## 23.) T-Test (unequal sd)
@@ -754,7 +789,7 @@ critcal_t <- qt(1 - 0.05, df = df.calculated, lower.tail = F) # [1] -1.699535
 pretty_vector(c("Df Calculated" = round(df.calculated, 3), "Alt Df" = alt.df))
 
 pretty_vector(c("T-Score" = round(t, 3), "Critical T-Score" = critcal_t))
-pretty_vector(c("Test Result" = ifelse(t < critcal_t, "Reject", "Fail to Reject")))
+pretty_vector(c("Test Result" = ifelse(t > critcal_t, "Reject", "Fail to Reject")))
 ```
 
 _At our adopted significance level (0.05), we fail to reject the null hypothesis._
@@ -874,7 +909,7 @@ pretty_vector(c("p1" = round(p1, 3), "p2" = round(p2,3)))
 pretty_vector(c("Test Result" = ifelse(critcal_z < z, "Reject", "Can't Reject")))
 ```
 
-## 26.)
+## 26.) Regression Line
 
 Use the given data to find the equation of the regression line. Round the final values to three significant digits. The variable y denotes the predicted value for the dependent variable y.
 
@@ -889,17 +924,29 @@ pretty_kable(q26_data, "")
 
 ```
 
-+ A.) y = -2.79 + 0.897x 
-+ B.) y -2.79 + 0.950x 
-+ C.) y = -.79 + 0.801x 
-+ D.) y = -3.79 +0.897x
++ a.) y = -2.79 + 0.897x 
++ b.) y -2.79 + 0.950x 
++ c.) y = -.79 + 0.801x 
++ __d.) y = -3.79 +0.897x__
 
 
 ```{r q26}
 
+x <- c(6, 8, 20, 28, 36)
+y <- c(2, 4, 13, 20, 30)
+
+lm.fit <- lm(y ~ x)
+
 ```
 
-## 27.)
+
+```{r q26_results, echo = F}
+
+pretty_vector(lm.fit$coefficients, "Coefficients")
+
+```
+
+## 27.) Confidence Intervals
 
 Using the data in problem 26, construct 95% confidence intervals for the coefficients in the resulting regression model.
 
@@ -920,14 +967,23 @@ pretty_kable(q27_data, "Answer Choices")
 
 ```{r q27}
 
+lm.sum <- summary(lm.fit)
+
+result <- confint(lm.fit, level = .95)
+
 ```
 
-## 28.)
+__Answer: C__ 
+
+```{r q27_results, echo = F}
+pretty_kable(as.data.table(result), "95% Confidence Intervals", dig = 3 )
+```
+
+## 28.) Chi-Squared Test (independence)
 
 A web service is interested in whether or not having signed up for email updates and offers is independent of purchasing choice (has purchased or has not). 
 Conduct a chi-square test of independence. 
 State the hypotheses, determine chi- square statistic and p-value using the contingency table below:
-
 
 ```{r q28_setup, echo = F}
 
@@ -945,9 +1001,11 @@ pretty_kable(q28_data, "Contingency Table")
 
 ```{r q28}
 
+chisq.test(q28_data, correct = FALSE)
+
 ```
 
-## 29.)
+## 29.) Chi-Squared (Uniform)
 
 An urgent care center is interested in whether visits per day of the week are uniformly distributed. 
 Conduct a chi-square goodness of fit test. State the null and alternative hypotheses. 
@@ -964,22 +1022,52 @@ pretty_kable(q29_data, "Visits")
 
 ```
 
-## 30.)
+
+```{r q29}
+
+chisq.test(q29_data)
+
+```
+
+## 30.) Correlation Test
 
 Test the hypothesis of a zero correlation using the procedure shown by Wilcox in Basic Statistics. 
 
-Assume n = 47, r = -0.286. 
+Assume __n = 47__, __r = -0.286__. 
 
 Test the null hypothesis of zero correlation versus the alternative that the correlation is negative at 95% confidence. 
 
 _Also calculate the p-value_.
 
-
 ```{r q30}
+
+r <- -0.286
+n <- 47
+df <- n - 2
+
+t <- r * sqrt( df / ( 1 - ( r ) ^ 2 ) )
+
+critical_t <- qt(1 - 0.05, df, lower.tail = F)
+
+p <- 1 - pt(abs(t), df = n - 2)
 
 ```
 
-## 31.)
+> The T test statistic has a Student’s t-distribution with 45 degrees
+of freedom.  The test statistic value is -2.00.  The critical value
+is -1.679.  Since T = -2.00 < -1.679 the null hypothesis can be
+rejected.  The p-value is 0.0258 < 0.05.
+
+```{r q30_results, echo = F}
+
+pretty_vector(c("T" = round(t, 3), "Critical T" = critical_t))
+
+pretty_vector(c("p" = round(p, 3)))
+pretty_vector(c("Test Result" = ifelse(t < critical_t, "Reject", "Can't Reject")))
+
+```
+
+## 31.) Hypergeometric Distribution
 
 A project manager is trying to assemble a five-member team. She has a list of 30 volunteers that she intends to draw five (5) from randomly, so as not to alienate anyone. 
 However, only four (4) of the 30 have a specific certification that the project manager knows she’ll need. 
@@ -989,9 +1077,27 @@ However, only four (4) of the 30 have a specific certification that the project 
 
 ```{r q31}
 
+N <- 30 # size of population
+k <- 4 # number of "successes"
+n <- 5 # sample size, without replacement
+x <- 2 # quantity of interest
+
+((factorial(k) / (factorial(x) * factorial(k - x))) *
+	(factorial(N - k) / (factorial(n - x) * factorial((N - k) - (n - x))))) /
+	(factorial(N) / (factorial(n) * factorial(N - n)))
+
+# Or, using the dhyper() function:
+dhyper(2, 4, (30 - 4), 5) # [1] 0.1094691
+
+
+# What is the probability that at least one of the five members randomly selected
+# will have the needed certification?
+
+1 - phyper(0, 4, (30 - 4), 5) # [1] 0.5384054
+
 ```
 
-## 32.)
+## 32.) T-Test
 
 Consumers are asked to rate a company both before and after viewing a video on the company twice a day for a week. Use the paired data given below. 
 Test at the 1% significance level if the “after” results are less than the “before” results. Assume the data are normally distributed.
@@ -1011,7 +1117,28 @@ pretty_kable(q32_data, "Raitings")
 
 ```
 
-## 33.)
+
+```{r q32}
+
+alpha <- 0.01
+
+delta <- q32_data["before",] - q32_data["after",]
+
+sd <- sd(delta)
+
+t <- qt(1 - alpha, 8, lower.tail = T)
+
+results <- t.test( delta, alternative = c("greater"), mu = 0, paired = F, conf.level = 1 - alpha)
+
+```
+
+```{r q32_results, echo = F}
+pretty_vector(c("Test Result" = ifelse(results$p.value < alpha, "Reject", "Can't Reject")))
+```
+
+> At our adopted significance level, we reject the null hypothesis of no difference.
+
+## 33.) Difference of Means
 
 Random samples of men from two different towns were obtained and the weights of the men measured in pounds. 
 Using the data below test the claim there is more variation in weights of men from town A versus the weights of men from town B. 
@@ -1032,11 +1159,37 @@ pretty_kable(q33_data, "Samples")
 
 ```
 
-## 34.)
+
+```{r q33}
+
+sA <- 26.2
+sB <- 24.1
+nA <- 41
+nB <- 21
+dfA <- nA - 1
+dfB <- nB - 1
+
+f_stat <- (sA / sB) ^ 2 # 1.181867
+f_crit <- qf(0.95, dfA, dfB, lower.tail = TRUE) # 1.993819
+
+prob <- pf(F_Stat, dfA, dfB, lower.tail = FALSE) # 0.3518687
+
+```
+
+```{r q33_results}
+pretty_vector(c( "P Value" = prob ))
+pretty_vector(c("Test Result" = ifelse(f_crit < f_stat, "Reject", "Can't Reject")))
+```
+
+## 34.) Chi-Squared
 
 Use the p-value method to test the claim that the population standard deviation of the systolic blood pressures of adults aged 40-50 is equal to 22 mmHG. 
 
-Use the following sample statistics: n = 23, sample mean = 132.3 mmHg, and sample standard deviation s = 26.6 mmHg. 
+Use the following sample statistics: 
+
++ n = __23__
++ sample mean = __132.3__ mmHg, and 
++ sample standard deviation s = __26.6__ mmHg. 
 
 Determine the value of the test statistic, the p-value and your conclusion. 
 
@@ -1048,11 +1201,39 @@ This is a two-sided test.
 
 Also, calculate a 95% confidence interval for the population standard deviation.
 
-```{r q35}
+```{r q34}
+
+alpha <- 0.05 / 2 # two-sided test, so divide by two
+
+n <- 23
+ev <- 132.3
+sd <- 26.6
+
+chi <- (n - 1) * (sd / (n - 1)) ^ 2
+
+# p-value
+p <- pchisq(chi, n - 1, lower.tail = FALSE)
+
+# critical value
+
+critical.values <- c(qchisq(0.975, n - 1, lower.tail = T), qchisq(0.025, n - 1, lower.tail = T))
+
+inverted <- sqrt(((n - 1) * 26.6 ^ 2) / critical.values)
 
 ```
 
-## 35.)
+> Since the p-value is greater than 2.5%, the null hypothesis of variance
+equality can not be rejected.
+
+```{r q34_results, echo = F}
+
+pretty_vector( c( "p-value" = p) )
+pretty_vector( c( "Test Result" = ifelse( alpha < p, "Can't Reject", "Reject" ) ))
+pretty_vector( c( "Critical Values" = inverted ) )
+
+```
+
+## 35.) ANOVA Table
 
 Fill in the missing entries in the following one-way ANOVA table and determine the p-value and the critical value for the F-statistic.
 
@@ -1067,5 +1248,345 @@ rownames(q35_data) <- c("Treatment", "Error", "Total")
 colnames(q35_data) <- c("Source", "SS", "MS=SS/df", "F-statistic")
 
 pretty_kable(q35_data, "ANOVA Table")
+
+```
+
+
+```{r q35}
+
+ms.error <- 0.686
+ss.error <- 13.72
+treatment <- 3
+f.stat <- 11.16
+
+error <- ss.error / ms.error
+total <- treatment + error
+
+#  (F-statistic * MS_Error)
+ms.treatment <- round( f.stat * ms.error, 2)
+
+# MS, Treatment (F-statistic * MS_Error)
+ss.treatment <- round( ms.treatment * treatment, 2 )
+
+ss.total <- round( ss.treatment + ss.error, 2 )
+
+q35 <- data.frame(rbind(
+	c(treatment, ss.treatment, ms.treatment, f.stat),
+	c(error, ss.error, ms.error, ""),
+	c(total, ss.total, "", " ")))
+
+p <- pf( f.stat, treatment, error, lower.tail = FALSE) # p-value = 0.0001607934
+# 99% Critical Value
+crit <- qf(0.99, treatment, error, lower.tail = TRUE) # critical value = 4.938
+
+test.statistic <- ms.treatment / ms.error # F-statistic
+
+```
+
+
+```{r q35_results, echo = F}
+
+rownames(q35) <- c("Treatment", "Error", "Total")
+colnames(q35) <- c("Source", "SS", "MS=SS/df", "F-statistic")
+
+pretty_kable(q35, "ANOVA Table")
+
+pretty_vector(c( "Test Statistic" = test.statistic, "p-value" = round( p, 3 ), "Critical Value" = round( crit, 3 )))
+
+```
+
+## 36.) Pearson Linear Coefficient
+
+For the data below, determine the value of thelinear correlation coefficient r between y and x2.
+
+
+```{r q36_setup, echo = F}
+
+q36_data <- data.frame(rbind(
+	c( 1.2, 2.7, 4.4, 6.6, 9.5 ),
+	c(1.6, 4.7, 9.9, 24.5, 39.0)))
+
+rownames(q36_data) <- c("x", "y")
+colnames(q36_data) <- c("", "", "", "")
+
+```
+
+
+```{r q36}
+
+x <- as.numeric( q36_data[1,] )
+y <- as.numeric(q36_data[2,])
+
+x_sq <- x ^ 2
+
+correlation <- cor(x_sq, y, method = c("pearson"))
+
+```
+
+
+```{r q36_results}
+pretty_vector( c( "Correlation" = correlation))
+```
+
+## 37.) Chi-Squared Frequency
+
+In studying the occurrence of genetic characteristics, the following sample data were obtained. At the 0.05 significance level, test the claim
+that the characteristics occur with the same frequency.
+
+```{r q37_data, echo = F}
+
+q37_values <- c(28, 30, 45, 48, 38, 39)
+
+q37_data <- data.frame(rbind(
+	c("A", "B", "C", "D", "E", "F"),
+    q37_values))
+
+rownames(q37_data) <- c("Characteristic", "Frequency")
+colnames(q37_data) <- rep(c(""), length(q37_values))
+
+pretty_kable(q37_data, "Data")
+
+```
+
++ This is a Chi-square goodness-of-fit test. The counts are expected to be equal under the null hypothesis.
++ The expectation is 38 which needs to be compared against the observed counts.
+
+```{r q37}
+
+alpha <- .05
+
+obs <- q37_values
+ec <- rep(sum(obs) / length(obs), times = 6 )
+
+diff <- sum((obs - ec) ^ 2 / ec) # f-statistic, 8.263158
+
+df <- length(obs) - 1
+
+p.value <- pchisq(diff, df, lower.tail = F) # p-value
+f.stat <- qchisq(1 - alpha, df, lower.tail = T) # f critical
+
+diff > f.stat
+p.value < alpha
+
+```
+
+
+```{r q37_results}
+pretty_vector(c("p-value" = p.value, "f-statistic" = f.stat))
+
+pretty_vector(c("p-value Result" = ifelse(p.value < alpha, "Reject", "Fail to Reject")))
+pretty_vector(c("Test Result" = ifelse(diff > f.stat, "Reject", "Fail To Reject")))
+
+```
+
+## 38.) Pearson's Chi-squared Test
+
+Customers in a store were selected at random to participate in a taste test. Two hundred people participated and expressed a 
+preference for one of two beverages. Use the taste test data in the following table to test the hypothesis of
+equal preferences for the two beverages in the study.
+
++ Test at the 5% level.
++ Use an uncorrected Chi-square test.
+
+```{r q38_data, echo = F}
+
+alpha <- 0.05
+
+bev_a <- c(35, 23, 42)
+bev_b <- c(25, 30, 45)
+
+q38_data <- data.frame(rbind( bev_a, bev_b))
+
+rownames(q38_data) <- c("Beverage A", "Beverage B")
+colnames(q38_data) <- c("children", "men", "women")
+
+pretty_kable(q38_data, "Beverages")
+
+```
+
+
+```{r q38}
+
+data <- matrix(c(bev_a, bev_b), nrow = 2, byrow = T)
+
+results <- chisq.test(data, correct = F)
+
+qchisq(.95, 2, lower.tail = T)
+
+```
+
+
+```{r q38_results}
+pretty_vector(c("p-value" = results$p.value))
+pretty_vector(c("p-value Result" = ifelse(results$p.value < alpha, "Reject", "Fail to Reject")))
+```
+
+## 39.) Quantiles
+
+The systolic blood pressures of the patients at the hospital are normally distributed with a mean of 138 mm Hg
+and aa standard deviation of 13.5 mm Hg. Find the two blood pressures having these properties:
+
++ The mean is midway between them and 
++ 90% of all blood pressures are between them.
+
+__Answer:__
+
+
+```{r q39}
+
+upper <- qnorm(0.95, 138, 13.5)
+lower <- qnorm(0.05, 138, 13.5, lower.tail = T)
+
+```
+
+```{r q39_result}
+pretty_vector(c("Lower" = lower, "Upper" = upper))
+
+```
+
+## 40.) Two-sided Confidence Interval
+
+Assume a binomial experiment has been completed and two independent random samples were collected.
+For the first sample there were 18 successes out of 50 trials (__p1 = 18/50__). For the second sample
+there were 30 successes out of 60 trials (__p2 = 30/60__).
+
++ Construct a 90% two-sided confidence interval for the difference p1 - p2.
++ Determine if this is a statistically significant difference.
+
+```{r q40}
+
+alpha <- .1
+
+n1 <- 50
+s1 <- 18
+
+n2 <- 60
+s2 <- 30
+
+p1 <- s1 / n1
+p2 <- s2 / n2
+
+p_hat <- p1 - p2
+
+# Section 10.4, Business Statistics
+
+p_bar <- ( s1 + s2 ) / (n1 + n2)
+std <- sqrt(p_bar * (1 - p_bar) * (1 / n1 + 1 / n2))
+z <- p_hat / std
+
+p <- round(pnorm(z), 4)
+
+q.z <- qnorm(1 - (alpha / 2)) # divide by two for two-sided confidence interval
+
+conf_int <- p_hat + round(c(-q.z, q.z) * std, digits = 4)
+
+```
+
+
+```{r q40_result, echo = F}
+pretty_vector(c("p-value" = p ))
+pretty_vector(c("p-value Result" = ifelse(p < alpha, "Reject", "Fail to Reject")))
+```
+
+## 41.) Discrete Statistics
+
+A discrete random variable has the follow outcomes:
+
+```{r q41_setup, echo = F}
+x <- c(0, 1, 2, 3, 4, 5, 6)
+P.x <- c(0.215, 0.230, 0.240, 0.181, 0.130, 0.003, 0.001)
+
+q40_data <- data.frame(rbind(x, P.x))
+rownames(q40_data) <- c("x", "P(x)")
+colnames(q40_data) <- rep("", ncol(q40_data))
+
+pretty_kable(q40_data, "Probabilities")
+
+```
+
++ Determine the value of _median_, _mean_, _mode_ and _variance_ for this variable.
+
+Quantiles for a discrete random variable are selected from the possible values of the variable based upon the probability distribution.
+
+
+```{r q41}
+
+avg <- round(sum(x * P.x), digits = 3) # 1.794
+var <- round(sum(P.x * (x - avg) ^ 2), digits = 3) # 1.792
+mode <- x[ P.x == max(P.x) ] # 2
+sd <- sqrt(var)
+med <- 2 # look at the cdf
+
+```
+
+```{r q41_display, echo = F}
+
+    pretty_vector(c("Mean" = ev, "Variance" = var, "Standard Deviation" = sd, "Median" = med, "Mode" = mode))
+    plot(x, cumsum(P.x), main = "cdf for P.x", type = "h", ylim = c(0, 1.0))
+    abline(h = 0.5, col = "red")
+
+```
+
+## 42.) T-Test (unequal sd)
+
+A researcher was interested in comparing the average length of time (in hours) spent watching television by women and by men. Independent simple random samples of 14 women and 17 men were selected, 
+and each person was asked how many hours he or she had watched television during the previous week. 
+
+_The summary statistics are as follows_:
+
+```{r q42_setup, echo = F}
+
+q23_data <- data.frame(c("x1 = 11.4 hr", "s1 = 4.1 hr", "n1 = 14"), c("x2 = 16.8 hr", "s2 = 4.7 hr", "n2 = 17"))
+colnames(q23_data) <- c("Women", "Men")
+
+pretty_kable(q23_data, "Samples")
+
+```
+
++ Use a 0.05 significance level to test the claim that the average length of time spent watching television by women is smaller than the average length amount of time spent watching television by men. 
++ Use the t radition method of hypothesis testing. 
+
+__Assume that the population variances are equal.__
+
++ H0 = avg(women) < avg(men)
++ Ha = avg(women) > avg(men)
+
+__For this problem, a one-sided test is required. The alternative will be framed as a positive.__
+
+```{r q42}
+
+alpha <- 0.05
+
+s1.2 <- 4.1 ^ 2
+s2.2 <- 4.7 ^2
+
+n1 <- 14
+n2 <- 17
+
+df <- n1 + n2 - 2
+
+pool <- sqrt((s1.2 * (n1 - 1) + s2.2 * (n2 - 1)) / df)
+
+den <- pool * sqrt( 1 / n1 + 1 / n2)
+
+x1 <- 11.4
+x2 <- 16.8
+
+t <- (x2 - x1) / den
+
+p.value <- pt(t, df, lower.tail = F)
+
+critical_t <- qt(0.95, df, lower.tail = T)
+
+```
+
+
+```{r q42_display, echo = F}
+
+pretty_vector(c("p-value" = round(p.value,3)))
+pretty_vector(c("T-Score" = round(t, 3), "Critical T-Score" = critcal_t))
+
+pretty_vector(c("p-value Test Result" = ifelse(p.value < alpha, "Reject", "Fail to Reject")))
+pretty_vector(c("Test Statistic Result" = ifelse(t > critcal_t, "Reject", "Fail to Reject")))
 
 ```
